@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capacidad Total Instalada por Ciclo de Asignación</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <style>
+        #container {
+            width: 100%;
+            height: 600px;
+            margin: 0 auto;
+            font-family: Arial, sans-serif;
+        }
+        .highlight-bar {
+            fill: #39FF14;
+        }
+        .highcharts-data-label-color-0 {
+            fill: #333 !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Highcharts.setOptions({
+                lang: {
+                    decimalPoint: ',',
+                    thousandsSep: '.'
+                }
+            });
+
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'column',
+                    backgroundColor: '#f9f9f9'
+                },
+                title: {
+                    text: 'CAPACIDAD TOTAL INSTALADA POR CICLO DE ASIGNACIÓN',
+                    style: {
+                        fontSize: '22px',
+                        fontWeight: 'bold',
+                        color: '#333',
+                        textTransform: 'uppercase'  // Asegura que esté en mayúsculas
+                    }
+                },
+                subtitle: {
+                    text: 'Total de capacidad instalada: <b>139,314.46 MW</b>',
+                    useHTML: true,
+                    style: {
+                        fontSize: '14px',
+                        color: '#555'
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    title: {
+                        text: 'Ciclo de Asignación'
+                    },
+                    labels: {
+                        rotation: 0,
+                        style: {
+                            fontSize: '12px'
+                        }
+                    },
+                    crosshair: true
+                },
+                yAxis: {
+                    title: {
+                        text: 'Capacidad Total (MW)'
+                    },
+                    min: 0,
+                    labels: {
+                        formatter: function() {
+                            return Highcharts.numberFormat(this.value, 0, ',', '.');
+                        }
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                plotOptions: {
+                    column: {
+                        colorByPoint: true, // Diferentes colores por columna
+                        borderRadius: 3,
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: true,
+                            formatter: function() {
+                                return Highcharts.numberFormat(this.y, 0, ',', '.');
+                            },
+                            style: {
+                                fontWeight: 'bold',
+                                textOutline: 'none'
+                            }
+                        },
+                        pointPadding: 0.1,
+                        groupPadding: 0.1
+                    }
+                },
+                series: [{
+                    name: 'Capacidad Total',
+                    data: [
+                        { name: 'CICLO 1', y: 39928.73, color: '#39FF14' },
+                        { name: 'CICLO 2', y: 99035.23, color: '#0B6623' }
+                    ]
+                }],
+                tooltip: {
+                    headerFormat: '<b>{point.key}</b><br>',
+                    pointFormat: 'Capacidad Total: <b>{point.y}</b> MW',
+                    useHTML: true
+                },
+                credits: {
+                    enabled: false
+                },
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 600
+                        },
+                        chartOptions: {
+                            xAxis: {
+                                labels: {
+                                    rotation: -30
+                                }
+                            },
+                            plotOptions: {
+                                column: {
+                                    dataLabels: {
+                                        rotation: -90,
+                                        align: 'left',
+                                        x: 5,
+                                        y: -5
+                                    }
+                                }
+                            }
+                        }
+                    }]
+                }
+            });
+        });
+    </script>
+</body>
+</html>

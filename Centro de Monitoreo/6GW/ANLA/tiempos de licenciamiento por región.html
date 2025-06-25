@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiempo Promedio de Aprobación de Licencias por Región</title>
+    <!-- 1. Incluir las librerías de Highcharts -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <style>
+        /* Estilos generales consistentes */
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        #container {
+            width: 90%;
+            max-width: 1200px;
+            height: 700px;
+            margin: 20px auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            background-color: white;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+
+<div id="container"></div>
+
+<script>
+    // --- DATOS REALES PROPORCIONADOS POR EL USUARIO ---
+    // Representa el resultado de agrupar por Región_SSLA y calcular la media de días de aprobación.
+    const datosPorRegion = [
+        { name: 'Medio Magdalena', dias: 351 },
+        { name: 'Pacifico - Río Cauca', dias: 274 },
+        { name: 'Alto Magdalena', dias: 208 },
+        { name: 'Caribe', dias: 208 },
+        { name: 'Pendiente', dias: 203 }
+    ].sort((a, b) => a.dias - b.dias); // Ordenar para la gráfica de barras
+
+    // Paleta de colores 'viridis'
+    const viridisPalette = ['#440154', '#482878', '#3e4989', '#31688e', '#26828e'];
+
+    // --- CONFIGURACIÓN DEL GRÁFICO DE BARRAS ---
+    Highcharts.chart('container', {
+        chart: {
+            type: 'bar',
+            backgroundColor: 'white'
+        },
+        title: {
+            text: 'Tiempo Promedio de Aprobación de Licencias por Región SSLA',
+            style: {
+                fontSize: '22px',
+                fontWeight: 'bold',
+                color: '#333333'
+            }
+        },
+        subtitle: {
+            text: 'Desde la fecha de inicio hasta la fecha de la licencia',
+            style: {
+                color: '#666666'
+            }
+        },
+        xAxis: {
+            categories: datosPorRegion.map(item => item.name),
+            title: {
+                text: 'Región SSLA'
+            },
+            labels: {
+                style: {
+                    fontSize: '12px'
+                }
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Tiempo Promedio de Aprobación (Días)',
+                align: 'high',
+                style: {
+                    fontSize: '14px'
+                }
+            },
+            labels: {
+                format: '{value} días'
+            }
+        },
+        tooltip: {
+            valueSuffix: ' días',
+            pointFormat: 'Promedio de aprobación: <b>{point.y} días</b>'
+        },
+        legend: {
+            enabled: false
+        },
+        plotOptions: {
+            bar: {
+                borderRadius: 3,
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.y} días',
+                    color: 'white',
+                    inside: true,
+                    align: 'right',
+                    style: {
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        textOutline: 'none'
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Tiempo promedio (días)',
+            data: datosPorRegion.map(item => item.dias),
+            colorByPoint: true,
+            colors: viridisPalette.slice().reverse() // Usar la paleta
+        }],
+        credits: {
+            text: 'Fuente: ANLA - Datos procesados por el equipo de analítica',
+            style: {
+                color: '#999999'
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

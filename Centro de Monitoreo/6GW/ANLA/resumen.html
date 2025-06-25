@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FNCER otorgados desde 07/08/2022</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+</head>
+<body>
+
+    <div id="plotResumenANLA" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Highcharts.chart('plotResumenANLA', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'FNCER otorgados desde 07/08/2022 hasta la fecha'
+                },
+                xAxis: {
+                    categories: ['2022', '2023', '2024', '2025'],
+                    title: {
+                        text: 'Año'
+                    }
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Cantidad de FNCER otorgados'
+                    },
+                    stackLabels: {
+                        enabled: true,
+                        style: {
+                            fontWeight: 'bold',
+                            color: ( // theme
+                                Highcharts.defaultOptions.title.style &&
+                                Highcharts.defaultOptions.title.style.color
+                            ) || 'black',
+                            textOutline: 'none'
+                        }
+                    }
+                },
+                legend: {
+                    align: 'right',
+                    x: -30,
+                    verticalAlign: 'top',
+                    y: 25,
+                    floating: true,
+                    backgroundColor:
+                        Highcharts.defaultOptions.legend.backgroundColor || 'white',
+                    borderColor: '#CCC',
+                    borderWidth: 1,
+                    shadow: false
+                },
+                tooltip: {
+                    headerFormat: '<b>{point.x}</b><br/>',
+                    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+                },
+                plotOptions: {
+                    column: {
+                        stacking: 'normal',
+                        dataLabels: {
+                            enabled: true
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Eólico',
+                    data: [1, 1, 0, 0] // Se añade un 0 para 2025 ya que no hay dato explícito
+                }, {
+                    name: 'Fotovoltaico',
+                    data: [4, 3, 4, 5]
+                }, {
+                    name: 'LT',
+                    data: [2, 6, 4, 3]
+                }]
+            });
+        });
+    </script>
+
+</body>
+</html>

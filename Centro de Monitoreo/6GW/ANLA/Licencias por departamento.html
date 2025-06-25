@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top 10 Departamentos por Generación de Energía</title>
+    <!-- 1. Incluir las librerías de Highcharts -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <style>
+        /* Estilos para el contenedor y la fuente */
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        #container {
+            width: 90%;
+            max-width: 1200px;
+            height: 700px;
+            margin: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            background-color: white;
+            padding: 20px;
+        }
+        .highcharts-figure {
+            margin: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 2. Crear el contenedor para la gráfica -->
+<figure class="highcharts-figure">
+    <div id="container"></div>
+</figure>
+
+<!-- 3. El script de la gráfica -->
+<script>
+    // Datos ordenados de mayor a menor
+    const data = [
+        { name: 'La Guajira', y: 2028.9 },
+        { name: 'Santander', y: 860.5 },
+        { name: 'Atlántico', y: 799.5 },
+        { name: 'Cesar', y: 791.4 },
+        { name: 'Cundinamarca', y: 400.0 },
+        { name: 'Códoba - Sucre', y: 350.0 },
+        { name: 'Córdoba', y: 335.0 },
+        { name: 'Caldas', y: 271.3 },
+        { name: 'Tolima', y: 260.0 },
+        { name: 'Bolivar', y: 200.0 }
+    ].sort((a, b) => b.y - a.y);  // Orden descendente
+
+    // Configuración de la gráfica de Highcharts
+    Highcharts.chart('container', {
+        // Tipo de gráfica: Barras horizontales
+        chart: {
+            type: 'bar',
+            styledMode: false,
+            backgroundColor: 'white'
+        },
+        // Título
+        title: {
+            text: 'Top 10 Departamentos por Capacidad de Generación (MW) Licenciada',
+            align: 'center',
+            style: {
+                fontSize: '20px',
+                fontWeight: 'bold',
+                color: '#333333'
+            },
+            margin: 30
+        },
+        // Subtítulo
+        subtitle: {
+            text: 'Datos de generación eléctrica licenciada por departamento',
+            align: 'center',
+            style: {
+                color: '#666666'
+            }
+        },
+        // Configuración del eje X (Departamentos)
+        xAxis: {
+            categories: data.map(item => item.name),
+            title: {
+                text: null
+            },
+            labels: {
+                style: {
+                    fontSize: '12px'
+                }
+            },
+            gridLineWidth: 0,
+            lineWidth: 0
+        },
+        // Configuración del eje Y (Generación en MW)
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Total de Generación Licenciada (MW)',
+                align: 'high',
+                style: {
+                    fontSize: '14px'
+                },
+                margin: 20
+            },
+            labels: {
+                format: '{value:,.0f} MW',
+                style: {
+                    fontSize: '12px'
+                }
+            },
+            gridLineWidth: 1,
+            gridLineColor: '#f0f0f0'
+        },
+        // Tooltip que aparece al pasar el cursor
+        tooltip: {
+            valueSuffix: ' MW',
+            pointFormat: '<b>{point.y:,.1f} MW</b> de generación licenciada.',
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            borderColor: '#cccccc',
+            borderRadius: 10,
+            shadow: true,
+            style: {
+                fontSize: '13px'
+            }
+        },
+        // Configuración de la leyenda
+        legend: {
+            enabled: false
+        },
+        // Opciones de la serie de datos
+        series: [{
+            name: 'Generación (MW)',
+            data: data,
+            colorByPoint: true, // Cada barra con color diferente
+            colors: [
+                '#440154', '#482878', '#3e4989', '#31688e', '#26828e',
+                '#1f9e89', '#35b779', '#6ece58', '#b5de2b', '#fde725'
+            ], // Paleta Viridis completa
+            dataLabels: {
+                enabled: true,
+                align: 'right',
+                inside: true,
+                color: 'white',
+                format: '{point.y:,.0f} MW',
+                style: {
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    textShadow: '0 0 3px rgba(0,0,0,0.5)'
+                },
+                x: -10
+            },
+            pointWidth: 30, // Ancho de las barras
+            borderWidth: 0,
+            shadow: {
+                color: 'rgba(0,0,0,0.2)',
+                width: 5,
+                offsetX: 0,
+                offsetY: 2
+            }
+        }],
+        // Créditos
+        credits: {
+            text: 'Fuente: ANLA - Listado de Proyectos FNCER (Datos procesados por la UPME)',
+            href: '',
+            position: {
+                align: 'right'
+            },
+            style: {
+                fontSize: '10px',
+                color: '#999999'
+            }
+        },
+        // Configuración de diseño general
+        plotOptions: {
+            bar: {
+                borderRadius: 3,
+                pointPadding: 0.1,
+                groupPadding: 0.1,
+                borderWidth: 0
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

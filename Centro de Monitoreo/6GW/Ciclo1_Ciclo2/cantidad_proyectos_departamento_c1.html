@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyectos por Departamento - Ciclo 1</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <style>
+        #container {
+            width: 30%;
+            height: 500px;
+            margin: 0 auto;
+            font-family: 'Arial', sans-serif;
+        }
+        .highlight-bar {
+            fill: #39FF14;
+        }
+        .highcharts-data-label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'column',
+                    backgroundColor: '#f9f9f9'
+                },
+                title: {
+                    text: 'DISTRIBUCIÓN DE PROYECTOS POR DEPARTAMENTO - CICLO 1',
+                    style: {
+                        fontSize: '22px',
+                        fontWeight: 'bold',
+                        color: '#333'
+                    }
+                },
+                subtitle: {
+                    text: 'Total proyectos: <b>619</b>',
+                    useHTML: true,
+                    style: {
+                        fontSize: '14px',
+                        color: '#555'
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    title: {
+                        text: 'Departamento',
+                        style: {
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labels: {
+                        rotation: -90,
+                        style: {
+                            fontSize: '11px',
+                            fontWeight: 'bold'
+                        },
+                        formatter: function() {
+                            return this.value.replace(/_/g, ' ');
+                        }
+                    },
+                    crosshair: true
+                },
+                yAxis: {
+                    title: {
+                        text: 'Número de Proyectos',
+                        style: {
+                            fontWeight: 'bold'
+                        }
+                    },
+                    min: 0,
+                    tickInterval: 10,
+                    gridLineWidth: 1
+                },
+                legend: {
+                    enabled: false
+                },
+                plotOptions: {
+                    column: {
+                        colorByPoint: true, // Usamos diferentes colores para cada barra
+                        borderRadius: 3,
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: true,
+                            formatter: function() {
+                                return this.y;
+                            },
+                            style: {
+                                fontWeight: 'bold',
+                                fontSize: '11px',
+                                color: '#333',
+                                textOutline: 'none'
+                            },
+                            y: -5
+                        },
+                        pointPadding: 0.1,
+                        groupPadding: 0.1
+                    }
+                },
+                series: [{
+                    name: 'Proyectos',
+                    data: [
+                        ['CESAR', 74],
+                        ['BOLIVAR', 67],
+                        ['TOLIMA', 57],
+                        ['ATLANTICO', 53],
+                        ['ANTIOQUIA', 37],
+                        ['LA_GUAJIRA', 34],
+                        ['MAGDALENA', 32],
+                        ['CORDOBA', 31],
+                        ['SANTANDER', 30],
+                        ['HUILA', 28],
+                        ['SUCRE', 28],
+                        ['BOYACA', 25],
+                        ['NORTE_DE_SANTANDER', 22],
+                        ['VALLE_DEL_CAUCA', 20],
+                        ['RISARALDA', 20],
+                        ['CASANARE', 17],
+                        ['CALDAS', 15],
+                        ['CUNDINAMARCA', 10],
+                        ['META', 7],
+                        ['BOGOTA', 6],
+                        ['ARAUCA', 2],
+                        ['CAUCA', 2],
+                        ['NARINO', 2]
+                    ].sort((a, b) => b[1] - a[1]), // Ordenar por proyectos descendente
+                    colorByPoint: true, // Color diferente por cada barra
+                    colors: [
+                        '#39FF14',  // verde neón fosforescente
+                        '#0B6623',  // verde oscuro bosque
+                        '#7FFF00',  // chartreuse brillante
+                        '#228B22',  // verde bosque clásico
+                        '#39FF14',  // verde neón fosforescente
+                        '#0B6623',  // verde oscuro bosque
+                        '#7FFF00',  // chartreuse brillante
+                        '#228B22',  // verde bosque clásico
+                        '#39FF14',  // verde neón fosforescente
+                        '#0B6623',  // verde oscuro bosque
+                        '#7FFF00',  // chartreuse brillante
+                        '#228B22',  // verde bosque clásico
+                        '#39FF14',  // verde neón fosforescente
+                        '#0B6623',  // verde oscuro bosque
+                        '#7FFF00',  // chartreuse brillante
+                        '#228B22',  // verde bosque clásico
+                        '#39FF14',  // verde neón fosforescente
+                        '#0B6623',  // verde oscuro bosque
+                        '#7FFF00',  // chartreuse brillante
+                        '#228B22',  // verde bosque clásico
+                        '#39FF14',  // verde neón fosforescente
+                        '#0B6623',  // verde oscuro bosque
+                        '#7FFF00',  // chartreuse brillante
+                        '#228B22'   // verde bosque clásico
+                    ]
+                }],
+                tooltip: {
+                    headerFormat: '<b>{point.key}</b><br>',
+                    pointFormat: 'Proyectos: <b>{point.y}</b>',
+                    useHTML: true,
+                    style: {
+                        fontSize: '14px'
+                    }
+                },
+                credits: {
+                    enabled: false
+                },
+                // responsive: {
+                //     rules: [{
+                //         condition: {
+                //             maxWidth: 768
+                //         },
+                //         chartOptions: {
+                //             chart: {
+                //                 height: 900
+                //             },
+                //             xAxis: {
+                //                 labels: {
+                //                     rotation: -65,
+                //                     style: {
+                //                         fontSize: '10px'
+                //                     }
+                //                 }
+                //             },
+                //             plotOptions: {
+                //                 column: {
+                //                     dataLabels: {
+                //                         rotation: -90,
+                //                         align: 'right',
+                //                         x: 3,
+                //                         y: 3
+                //                     }
+                //                 }
+                //             }
+                //         }
+                //     }]
+                // }
+            });
+        });
+    </script>
+</body>
+</html>

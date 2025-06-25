@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capacidad Instalada por Estado - Ciclo 1</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <style>
+        #container {
+            width: 40%;
+            height: 600px;
+            margin: 0 auto;
+            font-family: Arial, sans-serif;
+        }
+        .highlight-bar {
+            fill: #39FF14;  /* verde neón fosforescente */
+        }
+        .highcharts-data-label-color-0 {
+            fill: #333 !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Highcharts.setOptions({
+                lang: {
+                    decimalPoint: ',',
+                    thousandsSep: '.'
+                }
+            });
+
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'column',
+                    backgroundColor: '#f9f9f9'
+                },
+                title: {
+                    text: 'DISTRIBUCIÓN DE CAPACIDAD INSTALADA - CICLO 1',
+                    style: {
+                        fontSize: '22px',
+                        fontWeight: 'bold',
+                        color: '#333'
+                    }
+                },
+                subtitle: {
+                    text: 'Total capacidad: <b>52.871,4 MW</b>',
+                    useHTML: true,
+                    style: {
+                        fontSize: '14px',
+                        color: '#555'
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    title: {
+                        text: 'Estado del Proyecto',
+                        style: {
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labels: {
+                        rotation: -45,
+                        style: {
+                            fontSize: '12px',
+                            fontWeight: 'bold'
+                        }
+                    },
+                    crosshair: true
+                },
+                yAxis: {
+                    title: {
+                        text: 'Capacidad Instalada (MW)',
+                        style: {
+                            fontWeight: 'bold'
+                        }
+                    },
+                    min: 0,
+                    labels: {
+                        formatter: function() {
+                            return Highcharts.numberFormat(this.value, 0, ',', '.');
+                        }
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                plotOptions: {
+                    column: {
+                        borderRadius: 4,
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: true,
+                            formatter: function() {
+                                return Highcharts.numberFormat(this.y, this.point.index === 7 ? 1 : 2, ',', '.');
+                            },
+                            style: {
+                                fontWeight: 'bold',
+                                fontSize: '12px',
+                                color: '#333'
+                            },
+                            y: -20
+                        },
+                        pointPadding: 0.1,
+                        groupPadding: 0.15
+                    }
+                },
+                series: [{
+                    name: 'Capacidad (MW)',
+                    data: [
+                        {name: 'CONCEPTO APROBADO', y: 6557.45, color: '#0B6623'},  // verde oscuro bosque
+                        {name: 'CONCEPTO NEGADO', y: 28019.74, color: '#7FFF00'},  // chartreuse brillante
+                        {name: 'DESISTIDO', y: 921.59, color: '#39FF14'},  // verde neón fosforescente
+                        {name: 'EN OPERACIÓN', y: 68, color: '#228B22'},  // verde bosque clásico
+                        {name: 'EN VALIDACIÓN COMPLETITUD', y: 825, color: '#00843D'},  // verde UPME
+                        {name: 'LIBERADO', y: 2784.13, color: '#32CD32'},  // verde lima
+                        {name: 'RETIRADO', y: 752.49, color: '#006400'},  // verde muy oscuro
+                        {name: 'TOTAL', y: 52871.4, color: '#005A28', className: 'highlight-bar'}  // verde muy oscuro para el total
+                    ]
+                }],
+                tooltip: {
+                    headerFormat: '<b>{point.key}</b><br>',
+                    pointFormat: 'Capacidad: <b>{point.y:,.2f} MW</b>'.replace(/\./g, '|').replace(/,/g, '.').replace(/\|/g, ','),
+                    useHTML: true
+                },
+                credits: {
+                    enabled: false
+                },
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 600
+                        },
+                        chartOptions: {
+                            xAxis: {
+                                labels: {
+                                    rotation: -30
+                                }
+                            },
+                            plotOptions: {
+                                column: {
+                                    dataLabels: {
+                                        rotation: -90,
+                                        align: 'left',
+                                        x: 5,
+                                        y: -5
+                                    }
+                                }
+                            }
+                        }
+                    }]
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribución de Ciclos de Asignación</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <style>
+        #container {
+            width: 80%;
+            height: 500px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'column',
+                    backgroundColor: '#f9f9f9'
+                },
+                title: {
+                    text: 'DISTRIBUCIÓN DE CICLOS DE ASIGNACIÓN',
+                    style: {
+                        fontSize: '22px',
+                        fontWeight: 'bold',
+                        color: '#333',
+                        textTransform: 'uppercase'
+                    }
+                },
+                subtitle: {
+                    text: 'Total de proyectos: <b>2,339</b>',
+                    useHTML: true,
+                    style: {
+                        fontSize: '14px',
+                        color: '#555'
+                    }
+                },
+                xAxis: {
+                    categories: ['CICLO 1', 'CICLO 2'],
+                    title: {
+                        text: 'Ciclo de Asignación'
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: 'Número de Proyectos'
+                    },
+                    min: 0,
+                    labels: {
+                        formatter: function() {
+                            return Highcharts.numberFormat(this.value, 0, ',', '.');
+                        }
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                plotOptions: {
+                    column: {
+                        colorByPoint: true,
+                        borderRadius: 3,
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: true,
+                            formatter: function() {
+                                return Highcharts.numberFormat(this.y, 0, ',', '.');
+                            },
+                            style: {
+                                fontWeight: 'bold',
+                                textOutline: 'none'
+                            }
+                        },
+                        pointPadding: 0.1,
+                        groupPadding: 0.1
+                    }
+                },
+                series: [{
+                    name: 'Proyectos',
+                    data: [
+                        { name: 'CICLO 1', y: 619, color: '#39FF14' },
+                        { name: 'CICLO 2', y: 1720, color: '#0B6623' }
+                    ]
+                }],
+                tooltip: {
+                    headerFormat: '<b>{point.key}</b><br>',
+                    pointFormat: 'Proyectos: <b>{point.y}</b>',
+                    useHTML: true
+                },
+                credits: {
+                    enabled: false
+                },
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 600
+                        },
+                        chartOptions: {
+                            xAxis: {
+                                labels: {
+                                    rotation: -30
+                                }
+                            },
+                            plotOptions: {
+                                column: {
+                                    dataLabels: {
+                                        rotation: -90,
+                                        align: 'left',
+                                        x: 5,
+                                        y: -5
+                                    }
+                                }
+                            }
+                        }
+                    }]
+                }
+            });
+        });
+    </script>
+</body>
+</html>

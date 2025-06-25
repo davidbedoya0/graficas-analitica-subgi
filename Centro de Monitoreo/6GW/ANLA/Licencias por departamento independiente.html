@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evolución de la capacidad instalada licenciada por Departamento</title>
+    <!-- 1. Incluir las librerías de Highcharts -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        /* Contenedor principal de los gráficos */
+        .main-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        /* Título principal */
+        .main-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        /* Cuadrícula para los gráficos facetados */
+        .facet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        /* Contenedor de cada gráfico individual */
+        .chart-container {
+            width: 100%;
+            height: 300px; /* Altura fija para cada mini-gráfico */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            background-color: white;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <h1 class="main-title">Evolución de la capacidad instalada licenciada por Departamento</h1>
+    <div id="facet-grid-container" class="facet-grid">
+        <!-- Los gráficos se insertarán aquí mediante JavaScript -->
+    </div>
+</div>
+
+<script>
+    // --- DATOS Y PALETAS ---
+    const seriesData = [
+        { name: 'La Guajira', data: [[2018, 240.0], [2019, 346.5], [2020, 200.0], [2021, 571.2], [2022, 571.2], [2023, 100.0]], dashStyle: 'Solid'},
+        { name: 'Santander', data: [[2019, 100.5], [2022, 200.0], [2023, 360.0], [2024, 200.0]], dashStyle: 'Solid'},
+        { name: 'Atlántico', data: [[2021, 599.5], [2022, 200.0]], dashStyle: 'Solid'},
+        { name: 'Cesar', data: [[2019, 250.4], [2021, 101.0], [2023, 240.0], [2025, 200.0]], dashStyle: 'Solid'},
+        { name: 'Cundinamarca', data: [[2022, 300.0], [2023, 100.0]], dashStyle: 'Solid'},
+        { name: 'Códoba - Sucre', data: [[2025, 350.0]], dashStyle: 'Solid'},
+        { name: 'Córdoba', data: [[2024, 200.0], [2025, 135.0]], dashStyle: 'Solid'},
+        { name: 'Otros', data: [[2021, 121.3], [2022, 360.0], [2024, 250.0], [2025, 400.0]], dashStyle: 'Dash', color: 'lightgray'}
+    ];
+    
+    const viridisPalette = ['#440154', '#482878', '#3e4989', '#31688e', '#26828e', '#1f9e89', '#35b779'];
+    const maxMw = 600; // Valor máximo para el eje Y, consistente en todos los gráficos
+
+    // --- RENDERIZADO DE GRÁFICOS ---
+    const gridContainer = document.getElementById('facet-grid-container');
+
+    seriesData.forEach((series, index) => {
+        // 1. Crear un div para cada gráfico
+        const chartDiv = document.createElement('div');
+        const chartId = 'chart-' + index;
+        chartDiv.id = chartId;
+        chartDiv.className = 'chart-container';
+        gridContainer.appendChild(chartDiv);
+
+        // 2. Configurar y renderizar el gráfico de Highcharts
+        Highcharts.chart(chartId, {
+            chart: {
+                type: 'column',
+                backgroundColor: 'white'
+            },
+            title: {
+                text: series.name, // Título del gráfico es el nombre del depto
+                style: {
+                    fontSize: '16px',
+                    fontWeight: 'bold'
+                }
+            },
+            xAxis: {
+                title: { text: 'Año' },
+                allowDecimals: false
+            },
+            yAxis: {
+                title: { text: 'MW Licenciados' },
+                min: 0,
+                max: maxMw, // Eje Y consistente
+                gridLineDashStyle: 'Dash',
+                gridLineColor: '#e0e0e0'
+            },
+            legend: {
+                enabled: false // No se necesita leyenda en gráficos individuales
+            },
+            tooltip: {
+                pointFormat: '<b>{point.y:,.1f} MW</b> en {point.x}'
+            },
+            plotOptions: {
+                series: {
+                    lineWidth: 2.5,
+                    marker: { enabled: true, radius: 4 }
+                }
+            },
+            series: [{
+                name: series.name,
+                data: series.data,
+                dashStyle: series.dashStyle,
+                color: series.color || viridisPalette[index % viridisPalette.length]
+            }],
+            credits: {
+                enabled: false // Desactivar créditos para un look más limpio
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

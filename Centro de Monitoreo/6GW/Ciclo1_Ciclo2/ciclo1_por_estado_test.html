@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gráfica de Proyectos por Estado</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <style>
+        #container {
+            width: 100%;
+            height: 500px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Número de Proyectos por Estado'
+                },
+                xAxis: {
+                    type: 'category',
+                    title: {
+                        text: 'Estado Proyecto'
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: 'Número de Proyectos'
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                plotOptions: {
+                    column: {
+                        color: '#00843D', // Verde UPME CAMBIAR COLOR 
+                        borderRadius: 5,
+                        dataLabels: {
+                            enabled: true,
+                            format: '{point.y}'
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Proyectos',
+                    data: [
+                        ['CONCEPTO APROBADO', 5],
+                        ['DESISTIDO', 170],
+                        ['EN EVALUACIÓN', 1456],
+                        ['RETIRADO', 87],
+                        ['Suma total', 1718]
+                    ]
+                }],
+                tooltip: {
+                    pointFormat: 'Proyectos: <b>{point.y}</b>'
+                }
+            });
+        });
+    </script>
+</body>
+</html>

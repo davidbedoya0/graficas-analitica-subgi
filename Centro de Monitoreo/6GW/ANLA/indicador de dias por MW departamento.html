@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indicador de dias de Licenciamiento por MW para cada Tipo de Proyecto</title>
+    <!-- Incluir las librerías de Highcharts -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .chart-container {
+            width: 90%;
+            max-width: 1200px;
+            height: 700px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            background-color: white;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+
+<div id="container-departamento" class="chart-container"></div>
+
+<script>
+    // --- DATOS REALES ---
+    const datosPorDepto = [
+        { name: 'Santander', eficiencia: 2.004 },
+        { name: 'Córdoba', eficiencia: 1.723 },
+        { name: 'Otros', eficiencia: 1.650 },
+        { name: 'Códoba - Sucre', eficiencia: 1.360 },
+        { name: 'Cundinamarca', eficiencia: 1.312 },
+        { name: 'Cesar', eficiencia: 1.157 },
+        { name: 'La Guajira', eficiencia: 1.022 },
+        { name: 'Atlántico', eficiencia: 0.937 }
+    ].sort((a, b) => a.eficiencia - b.eficiencia);
+    
+    // Paleta de colores 'viridis'
+    const viridisPalette = ['#440154', '#482878', '#3e4989', '#31688e', '#26828e', '#1f9e89', '#35b779', '#fde725'];
+
+    // --- GRÁFICO ---
+    Highcharts.chart('container-departamento', {
+        chart: { type: 'bar', backgroundColor: 'white' },
+        title: { text: 'Indicador de dias de Licenciamiento por MW para cada Departamento', style: { fontSize: '20px', fontWeight: 'bold' } },
+        subtitle: { text: 'Indicador: Promedio de Días por MW licenciado' },
+        xAxis: { categories: datosPorDepto.map(item => item.name), title: { text: null } },
+        yAxis: {
+            min: 0,
+            title: { text: 'Eficiencia (Días por MW)', align: 'high' },
+            labels: { format: '{value:.1f}' }
+        },
+        tooltip: {
+            pointFormat: 'Eficiencia: <b>{point.y:.2f} días por MW</b>'
+        },
+        legend: { enabled: false },
+        plotOptions: {
+            bar: {
+                borderRadius: 3,
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.y:.2f}',
+                    color: 'white',
+                    inside: true,
+                    align: 'right',
+                    style: { fontSize: '12px', fontWeight: 'bold', textOutline: 'none' }
+                }
+            }
+        },
+        series: [{
+            name: 'Días por MW',
+            data: datosPorDepto.map(item => item.eficiencia),
+            colorByPoint: true,
+            colors: viridisPalette
+        }],
+        credits: { enabled: false }
+    });
+</script>
+
+</body>
+</html>

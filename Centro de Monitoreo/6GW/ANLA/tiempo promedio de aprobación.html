@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiempo Promedio de Aprobación de Licencias</title>
+    <!-- 1. Incluir las librerías de Highcharts -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <style>
+        /* Estilos generales consistentes */
+        #tiempoPromedioANLA {
+            width: 90%;
+            max-width: 1200px;
+            height: 700px;
+            margin: 20px auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            background-color: white;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+
+<div id="tiempoPromedioANLA"></div>
+
+<script>
+    // --- DATOS CORREGIDOS SEGÚN EL CÁLCULO DEL USUARIO ---
+    // Representa el resultado de agrupar por departamento y calcular la media de días de aprobación.
+    const datosTiempos = [
+        { name: 'Códoba - Sucre', dias: 476 },
+        { name: 'Santander', dias: 288 },
+        { name: 'Cesar', dias: 287 },
+        { name: 'Córdoba', dias: 255 },
+        { name: 'Atlántico', dias: 221 },
+        { name: 'La Guajira', dias: 219 },
+        { name: 'Otros', dias: 206 },
+        { name: 'Cundinamarca', dias: 199 }
+    ].sort((a, b) => a.dias - b.dias); // Ordenar para la gráfica de barras
+
+    // Paleta de colores 'viridis'
+    const viridisPalette = ['#440154', '#482878', '#3e4989', '#31688e', '#26828e', '#1f9e89', '#35b779', '#fde725'];
+
+    // --- CONFIGURACIÓN DEL GRÁFICO DE BARRAS ---
+    Highcharts.chart('tiempoPromedioANLA', {
+        chart: {
+            type: 'bar',
+            backgroundColor: 'white'
+        },
+        title: {
+            text: 'Tiempo Promedio de Aprobación de Licencias por Departamento',
+            style: {
+                fontSize: '22px',
+                fontWeight: 'bold',
+                color: '#333333'
+            }
+        },
+        subtitle: {
+            text: 'Desde la fecha de inicio hasta la fecha de la licencia',
+            style: {
+                color: '#666666'
+            }
+        },
+        xAxis: {
+            categories: datosTiempos.map(item => item.name),
+            title: {
+                text: null
+            },
+            labels: {
+                style: {
+                    fontSize: '12px'
+                }
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Tiempo Promedio de Aprobación (Días)',
+                align: 'high',
+                style: {
+                    fontSize: '14px'
+                }
+            },
+            labels: {
+                format: '{value} días'
+            }
+        },
+        tooltip: {
+            valueSuffix: ' días',
+            pointFormat: 'Promedio de aprobación: <b>{point.y} días</b>'
+        },
+        legend: {
+            enabled: false
+        },
+        plotOptions: {
+            bar: {
+                borderRadius: 3,
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.y} días',
+                    color: 'white',
+                    inside: true,
+                    align: 'right',
+                    style: {
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        textOutline: 'none'
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Tiempo promedio (días)',
+            data: datosTiempos.map(item => item.dias),
+            colorByPoint: true,
+            colors: viridisPalette.slice().reverse() // Usar la paleta
+        }],
+        credits: {
+            text: 'Fuente: ANLA - Datos procesados por la UPME',
+            style: {
+                color: '#999999'
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

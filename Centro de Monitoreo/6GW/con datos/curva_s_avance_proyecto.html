@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promedio Anual de Producción Fiscalizada</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/data.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+</head>
+<body>
+    <div id="container" style="width:100%; height:600px;"></div>
+<script>
+    const csv = `proyecto,fecha,avance,hito,hito_nombre,estado
+0,1158,2022-06-30,4.0,hito_1,"Obtención del derecho al uso de los terrenos para el proyecto y, si es requisito para el proyecto, haber cumplido con las consultas previas.",Cumplido
+1,1158,2025-01-15,14.0,hito_2,Permisos y licencias ambiental del proyecto (aprobación DAA y EIA),Cumplido
+2,1158,2025-02-15,14.0,hito_3,Permisos y licencias para activos de conexión.,Cumplido
+3,1158,2025-04-27,18.0,hito_4,Orden de compra de los equipos del proyecto.,Cumplido
+4,1158,2026-10-31,50.0,hito_5,Identificación de Avance del 50% del proyecto,No cumplido`;
+
+    drawChart(csv);
+
+    function drawChart(csv) {
+        const lines = csv.trim().split('\n');
+        const headers = lines[0].split(',');
+        const rows = lines.slice(1).map(line => line.split(','));
+
+        const today = new Date();
+        const data = [];
+
+        rows.forEach(row => {
+            const fecha = new Date(row[2]);
+            data.push({
+                x: fecha.getTime(),
+                y: parseFloat(row[3]),
+                name: row[4], // hito
+                hitoNombre: row[5], // nombre del hito
+                color: fecha < today ? '#2b4037' : '#d94e3b'
+            });
+        });
+
+        Highcharts.chart('container', {
+            chart: { type: 'line' },
+            title: { text: 'Evolución de avance por proyecto - Hitos Cumplidos vs No cumplidos' },
+            xAxis: {
+                type: 'datetime',
+                title: { text: 'Fecha' },
+                plotLines: [{
+                    color: 'gray',
+                    width: 2,
+                    value: today.getTime(),
+                    dashStyle: 'Dash',
+                    label: {
+                        text: 'Hoy',
+                        align: 'right',
+                        style: { color: 'gray', fontWeight: 'bold' },
+                        y: -10
+                    }
+                }]
+            },
+            yAxis: {
+                title: {
+                    text: 'Porcentaje de avance',
+                    style: { fontWeight: 'bold' }
+                },
+                max: 100
+            },
+            tooltip: {
+                formatter: function () {
+                    return `<b>${this.point.name}</b><br/>
+                            ${this.point.hitoNombre}<br/>
+                            <b>Avance:</b> ${this.y}%<br/>
+                            <b>Fecha:</b> ${Highcharts.dateFormat('%Y-%m-%d', this.x)}`;
+                }
+            },
+            legend: {
+                align: 'center',
+                verticalAlign: 'top',
+                layout: 'horizontal'
+            },
+            series: [{
+                name: 'Porcentaje de avance',
+                data: data,
+                marker: {
+                    symbol: 'circle',
+                    radius: 6
+                }
+            }]
+        });
+    }
+</script>
+
+</body>
+</html>

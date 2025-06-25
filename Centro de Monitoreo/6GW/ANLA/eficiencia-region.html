@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indicador de dias de Licenciamiento por MW para cada Región</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .chart-container {
+            width: 100%;
+            height: 600px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            background-color: white;
+            padding: 25px;
+            margin: 0 auto;
+            max-width: 1000px;
+            border: 1px solid #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div id="container-region" class="chart-container"></div>
+
+    <script>
+        Highcharts.chart('container-region', {
+            chart: {
+                type: 'boxplot',
+                backgroundColor: 'white',
+                borderRadius: 8
+            },
+            title: {
+                text: 'Indicador de dias de Licenciamiento por MW para cada Región',
+                align: 'left',
+                style: {
+                    fontSize: '20px',
+                    fontWeight: '600',
+                    color: '#2c3e50'
+                }
+            },
+            subtitle: {
+                text: 'Distribución de días requeridos por MW licenciado',
+                align: 'left',
+                style: {
+                    color: '#7f8c8d',
+                    fontSize: '14px'
+                }
+            },
+            xAxis: {
+                categories: ['Pendiente', 'Caribe', 'Medio Magdalena', 'Alto Magdalena', 'Pacifico - Río Cauca'],
+                title: { text: null },
+                labels: { 
+                    style: { fontSize: '13px', color: '#34495e' },
+                    rotation: -15 
+                },
+                gridLineWidth: 0
+            },
+            yAxis: {
+                title: {
+                    text: 'Días por MW',
+                    style: { color: '#7f8c8d', fontSize: '14px' }
+                },
+                plotLines: [{
+                    value: 1.42,
+                    color: '#e74c3c',
+                    width: 1.5,
+                    dashStyle: 'Dash',
+                    label: {
+                        text: 'Mediana global: 1.42 días/MW',
+                        align: 'right',
+                        style: { color: '#e74c3c', fontSize: '12px' },
+                        y: -10
+                    }
+                }],
+                gridLineColor: '#f0f0f0'
+            },
+            series: [{
+                name: 'Distribución',
+                data: [
+                    [1.01, 1.01, 1.01, 1.01, 1.01],
+                    [0.56, 0.88, 0.99, 1.20, 1.65],
+                    [0.57, 0.90, 1.42, 2.52, 4.60],
+                    [0.67, 1.24, 1.51, 1.87, 1.95],
+                    [1.36, 1.47, 1.72, 1.96, 2.02]
+                ],
+                colorByPoint: true,
+                colors: ['#3498db', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6'],
+                tooltip: {
+                    headerFormat: '<span style="font-size: 14px; font-weight: bold">{point.key}</span><br/>',
+                    pointFormat: '<table>' +
+                        '<tr><td>Mínimo:</td><td style="text-align: right"><b>{point.low:.2f} días</b></td></tr>' +
+                        '<tr><td>Q1:</td><td style="text-align: right"><b>{point.q1:.2f} días</b></td></tr>' +
+                        '<tr><td>Mediana:</td><td style="text-align: right"><b>{point.median:.2f} días</b></td></tr>' +
+                        '<tr><td>Q3:</td><td style="text-align: right"><b>{point.q3:.2f} días</b></td></tr>' +
+                        '<tr><td>Máximo:</td><td style="text-align: right"><b>{point.high:.2f} días</b></td></tr>' +
+                        '</table>'
+                }
+            }, {
+                name: 'Valores atípicos',
+                color: '#e74c3c',
+                type: 'scatter',
+                data: [[1, 1.87], [1, 1.85], [3, 3.09]],
+                marker: {
+                    fillColor: 'white',
+                    lineWidth: 1.5,
+                    lineColor: '#e74c3c',
+                    radius: 5
+                },
+                tooltip: {
+                    pointFormat: '<span style="color:{series.color}">Valor atípico:</span> <b>{point.y:.2f} días/MW</b>'
+                }
+            }],
+            credits: {
+                enabled: true,
+                text: 'Fuente: ANLA | Diseño: Equipo de Análisis',
+                href: '',
+                position: { align: 'right', verticalAlign: 'bottom' },
+                style: { fontSize: '11px', color: '#95a5a6' }
+            }
+        });
+    </script>
+</body>
+</html>

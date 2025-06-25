@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evolución de Generación de Energía por Departamento</title>
+    <!-- 1. Incluir las librerías de Highcharts -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <style>
+        /* Estilos para el contenedor y la fuente, consistentes con el gráfico anterior */
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        #container {
+            width: 90%;
+            max-width: 1200px;
+            height: 700px;
+            margin: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            background-color: white;
+            padding: 20px;
+        }
+        .highcharts-figure {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 2. Crear el contenedor para la gráfica -->
+<figure class="highcharts-figure">
+    <div id="container"></div>
+</figure>
+
+<!-- 3. El script de la gráfica -->
+<script>
+    // --- DATOS REALES PROPORCIONADOS POR EL USUARIO ---
+    const seriesData = [
+        { name: 'La Guajira', data: [[2018, 240.0], [2019, 346.5], [2020, 200.0], [2021, 571.2], [2022, 571.2], [2023, 100.0]], dashStyle: 'Solid'},
+        { name: 'Santander', data: [[2019, 100.5], [2022, 200.0], [2023, 360.0], [2024, 200.0]], dashStyle: 'Solid'},
+        { name: 'Atlántico', data: [[2021, 599.5], [2022, 200.0]], dashStyle: 'Solid'},
+        { name: 'Cesar', data: [[2019, 250.4], [2021, 101.0], [2023, 240.0], [2025, 200.0]], dashStyle: 'Solid'},
+        { name: 'Cundinamarca', data: [[2022, 300.0], [2023, 100.0]], dashStyle: 'Solid'},
+        { name: 'Códoba - Sucre', data: [[2025, 350.0]], dashStyle: 'Solid'},
+        { name: 'Córdoba', data: [[2024, 200.0], [2025, 135.0]], dashStyle: 'Solid'},
+        { name: 'Otros', data: [[2021, 121.3], [2022, 360.0], [2024, 250.0], [2025, 400.0]], dashStyle: 'Dash', color: 'lightgray'}
+    ];
+
+    // --- NUEVO: CALCULAR LA SUMA TOTAL POR AÑO ---
+    const totalsByYear = {};
+    seriesData.forEach(series => {
+        series.data.forEach(([year, value]) => {
+            if (totalsByYear[year]) {
+                totalsByYear[year] += value;
+            } else {
+                totalsByYear[year] = value;
+            }
+        });
+    });
+
+    const totalSeriesData = Object.keys(totalsByYear).map(year => {
+        return [parseInt(year), totalsByYear[year]];
+    });
+
+    // Añadir la nueva serie de totales al conjunto de datos
+    const allSeries = [
+        ...seriesData,
+        {
+            name: 'Total Anual',
+            data: totalSeriesData,
+            dashStyle: 'Solid',
+            color: '#333333', // Color oscuro para destacar
+            lineWidth: 4,      // Línea más gruesa
+            marker: {
+                radius: 5,
+                symbol: 'circle'
+            },
+            zIndex: 10 // Asegura que se dibuje encima de otras líneas
+        }
+    ];
+
+    // Colores de la paleta 'viridis' para los 7 departamentos principales
+    const viridisPalette = ['#440154', '#482878', '#3e4989', '#31688e', '#26828e', '#1f9e89', '#35b779'];
+
+    // --- Configuración de la Gráfica de Highcharts ---
+    Highcharts.chart('container', {
+        chart: {
+            type: 'line',
+            styledMode: false,
+            backgroundColor: 'white',
+            marginRight: 180 // Espacio a la derecha para la leyenda
+        },
+        // Títulos
+        title: {
+            text: 'Licencias orotgadas',
+            style: {
+                fontSize: '22px',
+                fontWeight: 'bold',
+                color: '#333333'
+            }
+        },
+        subtitle: {
+            text: 'Evolución Anual de Capacidad (MW) Licenciada para los Principales Departamentos',
+            style: {
+                fontSize: '15px',
+                color: '#555555'
+            }
+        },
+        // Eje X: Años
+        xAxis: {
+            title: {
+                text: 'Año de Licenciamiento',
+                style: { fontSize: '14px' }
+            },
+            accessibility: {
+                rangeDescription: 'Rango: 2018 a 2025'
+            }
+        },
+        // Eje Y: Megavatios
+        yAxis: {
+            min: 0,
+            // El límite se ajusta automáticamente, pero se puede definir uno si se desea.
+            // max: 1800, 
+            title: {
+                text: 'Total de MW Licenciados en el Año',
+                style: { fontSize: '14px' }
+            },
+            labels: {
+                format: '{value:,.0f} MW'
+            },
+            gridLineDashStyle: 'Dash', // Rejilla horizontal sutil
+            gridLineColor: '#e0e0e0'
+        },
+        // Tooltip
+        tooltip: {
+            shared: true,
+            crosshairs: true,
+            pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.y:,.1f} MW</b><br/>'
+        },
+        // Leyenda
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 1,
+            borderRadius: 5,
+            title: {
+                text: 'Departamento',
+                style: { fontWeight: 'bold' }
+            }
+        },
+        // Opciones de la serie
+        plotOptions: {
+            series: {
+                lineWidth: 2.5,
+                marker: {
+                    enabled: true,
+                    radius: 4
+                }
+            }
+        },
+        // Datos a graficar
+        series: allSeries.map((series, index) => ({
+            ...series,
+            // Asignar color de la paleta si no es 'Otros' o 'Total Anual'
+            color: series.color || viridisPalette[index % viridisPalette.length]
+        })),
+        // Créditos
+        credits: {
+            text: 'Fuente: ANLA - Listado de Proyectos FNCER (Datos procesados por la UPME)',
+            style: { color: '#999999' }
+        }
+    });
+</script>
+
+</body>
+</html>

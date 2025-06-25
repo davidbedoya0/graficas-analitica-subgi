@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfica de Hidrología</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #F6F6F5;
+        }
+        #container {
+            width: 90%;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        #loading {
+            text-align: center;
+            padding: 20px;
+        }
+        #error {
+            color: red;
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        #chart {
+            height: 500px; 
+            min-width: 310px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="loading">Cargando datos...</div>
+        <div id="error"></div>
+        <div id="chart"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Función para mostrar errores
+            function showError(message) {
+                document.getElementById('loading').style.display = 'none';
+                const errorElement = document.getElementById('error');
+                errorElement.style.display = 'block';
+                errorElement.textContent = message;
+                console.error(message);
+            }
+
+            // Función para procesar el CSV
+            function parseCSV(csv) {
+                const lines = csv.split('\n');
+                const headers = lines[0].split(',').map(h => h.trim());
+                
+                // Verificar que el CSV tiene el formato correcto
+                const requiredHeaders = ['Date', 'aportes', 'volumen_util', 'porcentaje_util'];
+                if (!requiredHeaders.every(h => headers.includes(h))) {
+                    throw new Error('El archivo CSV no tiene el formato esperado');
+                }
+
+                const data = [];
+                
+                for (let i = 1; i < lines.length; i++) {
+                    if (lines[i].trim() === '') continue;
+                    
+                    const values = lines[i].split(',');
+                    if (values.length === headers.length) {
+                        const dateParts = values[0].trim().split('-');
+                        const date = Date.UTC(
+                            parseInt(dateParts[0]), 
+                            parseInt(dateParts[1]) - 1, 
+                            parseInt(dateParts[2])
+                        );
+                        
+                        data.push({
+                            date: date,
+                            aportes: parseFloat(values[1]),
+                            porcentaje_util: parseFloat(values[3])
+                        });
+                    }
+                }
+                
+                return data;
+            }
+
+            // Función para crear el gráfico
+            function createChart(data) {
+                try {
+                    Highcharts.chart('chart3', {
+                        chart: {
+                            zoomType: 'xy',
+                            backgroundColor: '#F6F6F5'
+                        },
+                        title: {
+                            text: 'Demanda Energía Eléctrica',
+                            style: {
+                                fontSize: '24px',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        xAxis: {
+                            type: 'datetime',
+                            dateTimeLabelFormats: {
+                                day: '%e %b %Y',
+                                month: '%b %Y',
+                                year: '%Y'
+                            },
+                            title: {
+                                text: null
+                            },
+                            gridLineWidth: 1,
+                            gridLineDashStyle: 'Dash',
+                            labels: {
+                                style: {
+                                    fontSize: '12px'
+                                }
+                            }
+                        },
+                        yAxis: [{
+                            title: {
+                                text: 'GWh-Día',
+                                style: {
+                                    fontSize: '16px',
+                                    fontWeight: 'bold',
+                                    color: '#4f8a21'
+                                }
+                            },
+                            min: 0,
+                            max: 700,
+                            gridLineDashStyle: 'Dash',
+                            labels: {
+                                format: '{value:.1f}',
+                                style: {
+                                    fontSize: '12px',
+                                    color: '#4f8a21'
+                                }
+                            },
+                            opposite: false
+                        }, {
+                            title: {
+                                text: '% Volumen Util Embalse',
+                                style: {
+                                    fontSize: '16px',
+                                    fontWeight: 'bold',
+                                    color: '#2b4037'
+                                }
+                            },
+                            min: 0,
+                            max: 1,
+                            labels: {
+                                format: '{value:.2f}',
+                                style: {
+                                    fontSize: '12px',
+                                    color: '#2b4037'
+                                }
+                            },
+                            opposite: true
+                        }],
+                        tooltip: {
+                            shared: true,
+                            xDateFormat: '%Y-%m-%d',
+                            valueDecimals: 2
+                        },
+                        legend: {
+                            layout: 'horizontal',
+                            align: 'center',
+                            verticalAlign: 'top',
+                            backgroundColor: 'white',
+                            borderWidth: 0,
+                            itemStyle: {
+                                fontSize: '14px'
+                            }
+                        },
+                        plotOptions: {
+                            series: {
+                                marker: {
+                                    enabled: false
+                                },
+                                states: {
+                                    hover: {
+                                        enabled: true,
+                                        lineWidth: 2
+                                    }
+                                }
+                            },
+                            area: {
+                                fillOpacity: 0.4
+                            }
+                        },
+                        series: [{
+                            name: 'Aportes',
+                            type: 'line',
+                            yAxis: 0,
+                            color: '#4f8a21',
+                            lineWidth: 2,
+                            tooltip: {
+                                valueSuffix: ' GWh-Día'
+                            },
+                            data: data.map(item => [item.date, item.aportes])
+                        }, {
+                            name: 'Porcentaje Embalses',
+                            type: 'area',
+                            yAxis: 1,
+                            color: '#2b4037',
+                            lineWidth: 0,
+                            fillOpacity: 0.4,
+                            tooltip: {
+                                valueSuffix: ' %'
+                            },
+                            data: data.map(item => [item.date, item.porcentaje_util])
+                        }],
+                        credits: {
+                            enabled: false
+                        }
+                    });
+
+                    document.getElementById('loading').style.display = 'none';
+                } catch (e) {
+                    showError('Error al crear el gráfico: ' + e.message);
+                }
+            }
+
+            // Cargar el archivo CSV usando fetch
+            fetch('data_hidrologia.csv')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('No se pudo cargar el archivo CSV');
+                    }
+                    return response.text();
+                })
+                .then(csv => {
+                    try {
+                        const data = parseCSV(csv);
+                        if (data.length === 0) {
+                            throw new Error('El archivo CSV no contiene datos válidos');
+                        }
+                        createChart(data);
+                    } catch (e) {
+                        showError('Error al procesar el CSV: ' + e.message);
+                    }
+                })
+                .catch(error => {
+                    showError('Error al cargar el archivo: ' + error.message + 
+                             '. Asegúrate de que el archivo data_hidrologia.csv esté en el mismo directorio que este HTML.');
+                });
+        });
+   
+   </script>
+</body>
+</html>
