@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  </head>
+  <body>
+    <div id="container" style="width: 100%; height: 600px"></div>
+    <script>
+      Highcharts.chart("container", {
+        chart: {
+          type: "bar",
+          backgroundColor: "#F6F6F5",
+        },
+        title: {
+          text: "Valor FOB de las Exportaciones Colombia",
+        },
+        xAxis: {
+          categories: ["2024*", "2023", "2022", "2021", "2020", "2019", "2018"],
+          labels: {
+            style: {
+              fontSize: "14px",
+            },
+          },
+          reversed: true,
+        },
+        yAxis: {
+          min: 0,
+          max: 100,
+          tickInterval: 10,
+          title: {
+            text: "Porcentaje (%)",
+            style: {
+              fontWeight: "bold",
+              fontSize: "14px",
+            },
+          },
+          labels: {
+            format: "{value}%",
+          },
+          gridLineDashStyle: "Dash",
+        },
+        legend: {
+          layout: "horizontal",
+          align: "center",
+          verticalAlign: "top",
+          floating: true,
+          backgroundColor: "#F6F6F5",
+          y: 25,
+        },
+        tooltip: {
+          shared: true,
+          pointFormat: "<b>{series.name}:</b> MM $USD {point.realValue}<br/>",
+        },
+        plotOptions: {
+          series: {
+            stacking: "percent",
+            dataLabels: {
+              enabled: true,
+              formatter: function () {
+                return "MM $USD " + this.point.realValue;
+              },
+            },
+          },
+        },
+        // El valor 'y' representa el porcentaje del total anual que corresponde a cada uno
+        // y = (realValue / valor exportaciones) * 100
+        series: [
+          {
+            name: "Total minería",
+            data: [
+              { y: 24.3, realValue: "5.828,6" }, // 2024
+              { y: 28.3, realValue: "14.067,9" }, // 2023
+              { y: 29.2, realValue: "16.602,5" }, // 2022
+              { y: 23.4, realValue: "9.721,1" }, // 2021
+              { y: 24.8, realValue: "7.711,0" }, // 2020
+              { y: 20.9, realValue: "8.240,0" }, // 2019
+              { y: 23.2, realValue: "9.722,4" }, // 2018
+            ],
+            color: "#00291B",
+          },
+          {
+            name: "Exportaciones Restantes Totales País",
+            data: [
+              { y: 44.0, realValue: "10.550,0" }, // 2024
+              { y: 39.9, realValue: "19.864,9" }, // 2023
+              { y: 37.9, realValue: "21.583,6" }, // 2022
+              { y: 43.9, realValue: "18.154,5" }, // 2021
+              { y: 47.0, realValue: "14.590,1" }, // 2020
+              { y: 38.7, realValue: "15.287,2" }, // 2019
+              { y: 36.6, realValue: "15.339,7" }, // 2018
+            ],
+            color: "#C0C0C0",
+          },
+          {
+            name: "Petróleo y derivados",
+            data: [
+              { y: 31.7, realValue: "7.601,3" }, // 2024
+              { y: 31.8, realValue: "15.836,4" }, // 2023
+              { y: 32.9, realValue: "18.724,0" }, // 2022
+              { y: 32.7, realValue: "13.514,4" }, // 2021
+              { y: 28.2, realValue: "8.754,8" }, // 2020
+              { y: 40.4, realValue: "15.962,0" }, // 2019
+              { y: 40.2, realValue: "16.842,7" }, // 2018
+            ],
+            color: "#D4FF00",
+          },
+        ],
+      });
+    </script>
+  </body>
+</html>

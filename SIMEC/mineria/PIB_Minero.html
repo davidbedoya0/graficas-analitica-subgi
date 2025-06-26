@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+</head>
+<body>
+    <div id="container" style="width: 100%; height: 600px;"></div>
+    <script>
+        Highcharts.chart('container', {
+            chart: {
+                type: 'column',
+                backgroundColor: '#F6F6F5'
+            },
+            title: {
+                text: 'PIB Explotación Minas y Canteras Desagregado'
+            },
+            subtitle: {
+                    text: 'Fuente: DANE',
+                    align: 'left'
+            },
+            xAxis: {
+                categories: ['2017', '2018', '2019', '2020', '2021p', '2022p', '2023pr', '2024pr'],
+                labels: {
+                    style: {
+                        fontSize: '14px'
+                    }
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'Miles de Millones ($COP)',
+                    style: {
+                        fontWeight: 'bold',
+                        fontSize: '14px'
+                    }
+                },
+                gridLineDashStyle: 'Dash'
+            },
+            legend: {
+                layout: 'horizontal',
+                align: 'center',
+                verticalAlign: 'top',
+                floating: true,
+                backgroundColor: 'white',
+                y: 25
+            },
+            tooltip: {
+                shared: true
+            },
+            plotOptions: {
+                column: {
+                    stacking: 'normal'
+                }
+            },
+            series: [
+                { name: 'Extracción de carbón de piedra y lignito', data: [9996, 9447, 9328, 6021, 6489, 6466, 6613, 3005], color: '#b8ff65' },
+                { name: 'Extracción de petróleo crudo y gas natural', data: [28532, 29011, 29827, 26499, 24777, 25258, 25961, 12959], color: '#2b4037' },
+                { name: 'Extracción de minerales metalíferos', data: [2982, 2574, 2710, 3184, 3511, 3558, 3733, 1567], color: '#05D80A' },
+                { name: 'Extracción de otras minas y canteras', data: [2175, 2145, 2235, 1504, 1661, 1694, 1636, 724], color: '#f97316' },
+                { name: 'Actividades de apoyo industria extractiva', data: [179, 181, 179, 148, 162, 163, 168, 80], color: '#e4b33c' }
+            ],
+        });
+    </script>
+</body>
+</html>
