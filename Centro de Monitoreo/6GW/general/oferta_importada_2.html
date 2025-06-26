@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oferta importada de gas natural promedio día calendario anual</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/data.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+</head>
+<body>
+    <div id="container" style="width:100%; height:600px;"></div>
+    <script>
+        const csv = `
+,Año,Energía (MBTU)
+0,2017,1745.1818181818182
+1,2018,29524.81095890411
+2,2019,16659.783561643835
+3,2020,36814.72479564033
+4,2021,5329.295890410959
+5,2022,3285.6575342465753
+6,2023,84889.2904109589
+7,2024,224801.12021857922
+8,2025,169855.76991150444
+`;
+
+        const lines = csv.trim().split('\n');
+        const data = lines.slice(1).map(line => line.split(','));
+        const anios = data.map(row => row[1]);
+        const valores = data.map(row => parseFloat(row[2]));
+
+        Highcharts.chart('container', {
+            chart: { type: 'line' },
+            title: { text: 'Oferta importada de gas natural promedio día calendario anual' },
+            legend: {
+            align: 'center',
+            verticalAlign: 'top',
+            layout: 'horizontal'},
+            xAxis: {
+                categories: anios,
+                title: { text: 'Año' }
+            },
+            yAxis: {
+                title: {text: 'Producción Fiscalizada (MPCDC)' ,
+                        style: { fontWeight: 'bold' },
+            }},
+            tooltip: {
+                valueDecimals: 2
+            },
+            series: [{
+                name: 'Promedio Anual',
+                data: valores
+            }]
+        });
+    </script>
+</body>
+</html>

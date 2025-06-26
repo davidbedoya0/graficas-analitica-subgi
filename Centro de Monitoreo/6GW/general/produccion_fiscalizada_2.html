@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promedio Anual de Producción Fiscalizada</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/data.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+</head>
+<body>
+    <div id="container" style="width:100%; height:600px;"></div>
+    <script>
+        const csv = `
+,Año,Valor
+0,2015,7.294409316109422
+1,2016,7.763179631661442
+2,2017,6.211643811438784
+3,2018,6.744097115376106
+4,2019,6.359433562457047
+5,2020,5.553098924808429
+6,2021,5.614266881390593
+7,2022,5.369908304214457
+8,2023,4.861064871593292
+9,2024,4.562455548455804
+10,2025,4.707762761732852
+`;
+
+        drawChart(csv);
+
+        function drawChart(csv) {
+            const lines = csv.trim().split('\n');
+            const data = lines.slice(1).map(line => line.split(','));
+            const anios = data.map(row => row[1]);
+            const valores = data.map(row => parseFloat(row[2]));
+
+            Highcharts.chart('container', {
+                chart: { type: 'line' },
+                title: { text: 'Producción fiscalizada promedio día calendario anual' },
+                legend: {
+                align: 'center',
+                verticalAlign: 'top',
+                layout: 'horizontal'},
+                xAxis: {
+                    categories: anios,
+                    title: { text: 'Año' }
+                },
+                yAxis: {
+                    title: { text: 'Producción Fiscalizada (MPCDC)' ,
+                        style: { fontWeight: 'bold' },
+            }
+                },
+                tooltip: {
+                    valueDecimals: 2
+                },
+                series: [{
+                    name: 'Promedio Anual',
+                    data: valores
+                }]
+            });
+        }
+    </script>
+</body>
+</html>

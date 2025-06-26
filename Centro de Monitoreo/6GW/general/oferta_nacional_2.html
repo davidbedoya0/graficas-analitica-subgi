@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oferta nacional promedio día calendario anual</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/data.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+</head>
+<body>
+    <div id="container" style="width:100%; height:600px;"></div>
+    <script>
+        const csv = `
+,Año,Energía (MBTU)
+0,2017,19915.830865961703
+1,2018,19049.203260639424
+2,2019,14674.507662987375
+3,2020,13305.508654238167
+4,2021,12886.337067351044
+5,2022,12145.43198061028
+6,2023,10700.000618881513
+7,2024,9903.948999483975
+8,2025,8632.912038369304
+`;
+
+        const lines = csv.trim().split('\n');
+        const data = lines.slice(1).map(line => line.split(','));
+        const anios = data.map(row => row[1]);
+        const valores = data.map(row => parseFloat(row[2]));
+
+        Highcharts.chart('container', {
+            chart: { type: 'line' },
+            title: { text: 'Oferta nacional promedio día calendario anual' },
+            legend: {
+            align: 'center',
+            verticalAlign: 'top',
+            layout: 'horizontal'},
+            xAxis: {
+                categories: anios,
+                title: { text: 'Año' ,}
+            },
+            yAxis: {
+                title: { text: 'Oferta (MBTU)' ,
+                        style: { fontWeight: 'bold' },
+            }
+            },
+            tooltip: {
+                valueDecimals: 2
+            },
+            series: [{
+                name: 'Promedio Anual',
+                data: valores
+            }]
+        });
+    </script>
+</body>
+</html>

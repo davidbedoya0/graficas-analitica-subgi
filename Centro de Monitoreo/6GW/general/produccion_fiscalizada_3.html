@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Producción fiscalizada promedio día calendario anual</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/data.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+</head>
+<body>
+    <div id="container" style="width:100%; height:600px;"></div>
+    <script>
+        const csv = `
+,Año,Mes,Valor
+0,2015,Abril,6.140114316109423
+1,2015,Agosto,7.201133161094225
+2,2015,Diciembre,7.619638693009118
+3,2015,Enero,7.790791215805471
+4,2015,Febrero,7.662859635258359
+5,2015,Julio,7.379582218844986
+6,2015,Junio,7.599774255319149
+7,2015,Marzo,7.197049513677812
+8,2015,Mayo,6.6775257446808505
+9,2015,Noviembre,7.567911489361703
+10,2015,Octubre,7.453696930091185
+11,2015,Septiembre,7.2428346200607905
+12,2016,Abril,7.919024263322885
+13,2016,Agosto,7.7278235109717865
+14,2016,Diciembre,7.509935705329155
+15,2016,Enero,8.032391912225705
+16,2016,Febrero,8.01751539184953
+17,2016,Julio,7.6262038244514105
+18,2016,Junio,7.628697868338557
+19,2016,Marzo,8.05273868338558
+20,2016,Mayo,7.733278181818181
+21,2016,Noviembre,7.488752915360503
+22,2016,Octubre,7.770990470219436
+23,2016,Septiembre,7.650802852664578
+24,2017,Abril,6.226140268096515
+25,2017,Agosto,6.196641313672922
+26,2017,Diciembre,6.112613431635388
+27,2017,Enero,6.243317721179625
+28,2017,Febrero,6.39551600536193
+29,2017,Julio,6.026180026809652
+30,2017,Junio,6.259214772117962
+31,2017,Marzo,6.353909142091154
+32,2017,Mayo,6.290279490616622
+33,2017,Noviembre,6.173189436997319
+34,2017,Octubre,6.2197827345844505
+35,2017,Septiembre,6.042941394101876
+36,2018,Abril,6.987741594810379
+37,2018,Agosto,6.7120902065578525
+38,2018,Diciembre,6.7510931407958275
+39,2018,Enero,5.746903855514777
+40,2018,Febrero,6.822216577202737
+41,2018,Julio,6.843637505794862
+42,2018,Junio,7.015497136726546
+43,2018,Marzo,6.997255874058336
+44,2018,Mayo,7.069984171334751
+45,2018,Noviembre,6.454950696606787
+46,2018,Octubre,6.679872167046551
+47,2018,Septiembre,6.847922458063873
+48,2019,Abril,6.425157050147493
+49,2019,Agosto,6.2317424188790564
+50,2019,Diciembre,6.1321702064896755
+51,2019,Enero,6.743764631268437
+52,2019,Febrero,6.66054994100295
+53,2019,Julio,6.18518761061947
+54,2019,Junio,6.372574437561455
+55,2019,Marzo,6.431362654867257
+56,2019,Mayo,6.525248901893614
+57,2019,Noviembre,6.164234513274337
+58,2019,Octubre,6.234035486725664
+59,2019,Septiembre,6.207174896755162
+60,2020,Abril,5.4452928735632184
+61,2020,Agosto,5.4101775000000005
+62,2020,Diciembre,5.601936752873563
+63,2020,Enero,5.849857126436781
+64,2020,Febrero,5.913567586206896
+65,2020,Julio,5.154540632183908
+66,2020,Junio,5.4300954885057475
+67,2020,Marzo,5.670032442528735
+68,2020,Mayo,5.4930958908045975
+69,2020,Noviembre,5.5888243390804595
+70,2020,Octubre,5.5898681896551725
+71,2020,Septiembre,5.489898275862069
+72,2021,Abril,5.831843251533742
+73,2021,Agosto,5.466248650306748
+74,2021,Diciembre,5.349998128834356
+75,2021,Enero,5.827892975460123
+76,2021,Febrero,6.0441954294478535
+77,2021,Julio,5.510074969325153
+78,2021,Junio,5.260579171779141
+79,2021,Marzo,5.908378742331289
+80,2021,Mayo,5.72978273006135
+81,2021,Noviembre,5.512564754601228
+82,2021,Octubre,5.407922730061349
+83,2021,Septiembre,5.521721042944785
+84,2022,Abril,5.526811442307692
+85,2022,Agosto,5.22589856230032
+86,2022,Diciembre,5.180822020766773
+87,2022,Enero,5.632871185897436
+88,2022,Febrero,5.636542019230769
+89,2022,Julio,5.351132307692308
+90,2022,Junio,5.530899262820513
+91,2022,Marzo,5.613575064102564
+92,2022,Mayo,5.544933413461538
+93,2022,Noviembre,4.975862555910543
+94,2022,Octubre,4.945278338658147
+95,2022,Septiembre,5.278258801916933
+96,2023,Abril,4.626355125786164
+97,2023,Agosto,4.758825566037736
+98,2023,Diciembre,4.717424402515723
+99,2023,Enero,5.169530283018868
+100,2023,Febrero,5.159594748427673
+101,2023,Julio,4.924960471698113
+102,2023,Junio,4.922643962264151
+103,2023,Marzo,5.085937704402515
+104,2023,Mayo,4.927730094339623
+105,2023,Noviembre,4.710430377358491
+106,2023,Octubre,4.680768050314465
+107,2023,Septiembre,4.648577672955975
+108,2024,Abril,4.697513769968052
+109,2024,Agosto,4.581161309904153
+110,2024,Diciembre,4.426217891373802
+111,2024,Enero,4.629375718849841
+112,2024,Febrero,4.699898115015975
+113,2024,Julio,4.5663461980830675
+114,2024,Junio,4.559239361022364
+115,2024,Marzo,4.616138881789138
+116,2024,Mayo,4.672443706070288
+117,2024,Noviembre,4.389369392971246
+118,2024,Octubre,4.466555015974441
+119,2024,Septiembre,4.445207220447284
+120,2025,Enero,4.743153610108304
+121,2025,Febrero,4.6723719133573995
+`;
+
+        drawChart(csv);
+
+        function drawChart(csv) {
+            const lines = csv.trim().split('\n');
+            const data = lines.slice(1).map(line => line.split(','));
+
+            const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+            const anios = [...new Set(data.map(row => row[1]))];
+
+            const series = anios.map(anio => ({
+                name: anio,
+                data: meses.map(mes => {
+                    const found = data.find(row => row[1] === anio && row[2] === mes);
+                    return found ? parseFloat(found[3]) : null;
+                })
+            }));
+
+            Highcharts.chart('container', {
+                chart: { type: 'line' },
+                title: { text: 'Producción fiscalizada promedio día calendario anual' },
+                legend: {
+                align: 'center',
+                verticalAlign: 'top',
+                layout: 'horizontal'},
+                xAxis: {
+                    categories: meses,
+                    title: { text: 'Mes' }
+                },
+                yAxis: {
+                    title: { text: 'Producción Fiscalizada (MPCDC)' ,
+                        style: { fontWeight: 'bold' },
+            }
+                },
+                tooltip: {
+                    shared: true,
+                    valueDecimals: 2
+                },
+                series: series
+            });
+        }
+    </script>
+</body>
+</html>
