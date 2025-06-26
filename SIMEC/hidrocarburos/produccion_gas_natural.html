@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+</head>
+<body>
+    <div id="container" style="width: 100%; height: 600px;"></div>
+    <script>
+    Highcharts.chart('container', {
+
+    title: {
+        text: 'PRODUCCIÓN DE GAS NATURAL',
+        align: 'left'
+    },
+
+    subtitle: {
+        text: 'Fuente : Agencia Nacional de Hidrocarburos - ANH',
+        align: 'left'
+    },
+
+    yAxis: {
+            title: {
+                    text: 'Millones de pies cúbicos (MPC)',
+                    style: {
+                        fontWeight: 'bold',
+                        fontSize: '14px'
+                    }
+                },
+                gridLineDashStyle: 'Dash'
+            },
+
+    xAxis: {
+            categories: ['ene-20', 'feb-20', 'mar-20', 'abr-20', 'may-20', 'jun-20', 'jul-20', 'ago-20', 'sep-20', 'oct-20', 'nov-20', 'dic-20',
+ 'ene-21', 'feb-21', 'mar-21', 'abr-21', 'may-21', 'jun-21', 'jul-21', 'ago-21', 'sep-21', 'oct-21', 'nov-21', 'dic-21',
+ 'ene-22', 'feb-22', 'mar-22', 'abr-22', 'may-22', 'jun-22', 'jul-22', 'ago-22', 'sep-22', 'oct-22', 'nov-22', 'dic-22',
+ 'ene-23', 'feb-23', 'mar-23', 'abr-23', 'may-23', 'jun-23', 'jul-23', 'ago-23', 'sep-23', 'oct-23', 'nov-23', 'dic-23',
+ 'ene-24', 'feb-24', 'mar-24', 'abr-24', 'may-24', 'jun-24', 'jul-24', 'ago-24', 'sep-24', 'oct-24', 'nov-24', 'dic-24']
+,
+            labels: {
+                    style: {
+                        fontSize: '14px'
+                    }
+                }
+            },
+    legend: {
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'middle'
+    },
+
+    plotOptions: {
+        series: {
+            label: {
+                connectorAllowed: false
+            },
+        }
+    },
+    series: [
+  {
+    name: 'Producción Fiscalizada',
+    data: [
+      63112.23, 59683.73, 61168.31, 56848.86, 59259.52, 56690.20, 55607.22, 58365.03, 57314.60, 60303.49, 58347.37, 60431.75,
+      58896.61, 55171.41, 59710.00, 57035.48, 57900.46, 51448.57, 55684.72, 55234.93, 54002.39, 54651.52, 53911.99, 54067.06,
+      54606.59, 49352.06, 54416.14, 51848.75, 53746.87, 51769.16, 51769.44, 50699.98, 49538.18, 47963.19, 46722.01, 50264.86,
+      50957.69, 45938.77, 50133.16, 44111.83, 48576.44, 46966.25, 48548.78, 46902.64, 44347.33, 46117.54, 44937.51, 46504.30,
+      44918.83, 42660.98, 44790.40, 44109.65, 45336.72, 42811.26, 44307.26, 44451.01, 41740.50, 43338.98, 41216.18, 42947.59
+    ], color: "#b8f600"
+  },
+  {
+    name: 'Entregado a Gasoductos',
+    data: [
+      25255.35, 24148.13, 22313.55, 16597.18, 20454.87, 21878.71, 20601.89, 21699.85, 21831.11, 23396.27, 22915.52, 23974.77,
+      22933.48, 21823.59, 22847.52, 21672.71, 20285.22, 21218.42, 23151.26, 22965.82, 23004.46, 24670.46, 23545.02, 24630.00,
+      21679.69, 21291.53, 23653.54, 23087.10, 24416.42, 22937.54, 23212.44, 22484.75, 22424.96, 20311.91, 20862.92, 21947.01,
+      21261.75, 20457.60, 21690.32, 19666.62, 20585.27, 20935.15, 21977.65, 21145.67, 20325.06, 20805.18, 19057.23, 19288.23,
+      17853.42, 17621.21, 18475.83, 18214.60, 18914.34, 18184.01, 18258.55, 18735.42, 17461.97, 18249.89, 17827.01, 17905.02
+    ], color: "#183e34"
+  }
+],
+    responsive: {
+        rules: [{
+            condition: {
+                maxWidth: 500
+            },
+            chartOptions: {
+                legend: {
+                    layout: 'horizontal',
+                    align: 'center',
+                    verticalAlign: 'bottom'
+                }
+            }
+        }]
+    }
+
+    });
+    </script>
+</body>
+</html>

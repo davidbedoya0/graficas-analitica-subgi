@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+</head>
+<body>
+    <div id="container" style="width: 100%; height: 600px;"></div>
+    <script>
+        Highcharts.chart('container', {
+            chart: {
+                zooming: {
+                    type: 'xy'
+                },
+                backgroundColor: '#F6F6F5'
+            },
+            title: {
+                text: 'Reservas de gas natural \n 2020 - 2023'
+            },
+            subtitle: {
+                    text: 'Fuente: Agencia Nacional de Hidrocarburos - ANH',
+                    align: 'left'
+            },
+            xAxis: {
+                categories: ['2020', '2021', '2022', '2023'],
+                labels: {
+                    style: {
+                        fontSize: '14px'
+                    }
+                }
+            },
+            yAxis: [{
+                title: {
+                    text: 'Giga Pies Cúbicos (GPC)',
+                    style: {
+                        fontWeight: 'bold',
+                        fontSize: '14px'
+                    }
+                }
+            },
+            {
+                title: {
+                    text: 'Relación R/P - Según 3P (Años)',
+                    style: {
+                        fontWeight: 'bold',
+                        fontSize: '14px'
+                    }
+                }
+                ,
+                opposite: true
+            },
+        ],
+            legend: {
+                layout: 'horizontal',
+                align: 'center',
+                verticalAlign: 'top',
+                floating: true,
+                backgroundColor: 'white',
+                y: 25
+            },
+            tooltip: {
+                shared: true
+            },
+            plotOptions: {
+                column: {
+            dataLabels: {
+                enabled: true
+            },
+        }
+    },
+    series: [
+        {name: 'Reservas Probadas (1P)', data: [2949, 3164, 2817, 2373], color: '#2b4037', type: 'column', yAxis: 0},
+        {name: 'Reservas (3P)', data: [4031, 4493, 4211, 3692], color: '#0a8c00', type: 'column', yAxis: 0},
+        {name: 'Producción Anual', data: [381, 395, 392, 386], color: '#05d80a', type: 'column', yAxis: 0},
+        {name: 'RELACION R/P - según 3P',  data: [10.6, 11.4, 10.7, 9.6], color: '#b8ff65', type: 'spline', yAxis: 1}
+    ]
+        });
+    </script>
+</body>
+</html>

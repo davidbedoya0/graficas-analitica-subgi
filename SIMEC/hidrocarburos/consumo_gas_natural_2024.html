@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <style>
+      #container {
+        min-width: 310px;
+        height: 600px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        Highcharts.chart("container", {
+          chart: {
+            type: "area",
+            backgroundColor: "#f4f4f4",
+          },
+          title: {
+            text: "CONSUMO MENSUAL DE GAS NATURAL POR SECTOR 2024 (GBTUD)",
+            // align: 'left'
+          },
+          subtitle: {
+            text: "Fuente: Concentra",
+            align: "left",
+          },
+          xAxis: {
+            categories: [
+              "ene.-24",
+              "feb.-24",
+              "mar.-24",
+              "abr.-24",
+              "may.-24",
+              "jun.-24",
+              "jul.-24",
+              "ago.-24",
+              "sep.-24",
+              "oct.-24",
+              "nov.-24",
+              "dic.-24",
+            ],
+            tickmarkPlacement: "on",
+            title: {
+              enabled: false,
+            },
+            labels: {
+              rotation: -45,
+              // style: {
+              //     fontSize: '10px'
+              // }
+            },
+          },
+          yAxis: {
+            title: {
+              text: "GBTUD",
+              style: {
+                fontWeight: "bold",
+                fontSize: "14px",
+              },
+            },
+            // labels: {
+            //     formatter: function () {
+            //         return this.value / 1000;
+            //     }
+            // },
+            gridLineColor: "#d9d9d9",
+          },
+          tooltip: {
+            split: true,
+          },
+          credits: {
+            enabled: false,
+          },
+          plotOptions: {
+            area: {
+              stacking: "normal",
+              lineColor: "#666666",
+              lineWidth: 1,
+              marker: {
+                lineWidth: 1,
+                lineColor: "#666666",
+                radius: 2,
+              },
+            },
+          },
+          legend: {
+            layout: "horizontal",
+            align: "center",
+            verticalAlign: "bottom",
+            backgroundColor: "#ffffff",
+            borderWidth: 1,
+          },
+          series: [
+            {
+              name: "Comercial",
+              data: [51, 52, 48, 50, 51, 51, 51, 51, 51, 52, 53, 52],
+              color: "#b9f601",
+            },
+            {
+              name: "Industrial",
+              data: [293, 312, 301, 314, 305, 303, 308, 309, 306, 300, 299, 293],
+              color: "#193e35",
+            },
+            {
+              name: "Residencial",
+              data: [165, 180, 170, 176, 177, 176, 178, 178, 176, 177, 182, 176],
+              color: "#0b8c01",
+            },
+            {
+              name: "GNVC",
+              data: [
+              54, 59, 56, 59, 60, 59, 60, 62, 61, 62, 63, 64],
+              color: "#04d80b",
+            },
+            {
+              name: "Término",
+              data: [
+              349, 371, 514, 550, 216, 204, 230, 272, 418, 504, 319, 373],
+              color: "#efca18",
+            },
+            {
+              name: "Refinería",
+              data: [
+              153, 149, 145, 141, 150, 143, 124, 112, 124, 141, 144, 146],
+              color: "#e5b23c",
+            },
+            {
+              name: "Petroquimica",
+              data: [
+              13, 24, 21, 9, 15, 20, 19, 23, 10, 8, 8, 9],
+              color: "#a6a6a6",
+            },
+            {
+              name: "Compresoras",
+              data: [
+              5, 7, 7, 9, 5, 5, 5, 7, 11, 9, 8, 8],
+              color: "#114863",
+            },
+          ],
+        });
+      });
+    </script>
+  </body>
+</html>
