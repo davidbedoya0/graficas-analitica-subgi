@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+</head>
+<body>
+    <div id="container" style="width: 100%; height: 600px;"></div>
+    <script>
+    Highcharts.chart('container', {
+
+    title: {
+        text: 'Precio SPOT del petroleo',
+        align: 'left'
+    },
+
+    subtitle: {
+        text: 'Fuente: Statistical Review of World Energy - 2024',
+        align: 'left'
+    },
+
+    yAxis: {
+        title: {
+            text: 'US Dollars'
+        }
+    },
+
+    xAxis: {
+            categories: ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023'],
+            labels: {
+                    style: {
+                        fontSize: '14px'
+                    }
+                }
+            },
+    legend: {
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'middle'
+    },
+
+    plotOptions: {
+        series: {
+            label: {
+                connectorAllowed: false
+            },
+        }
+    },
+
+    series: [
+    {
+        name: 'Brent $/bbl',
+        data: [
+            108.6585178, 98.94600791, 52.38675889, 43.73416996,
+            54.19244048, 71.31005976, 64.21057312, 41.83834646,
+            70.91189723, 101.32, 82.64229084
+        ],
+        color: '#2b4037'
+    },
+    {
+        name: 'West Texas $/bbl',
+        data: [
+            97.99227092, 93.28264, 48.70741036, 43.34270916,
+            50.7926506, 65.20467068, 57.03028, 39.24511905,
+            68.09588, 94.58, 78.88024194
+        ],
+        color: '#b8ff65'
+    }
+],
+    responsive: {
+        rules: [{
+            condition: {
+                maxWidth: 500
+            },
+            chartOptions: {
+                legend: {
+                    layout: 'horizontal',
+                    align: 'center',
+                    verticalAlign: 'bottom'
+                }
+            }
+        }]
+    }
+
+    });
+    </script>
+</body>
+</html>

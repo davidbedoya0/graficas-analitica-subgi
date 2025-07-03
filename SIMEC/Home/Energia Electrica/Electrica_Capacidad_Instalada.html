@@ -15,7 +15,11 @@
                 backgroundColor: '#F6F6F5'
             },
             title: {
-                text: null
+                text: 'Capacidad efectiva Neta por año'
+            },
+            subtitle: {
+                    text: 'Fuente: XM. 2020-2025',
+                    align: 'left'
             },
             xAxis: {
                 categories: ['2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'],
@@ -43,9 +47,7 @@
                 verticalAlign: 'top',
                 floating: true,
                 backgroundColor: 'white',
-                // itemStyle: {
-                //     fontSize: '12px'
-                // }
+                y: 25
             },
             tooltip: {
                 shared: true
@@ -65,21 +67,6 @@
                 { name: 'JET-A1', data: [0.046, 0.046, 0.046, 0.046, 0.044, 0.044, 0.044, 0.044, 0.051, 0.050, 0.050, 0.050], color: '#e9ffc7' },
                 { name: 'RAD SOLAR', data: [0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 1.138, 1.138], color: '#f97316' }
             ],
-            annotations: [{
-                labels: [{
-                    point: {
-                        x: 2,
-                        y: 20,
-                        xAxis: 0,
-                        yAxis: 0
-                    },
-                    text: 'CAPACIDAD EFECTIVA NETA: 22.120 GW',
-                    style: {
-                        fontSize: '14px',
-                        fontWeight: 'bold'
-                    }
-                }]
-            }]
         });
     
     

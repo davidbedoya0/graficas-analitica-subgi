@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+</head>
+<body>
+    <div id="container" style="width: 100%; height: 600px;"></div>
+    <script>
+    Highcharts.chart('container', {
+
+    title: {
+        text: 'PRODUCCION Y VENTAS DE ALCOHOL CARBURANTE 2020 - 2023',
+        align: 'left'
+    },
+
+    subtitle: {
+        text: 'Fuente: Ventas - Federacion Nacional de Biocombustibles -Fedebiocombustibles Produccion - SICOM',
+        align: 'left'
+    },
+
+    yAxis: {
+            title: {
+                    text: 'Miles de barriles (kb)',
+                    style: {
+                        fontWeight: 'bold',
+                        fontSize: '14px'
+                    }
+                },
+                gridLineDashStyle: 'Dash'
+            },
+
+    xAxis: {
+            categories: ['ene-20', 'feb-20', 'mar-20', 'abr-20', 'may-20', 'jun-20', 'jul-20', 'ago-20', 'sep-20', 'oct-20', 'nov-20', 'dic-20',
+ 'ene-21', 'feb-21', 'mar-21', 'abr-21', 'may-21', 'jun-21', 'jul-21', 'ago-21', 'sep-21', 'oct-21', 'nov-21', 'dic-21',
+ 'ene-22', 'feb-22', 'mar-22', 'abr-22', 'may-22', 'jun-22', 'jul-22', 'ago-22', 'sep-22', 'oct-22', 'nov-22', 'dic-22',
+ 'ene-23', 'feb-23', 'mar-23', 'abr-23', 'may-23', 'jun-23', 'jul-23', 'ago-23', 'sep-23', 'oct-23', 'nov-23', 'dic-23']
+,
+            labels: {
+                    style: {
+                        fontSize: '14px'
+                    }
+                }
+            },
+    legend: {
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'middle'
+    },
+
+    plotOptions: {
+        series: {
+            label: {
+                connectorAllowed: false
+            },
+        }
+    },
+    series: [
+  {
+    name: 'Producción',
+    data: [
+      294.76, 276.04, 225.53, 109.24, 64.34, 165.48, 188.28, 201.76, 194.43, 230.77, 161.85, 292.94,
+      344.96, 326.79, 221.34, 136.49, 52.87, 146.53, 176.36, 214.60, 205.35, 229.70, 153.73, 240.13,
+      343.39, 325.05, 311.73, 204.10, 92.98, 103.11, 190.30, 194.16, 241.06, 168.82, 119.40, 314.36,
+      210.93, 240.84, 288.31, 157.17, 68.51, 114.78, 168.91, 168.86, 169.61, 146.45, 102.40, 229.02
+    ], color: "#b8f600"
+  },
+  {
+    name: 'Ventas',
+    data: [
+      447.66, 286.35, 520.04, 92.75, 131.16, 153.58, 256.82, 434.87, 198.85, 513.78, 426.09, 457.25,
+      259.27, 403.83, 383.89, 111.56, 65.20, 163.14, 218.57, 302.75, 231.83, 267.64, 142.33, 203.72,
+      251.62, 233.38, 266.09, 324.59, 191.23, 147.20, 162.92, 192.65, 193.63, 104.45, 174.72, 240.57,
+      206.77, 257.91, 195.01, 195.01, 276.78, 308.23, 314.52, 408.88, 270.49, 257.91, 364.85, 364.85
+    ], color: "#183e34"
+  }
+],
+    responsive: {
+        rules: [{
+            condition: {
+                maxWidth: 500
+            },
+            chartOptions: {
+                legend: {
+                    layout: 'horizontal',
+                    align: 'center',
+                    verticalAlign: 'bottom'
+                }
+            }
+        }]
+    }
+
+    });
+    </script>
+</body>
+</html>

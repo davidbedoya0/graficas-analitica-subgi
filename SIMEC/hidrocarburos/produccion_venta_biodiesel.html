@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+</head>
+<body>
+    <div id="container" style="width: 100%; height: 600px;"></div>
+    <script>
+    Highcharts.chart('container', {
+
+    title: {
+        text: 'PRODUCCION Y VENTAS DE BIODIESEL 2020 - 2023',
+        align: 'left'
+    },
+
+    subtitle: {
+        text: 'Fuente: Ventas - Federacion Nacional de Biocombustibles -Fedebiocombustibles Produccion - SICOM',
+        align: 'left'
+    },
+
+    yAxis: {
+            title: {
+                    text: 'Miles de barriles (kb)',
+                    style: {
+                        fontWeight: 'bold',
+                        fontSize: '14px'
+                    }
+                },
+                gridLineDashStyle: 'Dash'
+            },
+
+    xAxis: {
+            categories: ['ene-20', 'feb-20', 'mar-20', 'abr-20', 'may-20', 'jun-20', 'jul-20', 'ago-20', 'sep-20', 'oct-20', 'nov-20', 'dic-20',
+ 'ene-21', 'feb-21', 'mar-21', 'abr-21', 'may-21', 'jun-21', 'jul-21', 'ago-21', 'sep-21', 'oct-21', 'nov-21', 'dic-21',
+ 'ene-22', 'feb-22', 'mar-22', 'abr-22', 'may-22', 'jun-22', 'jul-22', 'ago-22', 'sep-22', 'oct-22', 'nov-22', 'dic-22',
+ 'ene-23', 'feb-23', 'mar-23', 'abr-23', 'may-23', 'jun-23', 'jul-23', 'ago-23', 'sep-23', 'oct-23', 'nov-23', 'dic-23']
+,
+            labels: {
+                    style: {
+                        fontSize: '14px'
+                    }
+                }
+            },
+    legend: {
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'middle'
+    },
+
+    plotOptions: {
+        series: {
+            label: {
+                connectorAllowed: false
+            },
+        }
+    },
+    series: [
+  {
+    name: 'Produccion',
+    data: [
+      314.85, 297.65, 358.75, 156.58, 250.36, 288.45, 303.22, 293.94, 297.10, 339.18, 376.68, 325.45,
+      352.70, 327.37, 382.38, 397.43, 223.26, 254.11, 412.79, 416.22, 407.71, 386.95, 422.34, 367.88,
+      291.09, 258.84, 436.60, 314.14, 413.36, 395.03, 275.12, 292.01, 279.98, 299.83, 284.08, 438.95,
+      282.83, 256.10, 345.52, 227.00, 426.32, 414.74, 347.46, 394.90, 422.10, 408.34, 407.38, 409.97
+    ], color: "#b8f600"
+  },
+  {
+    name: 'Ventas',
+    data: [
+      339.86, 327.77, 307.47, 160.06, 262.18, 290.47, 309.42, 310.97, 330.87, 345.51, 342.64, 359.52,
+      333.47, 338.40, 382.45, 400.33, 301.05, 397.03, 419.05, 424.63, 397.03, 383.83, 381.21, 399.76,
+      405.88, 401.53, 423.94, 406.28, 395.52, 388.31, 401.10, 414.81, 422.07, 435.89, 410.07, 423.59,
+      392.95, 392.70, 425.50, 416.20, 395.70, 423.09, 414.37, 425.45, 426.04, 432.00, 450.21, 427.53
+    ], color: "#183e34"
+  }
+],
+    responsive: {
+        rules: [{
+            condition: {
+                maxWidth: 500
+            },
+            chartOptions: {
+                legend: {
+                    layout: 'horizontal',
+                    align: 'center',
+                    verticalAlign: 'bottom'
+                }
+            }
+        }]
+    }
+
+    });
+    </script>
+</body>
+</html>

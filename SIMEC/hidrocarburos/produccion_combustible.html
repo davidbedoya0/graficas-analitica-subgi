@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+</head>
+<body>
+    <div id="container" style="width: 100%; height: 600px;"></div>
+    <script>
+        Highcharts.chart('container', {
+            chart: {
+                type: 'column',
+                backgroundColor: '#F6F6F5'
+            },
+            title: {
+                text: 'Producción de derivados del petróleo \n 2019 - 2024'
+            },
+            subtitle: {
+                    text: 'Fuente: Ministerio de Minas y Energía. SICOM',
+                    align: 'left'
+            },
+            xAxis: {
+                categories: ['2019', '2020', '2021', '2022', '2023', '2024'],
+                labels: {
+                    style: {
+                        fontSize: '14px'
+                    }
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'Barriles de Petróleo Día Calendario [BPDC]',
+                    style: {
+                        fontWeight: 'bold',
+                        fontSize: '14px'
+                    }
+                },
+                gridLineDashStyle: 'Dash'
+            },
+            legend: {
+                layout: 'horizontal',
+                align: 'center',
+                verticalAlign: 'top',
+                floating: true,
+                backgroundColor: 'white',
+                y: 25
+            },
+            tooltip: {
+                shared: true
+            },
+            plotOptions: {
+                column: {
+            dataLabels: {
+                enabled: true
+            },
+        }
+    },
+            series: [
+                { name: 'Destilados Medios', data: [241093, 211367, 249324, 231173, 162221, 143420], color: '#b8ff65' },
+                { name: 'Fuel-Oil', data: [38520, 34654, 62534, 110396, 3472, 2984], color: '#2b4037' },
+                { name: 'Gasolinas', data: [95684, 71960, 97803, 124845, 180821, 145146], color: '#05D80A' },
+                { name: 'Propano', data: [17124, 19887, 18295, 17455, 0, 0], color: '#f97316' },
+            ],
+        });
+    </script>
+</body>
+</html>

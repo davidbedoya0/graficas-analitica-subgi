@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+</head>
+<body>
+    <div id="container" style="width: 100%; height: 600px;"></div>
+    <script>
+        Highcharts.chart('container', {
+            chart: {
+                zooming: {
+                    type: 'xy'
+                },
+                backgroundColor: '#F6F6F5'
+            },
+            title: {
+                text: 'Reservas de petróleo \n 2020 - 2023'
+            },
+            subtitle: {
+                    text: 'Fuente: Agencia Nacional de Hidrocarburos - ANH',
+                    align: 'left'
+            },
+            xAxis: {
+                categories: ['2020', '2021', '2022', '2023'],
+                labels: {
+                    style: {
+                        fontSize: '14px'
+                    }
+                }
+            },
+            yAxis: [{
+                title: {
+                    text: 'Reservas Probadas (R) [MB]',
+                    style: {
+                        fontWeight: 'bold',
+                        fontSize: '14px'
+                    }
+                }
+            },
+            {
+                title: {
+                    text: 'Relación R/P (Años)',
+                    style: {
+                        fontWeight: 'bold',
+                        fontSize: '14px'
+                    }
+                }
+                ,
+                opposite: true
+            },
+        ],
+            legend: {
+                layout: 'horizontal',
+                align: 'center',
+                verticalAlign: 'top',
+                floating: true,
+                backgroundColor: 'white',
+                y: 25
+            },
+            tooltip: {
+                shared: true
+            },
+            plotOptions: {
+                column: {
+            dataLabels: {
+                enabled: true
+            },
+        }
+    },
+    series: [
+        {name: 'Reservas Probadas (R) [MB]', data: [1816, 2036, 2073, 2019], color: '#2b4037', type: 'column', yAxis: 0},
+        {name: 'Relación R/P (Años)',  data: [6, 8, 8, 7], color: '#b8ff65', type: 'spline', yAxis: 1}
+    ]
+        });
+    </script>
+</body>
+</html>
