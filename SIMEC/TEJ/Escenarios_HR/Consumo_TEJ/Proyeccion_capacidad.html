@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <style>
+        #container {
+            min-width: 310px;
+            height: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'area',
+                    backgroundColor: '#f4f4f4'
+                },
+                title: {
+                    text: 'Proyección de capacidad instalada por tecnología - Escenario TEJ',
+                    // align: 'left'
+                },
+                subtitle: {
+                    text: 'Fuente: Minenergia - Hoja de Ruta TEJ',
+                    align: 'left'
+                },
+                xAxis: {
+                    categories: ['2022','2023', '2024','2025','2026','2027','2028','2029','2030','2031','2032','2033','2034','2035','2036','2037','2038','2039','2040','2041','2042','2043','2044','2045','2046','2047','2048','2049','2050'],
+                    tickmarkPlacement: 'on',
+                    title: {
+                        enabled: false
+                    },
+                    labels: {
+                        rotation: -45,
+                        // style: {
+                        //     fontSize: '10px'
+                        // }
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: 'Capacidad Instalada (GW)',
+                        style: {
+                            fontWeight: 'bold',
+                            fontSize: '14px'                            
+                        }
+                    },
+                    // labels: {
+                    //     formatter: function () {
+                    //         return this.value / 1000;
+                    //     }
+                    // },
+                    gridLineColor: '#d9d9d9'
+                },
+                tooltip: {
+                    split: true,
+                    valueSuffix: 'MW'
+                },
+                credits: {
+                enabled: false
+                },
+                plotOptions: {
+                    area: {
+                        stacking: 'normal',
+                        lineColor: '#666666',
+                        lineWidth: 1,
+                        marker: {
+                            lineWidth: 1,
+                            lineColor: '#666666',
+                            radius:1
+                        }
+                    }
+                },
+                legend: {
+                    layout: 'horizontal',
+                    align: 'center',
+                    verticalAlign: 'bottom',
+                    backgroundColor: '#ffffff',
+                    borderWidth: 1
+                },
+                series: [{
+
+                    // Datos de la tabla de input_file_0.png en formato Highcharts series
+
+                    
+                        name: 'Biogas',
+                        data: [
+                        0.01, 0.01, 0.02, 0.04, 0.06, 0.10, 0.13, 0.17, 0.21, 0.37,
+                        0.52, 0.68, 0.84, 1.00, 1.17, 1.33, 1.50, 1.67, 1.83, 2.00,
+                        2.17, 2.33, 2.50, 2.67, 2.83, 3.00, 3.17, 3.33, 3.50
+                        ],
+                        color: '#05D80A'
+                    },
+                    {
+                        name: 'Carbon',
+                        data: [
+                        1.65, 1.65, 1.66, 1.68, 1.68, 1.68, 0.66, 0.66, 0.66, 0.66,
+                        0.66, 0.39, 0.39, 0.16,
+                        0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00,
+                        0.00, 0.00, 0.00, 0.00, 0.00
+                        ],
+                        color: '#183E34'
+                    },
+                    {
+                        name: 'Combustóleo',
+                        data: [
+                        0.27, 0.27, 0.27, 0.27, 0.27, 0.27,
+                        0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00
+                        ],
+                        color: '#DEFF90'
+                    },
+                    {
+                        name: 'Gas Natural CS',
+                        data: Array(29).fill(1.16),
+                        color: '#B8F600'
+                    },
+                    {
+                        name: 'Gas Natural CC',
+                        data: [
+                        1.67, 1.94, 1.99, 2.03, 2.03, 2.16, 2.40,
+                        // el resto son 2.60
+                        ...Array(22).fill(2.60)
+                        ],
+                        color: '#131c46'
+                    },
+                    {
+                        name: 'Gen. Distribuida',
+                        data: [
+                        0.28, 0.34, 0.84, 1.39, 2.00, 2.55, 2.75, 2.95, 3.15, 3.55,
+                        3.95, 4.35, 4.75, 5.15, 5.55, 5.95, 6.35, 6.75, 7.15, 7.55,
+                        7.95, 8.35, 8.75, 9.15, 9.55, 10.15, 10.75, 11.15, 11.75
+                        ],
+                        color: '#ECB000'
+                    },
+                    {
+                        name: 'Geotermica',
+                        data: [
+                        // 13 primeros años sin datos
+                        ...Array(13).fill(0.00),
+                        0.07, 0.14, 0.22, 0.29, 0.36, 0.44, 0.51, 0.58, 0.66,
+                        0.73, 0.80, 0.88, 0.95, 1.02, 1.10, 1.17
+                        ],
+                        color: '#4F5A65'
+                    },
+                    {
+                        name: 'Hidro',
+                        data: [
+                        11.69, 12.29, 12.29, 12.29, 12.29, 12.29,
+                        13.49, 13.55, 13.60, 13.60, 13.60, 13.60, 13.60, 13.60, 13.60,
+                        13.60, 13.60, 13.60, 13.60, 13.60, 13.60, 13.60, 13.60, 13.60,
+                        13.60, 13.60, 13.60, 13.60, 13.60
+                        ],
+                        color: '#183e34'
+                    },
+                    {
+                        name: 'Hidro RoR',
+                        data: [
+                        0.80, 0.81, 0.83, 0.88, 0.96, 1.12, 1.20, 1.22, 1.24, 1.24,
+                        1.26, 1.48, 1.69, 1.91, 2.13, 2.34, 2.56, 2.78, 2.99, 3.29,
+                        3.59, 3.89, 4.19, 4.49, 4.79, 5.09, 5.39, 5.69, 5.99
+                        ],
+                        color: '#1F9EA0'
+                    },
+                    {
+                        name: 'Jet Fuel',
+                        data: [
+                        0.05, 0.05, 0.05, 0.05, 0.05, 0.05,
+                        ...Array(23).fill(0.00)
+                        ],
+                        color: '#F4A460'
+                    },
+                    {
+                        name: 'Solar FV',
+                        data: [
+                        0.32, 1.23, 4.03, 6.78, 9.09, 11.82, 13.90, 15.02, 15.22, 15.52,
+                        15.82, 16.12, 16.42, 16.72, 17.02, 17.32, 17.62, 17.92, 18.22, 18.52,
+                        18.82, 19.12, 19.42, 20.00, 21.00, 22.00, 23.00, 24.00, 25.00
+                        ],
+                        color: '#deff64'
+                    },
+                    {
+                        name: 'Viento Offshore',
+                        data: [
+                        ...Array(10).fill(0.00),
+                        1.50, 1.50, 1.50, 1.50,
+                        4.50, 4.50, 4.50, 4.50,
+                        ...Array(7).fill(7.00),
+                        7.09, 7.92, 7.92, 8.38
+                        ],
+                        color: '#00BFFF'
+                    },
+                    {
+                        name: 'Viento Onshore',
+                        data: [
+                        0.02, 0.03, 0.04, 0.21, 0.41, 1.83, 2.19, 2.94, 2.95,
+                        ...Array(14).fill(3.00),
+                        4.00, 5.00, 6.00, 7.00, 7.00, 7.00
+                        ],
+                        color: '#4B0082'
+                    },
+                    {
+                        name: 'Solar + BESS',
+                        data: [
+                        ...Array(6).fill(0.00),
+                        ...Array(5).fill(1.02),
+                        ...Array(2).fill(1.29),
+                        1.52,
+                        ...Array(8).fill(1.68),
+                        2.03, 2.38, 2.73, 3.78, 4.83, 5.78, 6.83
+                        ],
+                        color: '#c7f425'
+                    },
+                    {
+                        name: 'Biomasa',
+                        data: [
+                        0.15, 0.16, 0.16, 0.17, 0.18, 0.25, 0.32, 0.38, 0.45, 0.56,
+                        0.67, 0.78, 0.89, 1.00, 1.07, 1.13, 1.20, 1.27, 1.33, 1.40,
+                        1.47, 1.53, 1.60, 1.67, 1.73, 1.80, 1.87, 1.93, 2.00
+                        ],
+                        color: '#0a8c00'
+  }]
+            });
+        });
+    </script>
+</body>
+</html>

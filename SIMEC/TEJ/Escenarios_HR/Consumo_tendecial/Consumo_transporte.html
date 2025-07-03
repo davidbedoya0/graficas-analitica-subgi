@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <style>
+        #container {
+            min-width: 400px;
+            height: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'area',
+                    backgroundColor: '#f4f4f4'
+                },
+                title: {
+                    text: 'Consumo de energía del sector transporte - Escenario tendencial',
+                    // align: 'left'
+                },
+                subtitle: {
+                    text: 'Fuente: Minenergia - Hoja de Ruta TEJ',
+                    align: 'left'
+                },
+                xAxis: {
+                    categories: ['2010','2011','2012','2013','2014','2015', '2016','2017','2018','2019','2020','2021','2022','2023', '2024','2025','2026','2027','2028','2029','2030','2031','2032','2033','2034','2035','2036','2037','2038','2039','2040','2041','2042','2043','2044','2045','2046','2047','2048','2049','2050'],
+                    tickmarkPlacement: 'on',
+                    title: {
+                        enabled: false
+                    },
+                    labels: {
+                        rotation: -45,
+                        // style: {
+                        //     fontSize: '10px'
+                        // }
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: 'PJ/año',
+                        style: {
+                            fontWeight: 'bold',
+                            fontSize: '14px'                            
+                        }
+                    },
+                    // labels: {
+                    //     formatter: function () {
+                    //         return this.value / 1000;
+                    //     }
+                    // },
+                    gridLineColor: '#d9d9d9'
+                },
+                tooltip: {
+                    split: true,
+                    valueSuffix: '(PJ/año)'
+                },
+                credits: {
+                enabled: false
+                },
+                plotOptions: {
+                    area: {
+                        stacking: 'normal',
+                        lineColor: '#666666',
+                        lineWidth: 1,
+                        marker: {
+                            lineWidth: 0.5,
+                            lineColor: '#666666',
+                            radius: 1
+                        }
+                    }
+                },
+                legend: {
+                    layout: 'horizontal',
+                    align: 'center',
+                    verticalAlign: 'bottom',
+                    backgroundColor: '#ffffff',
+                    borderWidth: 1
+                },
+                series: [{
+
+                    // Datos de la tabla de input_file_0.png en formato Highcharts series
+
+                  // Datos de la tabla de input_file_0.png en formato Highcharts series
+
+            
+                name: 'Gas Natural',
+                data: [15.10, 16.68, 18.60, 19.57, 20.21, 20.97, 21.48, 21.95, 22.40, 23.05, 24.23, 25.19, 26.33, 27.63, 29.33, 31.31, 33.52, 35.92, 38.60, 41.23, 44.02, 47.07, 49.86, 52.56, 55.91, 58.62, 61.40, 64.24, 66.90, 69.49, 72.35, 75.30, 78.07, 80.85, 83.94, 86.80, 89.65, 92.60, 95.62, 98.73, 101.83],
+                color: '#b8f600'
+            },
+            {
+                name: 'Gasolina',
+                data: [111.44, 122.72, 134.26, 145.84, 158.47, 170.46, 180.87, 190.28, 200.30, 210.93, 227.95, 239.84, 246.88, 252.62, 259.48, 265.33, 271.22, 276.73, 281.61, 286.43, 289.71, 294.21, 297.82, 301.36, 305.64, 309.29, 312.65, 315.43, 317.53, 319.58, 321.90, 323.93, 325.66, 326.00, 327.83, 329.21, 330.50, 331.77, 332.96, 334.15, 335.35],
+                color: '#efca18'
+            },
+            {
+                name: 'Diesel',
+                data: [2.08, 3.00, 3.52, 2.78, 3.62, 5.46, 5.75, 4.64, 4.81, 5.69, 6.73, 7.28, 7.70, 7.94, 8.20, 8.47, 8.80, 9.09, 9.38, 9.66, 9.95, 10.24, 10.54, 10.84, 11.15, 11.48, 11.81, 12.15, 12.50, 12.85, 13.22, 13.60, 13.99, 13.74, 14.14, 14.55, 14.99, 15.42, 15.88, 16.35, 16.82],
+                color: '#deed1b'
+            },
+            {
+                name: 'Diesel',
+                data: [190.48, 208.16, 229.98, 242.66, 256.23, 266.46, 272.65, 279.68, 286.43, 295.51, 312.71, 323.70, 331.92, 340.52, 349.91, 359.00, 367.02, 374.11, 379.21, 381.18, 379.45, 371.05, 364.95, 361.40, 360.89, 362.78, 364.63, 366.45, 367.94, 369.15, 370.49, 371.86, 372.90, 373.86, 375.10, 376.08, 377.02, 378.09, 379.30, 380.61, 381.88],
+                color: '#05d80a'
+            },
+            {
+                name: 'Fuel Oil',
+                data: [0.01, null, 0.02, 0.15, 4.36, 6.78, 7.88, 6.45, 1.57, 0.74, 0.18, 0.20, 0.26, 0.27, 0.28, 0.29, 0.30, 0.31, 0.32, 0.33, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.41, 0.42, 0.43, 0.44, 0.46, 0.47, 0.49, 0.50, 0.51, 0.53, 0.55, 0.56, 0.58, 0.60, 0.61],
+                color: '#0a8c00'
+            },
+            {
+                name: 'Electricidad_SIN',
+                data: [0.00, 0.01, 0.01, 0.02, 0.02, 0.02, 0.52, 0.21, 0.29, 0.35, 0.24, 0.24, 0.28, 0.39, 0.64, 1.15, 1.96, 3.22, 5.19, 7.14, 9.25, 12.15, 14.17, 16.06, 19.57, 21.41, 23.27, 27.55, 30.23, 31.90, 35.80, 37.65, 39.36, 41.95, 46.86, 50.85, 52.55, 54.30, 58.93, 62.05, 64.89],
+                color: '#183e34'
+            },
+            {
+                name: 'Jet A1',
+                data: [29.58, 31.16, 36.31, 37.00, 38.83, 42.32, 44.61, 43.10, 49.57, 52.78, 23.98, 48.58, 69.43, 71.69, 72.86, 74.92, 76.69, 77.51, 78.99, 80.30, 80.90, 82.05, 82.61, 83.18, 84.31, 84.86, 86.00, 86.58, 87.77, 88.41, 89.74, 91.36, 87.68, 89.90, 92.83, 93.93, 96.69, 98.87, 97.25, 99.18, 98.73],
+                color: '#deff64'
+            },
+            {
+                name: 'SAF',
+                data: [
+                null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null,
+                null, 0.00, 0.00, 0.00, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01
+                ],
+                color: '#c7f425'
+            }
+        
+            // Nota: Las fuentes de tu tabla anterior (Hidro, Hidro RoR, Solar, Solar Distribuida,
+            // Solar + Almacenamiento, Eólica Onshore, Eólica Offshore, Geotérmica, Biomasa, NUCLEAR)
+            // no están en esta última tabla de 41 años, pero si las necesitas, puedes
+            // añadir series para ellas con sus datos de 41 puntos y colores.
+        ]
+            });
+        });
+    </script>
+</body>
+</html>

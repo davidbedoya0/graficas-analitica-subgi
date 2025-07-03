@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <style>
+        #container {
+            min-width: 310px;
+            height: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'area',
+                    backgroundColor: '#f4f4f4'
+                },
+                title: {
+                    text: 'Consumo de energía sector terciario - Escenario TEJ',
+                    // align: 'left'
+                },
+                subtitle: {
+                    text: 'Fuente: Minenergia - Hoja de Ruta TEJ',
+                    align: 'left'
+                },
+                xAxis: {
+                    categories: ['2020','2021','2022','2023', '2024','2025','2026','2027','2028','2029','2030','2031','2032','2033','2034','2035','2036','2037','2038','2039','2040','2041','2042','2043','2044','2045','2046','2047','2048','2049','2050'],
+                    tickmarkPlacement: 'on',
+                    title: {
+                        enabled: false
+                    },
+                    labels: {
+                        rotation: -45,
+                        // style: {
+                        //     fontSize: '10px'
+                        // }
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: 'PJ/año',
+                        style: {
+                            fontWeight: 'bold',
+                            fontSize: '14px'                            
+                        }
+                    },
+                    // labels: {
+                    //     formatter: function () {
+                    //         return this.value / 1000;
+                    //     }
+                    // },
+                    gridLineColor: '#d9d9d9'
+                },
+                tooltip: {
+                    split: true,
+                    valueSuffix: '(PJ/año)'
+                },
+                credits: {
+                enabled: false
+                },
+                plotOptions: {
+                    area: {
+                        stacking: 'normal',
+                        lineColor: '#666666',
+                        lineWidth: 1,
+                        marker: {
+                            lineWidth: 1,
+                            lineColor: '#666666',
+                            radius:1
+                        }
+                    }
+                },
+                legend: {
+                    layout: 'horizontal',
+                    align: 'center',
+                    verticalAlign: 'bottom',
+                    backgroundColor: '#ffffff',
+                    borderWidth: 1
+                },
+                series: [{
+
+                    // Datos de la tabla de input_file_0.png en formato Highcharts series
+
+                    // Datos de la tabla de input_file_0.png en formato Highcharts series
+
+        // Datos de la tabla de input_file_0.png con colores asignados
+      // Datos de la nueva tabla de input_file_0.png - Solo datos
+
+                name: 'Gas Natural',
+                data: [13.43, 16.21, 17.54, 17.52, 17.33, 17.05, 16.74, 16.16, 15.34, 14.41, 13.55, 12.96, 12.55, 12.29, 12.12, 12.01, 12.04, 12.07, 12.09, 12.09, 12.07, 12.57, 13.09, 13.63, 14.19, 14.77, 15.38, 16.02, 16.68, 17.37, 18.09],
+                color:'#0a8c00' 
+            },
+            {
+                name: 'GLP',
+                data: [1.99, 3.39, 3.67, 3.54, 3.38, 3.19, 3.04, 2.85, 2.62, 2.38, 2.15, 2.00, 1.89, 1.78, 1.69, 1.60, 1.55, 1.51, 1.45, 1.39, 1.32, 1.38, 1.44, 1.50, 1.56, 1.62, 1.69, 1.76, 1.83, 1.91, 1.99],
+                color:'#183e34' 
+            },
+            {
+                name: 'Electricidad SIN',
+                data: [52.00, 56.11, 56.98, 57.23, 56.77, 55.71, 55.99, 55.76, 54.97, 53.87, 52.84, 53.52, 54.69, 56.32, 58.31, 60.58, 63.13, 65.82, 68.64, 71.61, 74.70, 77.78, 80.99, 84.34, 87.82, 91.45, 95.23, 99.17, 103.28, 107.55, 112.00],
+                color:'#b8f600' 
+             },
+            
+        ]
+            });
+        });
+    </script>
+</body>
+</html>

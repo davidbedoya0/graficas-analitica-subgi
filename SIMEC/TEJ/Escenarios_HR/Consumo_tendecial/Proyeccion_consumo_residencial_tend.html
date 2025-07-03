@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <style>
+        #container {
+            min-width: 310px;
+            height: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'area',
+                    backgroundColor: '#f4f4f4'
+                },
+                title: {
+                    text: 'Consumo de energía sector residencial - Escenario tendencial',
+                    // align: 'left'
+                },
+                subtitle: {
+                    text: 'Fuente: Minenergia - Hoja de Ruta TEJ',
+                    align: 'left'
+                },
+                xAxis: {
+                    categories: ['2010','2011','2012','2013', '2014','2015','2016','2017','2018','2019','2020','2021','2022','2023', '2024','2025','2026','2027','2028','2029','2030','2031','2032','2033','2034','2035','2036','2037','2038','2039','2040','2041','2042','2043','2044','2045','2046','2047','2048','2049','2050'],
+                    tickmarkPlacement: 'on',
+                    title: {
+                        enabled: false
+                    },
+                    labels: {
+                        rotation: -45,
+                        // style: {
+                        //     fontSize: '10px'
+                        // }
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: 'PJ/año',
+                        style: {
+                            fontWeight: 'bold',
+                            fontSize: '14px'                            
+                        }
+                    },
+                    // labels: {
+                    //     formatter: function () {
+                    //         return this.value / 1000;
+                    //     }
+                    // },
+                    gridLineColor: '#d9d9d9'
+                },
+                tooltip: {
+                    split: true,
+                    valueSuffix: '(PJ/año)'
+                },
+                credits: {
+                enabled: false
+                },
+                plotOptions: {
+                    area: {
+                        stacking: 'normal',
+                        lineColor: '#666666',
+                        lineWidth: 1,
+                        marker: {
+                            lineWidth: 1,
+                            lineColor: '#666666',
+                            radius:1
+                        }
+                    }
+                },
+                legend: {
+                    layout: 'horizontal',
+                    align: 'center',
+                    verticalAlign: 'bottom',
+                    backgroundColor: '#ffffff',
+                    borderWidth: 1
+                },
+                series: [{
+
+                    // Datos de la tabla de input_file_0.png en formato Highcharts series
+
+                    // Datos de la tabla de input_file_0.png en formato Highcharts series
+
+        // Datos de la tabla de input_file_0.png con colores asignados
+// Datos de la nueva tabla de input_file_0.png con valores de Gas Natural corregidos
+
+       
+        name: 'GLP',
+        data: [18.10, 19.06, 19.96, 21.08, 21.85, 23.86, 22.54, 23.82, 29.62, 22.53, 21.82, 20.92, 19.89, 18.67, 18.92, 19.09, 19.13, 19.28, 18.26, 17.56, 16.73, 15.98, 15.67, 14.98, 14.24, 13.47, 12.65, 11.78, 11.72, 11.66, 11.58, 11.50, 11.41, 11.04, 10.66, 10.26, 9.84, 9.40],
+        color: '#0a8c00' // 3er color de la paleta
+    },
+    {
+        name: 'Electricidad SIN',
+        data:  [56.06, 57.70, 59.36, 61.16, 62.92, 67.57, 74.48, 73.23, 73.07, 67.51, 66.46, 66.01, 66.09, 66.91, 66.52, 65.25, 63.49, 61.90, 63.07, 65.03, 67.69, 70.90, 74.51, 79.58, 84.84, 90.29, 95.91, 107.31, 115.55, 124.03, 132.74, 141.67, 150.84, 157.95, 165.20, 172.59, 180.09, 187.74],
+        color: '#05d80a' // 4to color de la paleta
+    },
+    {
+        name: 'Electricidad ZNI',
+        data: [1.08, 0.90, 0.76, 0.94, 0.95, 0.96, 1.00, 1.01, 1.03, 1.11, 1.21, 1.32, 1.46, 1.61, 1.78, 1.97, 2.18, 2.44, 2.58, 2.69, 2.77, 2.80, 2.78, 2.85, 2.92, 3.02, 3.15, 3.34, 3.49, 3.66, 3.81, 3.95, 4.05, 4.17, 4.30, 4.42, 4.55, 4.71],
+        color: '#efca18' // 5to color de la paleta
+    },
+    {
+        name: 'Gas Natural',
+        data: [36.32, 39.18, 41.75, 45.11, 47.04, 50.44, 57.16, 64.40, 62.48, 67.54, 70.66, 73.44, 76.10, 78.27, 79.21, 79.46, 79.30, 79.21, 78.00, 77.28, 76.95, 76.86, 76.91, 75.76, 74.49, 73.10, 71.58, 63.30, 58.49, 53.42, 48.09, 42.50, 36.66, 33.40, 29.99, 26.44, 22.73, 18.86],
+        color: '#b8f600' // 1er color de la paleta
+    },
+    {
+
+        name: 'Leña',
+        data: [150.24, 153.93, 157.79, 162.05, 166.37, 158.61, 95.95, 83.38, 89.77, 84.53, 83.44, 80.99, 78.13, 73.84, 64.00, 52.74, 42.27, 32.68, 28.54, 24.32, 22.10, 20.19, 16.42, 15.44, 14.48, 13.51, 12.50, 11.47, 10.48, 9.46, 8.40, 7.30, 6.16, 6.14, 6.11, 6.08, 6.04, 6.00],
+        color: '#183e34' // 2do color de la paleta
+    
+    // Los colores restantes (#a9b33c, #cccccc, #0074D9, #4b0082)
+    // no se asignaron ya que no hay más series en este fragmento.
+
+        }]
+            });
+        });
+    </script>
+</body>
+</html>

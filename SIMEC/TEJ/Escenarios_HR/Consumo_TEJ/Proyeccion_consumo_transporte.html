@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <style>
+        #container {
+            min-width: 310px;
+            height: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'area',
+                    backgroundColor: '#f4f4f4'
+                },
+                title: {
+                    text: 'Consumo de energía sector transporte - Escenario TEJ',
+                    // align: 'left'
+                },
+                subtitle: {
+                    text: 'Fuente: Minenergia - Hoja de Ruta TEJ',
+                    align: 'left'
+                },
+                xAxis: {
+                    categories: ['2020','2021','2022','2023', '2024','2025','2026','2027','2028','2029','2030','2031','2032','2033','2034','2035','2036','2037','2038','2039','2040','2041','2042','2043','2044','2045','2046','2047','2048','2049','2050'],
+                    tickmarkPlacement: 'on',
+                    title: {
+                        enabled: false
+                    },
+                    labels: {
+                        rotation: -45,
+                        // style: {
+                        //     fontSize: '10px'
+                        // }
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: 'PJ/año',
+                        style: {
+                            fontWeight: 'bold',
+                            fontSize: '14px'                            
+                        }
+                    },
+                    // labels: {
+                    //     formatter: function () {
+                    //         return this.value / 1000;
+                    //     }
+                    // },
+                    gridLineColor: '#d9d9d9'
+                },
+                tooltip: {
+                    split: true,
+                    valueSuffix: '(PJ/año)'
+                },
+                credits: {
+                enabled: false
+                },
+                plotOptions: {
+                    area: {
+                        stacking: 'normal',
+                        lineColor: '#666666',
+                        lineWidth: 1,
+                        marker: {
+                            lineWidth: 1,
+                            lineColor: '#666666',
+                            radius:1
+                        }
+                    }
+                },
+                legend: {
+                    layout: 'horizontal',
+                    align: 'center',
+                    verticalAlign: 'bottom',
+                    backgroundColor: '#ffffff',
+                    borderWidth: 1
+                },
+                series: [{
+
+                    // Datos de la tabla de input_file_0.png en formato Highcharts series
+
+                    // Datos de la tabla de input_file_0.png en formato Highcharts series
+
+        // Datos de la tabla de input_file_0.png con colores asignados
+        name: 'Gas Natural',
+        data: [24.23, 25.19, 25.66, 26.30, 27.40, 28.13, 29.03, 29.63, 33.92, 35.21, 38.44, 40.74, 41.53, 44.05, 45.52, 46.52, 47.03, 47.53, 48.02, 48.52, 49.03, 49.57, 50.12, 50.65, 51.19, 51.72, 52.24, 52.76, 53.26, 53.76, 54.26],
+        color: '#b8f600' // 1er color de la paleta (Verde fosforescente)
+    },
+    {
+        name: 'Gasolina',
+        data: [209.65, 220.56, 223.38, 225.36, 244.71, 245.37, 245.17, 244.17, 242.60, 240.27, 237.14, 232.12, 225.69, 217.64, 207.84, 196.31, 183.39, 169.47, 155.10, 140.95, 127.68, 115.79, 105.55, 97.03, 90.11, 84.58, 80.19, 76.72, 73.93, 71.68, 69.81],
+        color: '#183e34' // 2do color de la paleta (Verde muy oscuro)
+    },
+    {
+        name: 'Diesel',
+        data: [281.44, 291.33, 295.00, 322.75, 328.88, 325.44, 319.50, 309.71, 293.21, 269.32, 236.78, 194.85, 155.21, 130.36, 117.58, 110.82, 105.86, 97.31, 88.78, 80.28, 77.24, 77.10, 76.96, 76.80, 76.65, 76.47, 76.31, 76.14, 75.96, 75.78, 61.93],
+        color: '#0a8c00' // 3er color de la paleta (Verde oscuro)
+    },
+    {
+        name: 'GLP',
+        data: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        color: '#05d80a' // 4to color de la paleta (Verde brillante)
+    },
+    {
+        name: 'Electricidad', // Nota: La tabla tiene 'Electrici'
+        data: [0.24, 0.24, 0.33, 2.19, 3.31, 4.88, 7.76, 11.47, 17.87, 28.99, 38.49, 50.38, 58.87, 61.33, 72.79, 79.78, 88.65, 92.56, 100.28, 115.86, 121.78, 133.22, 139.55, 149.12, 158.85, 162.27, 175.74, 186.12, 197.28, 207.83, 235.15],
+        color: '#efca18' // 5to color de la paleta (Amarillo/Naranja)
+    },
+    {
+        name: 'Hidrógeno', // Nota: La tabla tiene 'Hidrogeno'
+        data: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.02, 0.03, 0.07, 0.15, 0.28, 0.47, 0.71, 0.98, 1.27, 1.58, 1.89, 2.22, 2.55, 2.88, 3.23, 3.58, 3.94, 4.30, 4.67],
+        color: '#a9b33c' // 6to color de la paleta (Amarillo verdoso)
+    },
+    {
+        name: 'Biocombustibles',
+        data: [49.01, 51.03, 51.68, 52.36, 52.73, 52.87, 52.94, 52.89, 52.53, 51.79, 50.35, 47.50, 44.29, 40.72, 39.10, 38.67, 37.59, 35.86, 34.13, 32.40, 31.66, 31.44, 31.23, 31.00, 30.78, 30.55, 30.32, 30.10, 29.86, 29.63, 29.40],
+        color: '#cccccc' // 7mo color de la paleta (Gris claro)
+    },
+    {
+        name: 'SAF', // Nota: La tabla tiene 'SAF'
+        data: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.13, 7.23, 7.28, 9.03, 9.91, 10.81, 11.38, 11.88, 12.04, 12.12, 12.29, 12.38, 12.56, 12.79, 12.92, 13.25, 13.68, 14.41, 14.84, 15.17, 15.33, 17.25, 19.75],
+        color: '#0074D9' // 8vo color (inferido como azul)
+    },
+    {
+        name: 'Jet fuel',
+        data: [23.98, 48.58, 69.43, 71.69, 72.86, 74.92, 76.69, 77.51, 73.85, 73.07, 73.62, 73.03, 72.70, 72.37, 72.92, 72.98, 73.96, 74.46, 75.48, 76.03, 77.18, 78.57, 79.30, 81.38, 84.04, 84.99, 87.48, 89.45, 90.38, 90.56, 89.95],
+        color: '#4b0082' // 9no color (inferido como morado)
+
+        }]
+            });
+        });
+    </script>
+</body>
+</html>

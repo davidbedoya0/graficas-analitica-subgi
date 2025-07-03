@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+</head>
+<body>
+    <div id="container" style="width: 100%; height: 600px;"></div>
+    <script>
+        Highcharts.chart('container', {
+            chart: {
+                type: 'column',
+                backgroundColor: '#F6F6F5'
+            },
+            title: {
+                text: 'USUARIOS CONECTADOS A GAS NATURAL POR DEPARTAMENTO 2023'
+            },
+            subtitle: {
+                    text: 'Fuente. Ministerio de Minas y Energía - El total de ususarios incluye usuarios residenciales, comerciales e industriales',
+                    align: 'left'
+            },
+            xAxis: {
+                categories: [
+    'BOGOTÁ', 'ANTIOQUIA', 'VALLE DEL CAUCA', 'CUNDINAMARCA', 'ATLÁNTICO',
+    'SANTANDER', 'BOLÍVAR', 'TOLIMA', 'RISARALDA', 'MAGDALENA',
+    'NORTE DE SANTANDER', 'META', 'HUILA', 'BOYACÁ', 'CESAR',
+    'CORDOBA', 'CALDAS', 'QUINDÍO', 'SUCRE', 'CAUCA',
+    'LA GUAJIRA', 'CASANARE', 'NARIÑO', 'CAQUETÁ', 'PUTUMAYO',
+    'ARAUCA', 'GUAVIARE', 'CHOCÓ'
+  ],
+                labels: {
+                    style: {
+                        fontSize: '14px'
+                    }
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'Número de usuarios',
+                    style: {
+                        fontWeight: 'bold',
+                        fontSize: '14px'
+                    }
+                },
+                gridLineDashStyle: 'Dash'
+            },
+            legend: {
+                layout: 'horizontal',
+                align: 'center',
+                verticalAlign: 'top',
+                floating: true,
+                backgroundColor: 'white',
+                y: 25
+            },
+            tooltip: {
+                shared: true
+            },
+            plotOptions: {
+                column: {
+            dataLabels: {
+                enabled: true
+            },
+        }
+    },
+            series: [
+                { name: 'Usuarios',   data: [
+                    2246730, 1609364, 1283206, 882377, 739953, 528086, 479187, 361854, 305131, 295848, 
+                    286673, 275796, 275528, 268053, 260107, 257023, 239366, 182882, 168411, 149842,
+                    137179, 120609, 49500, 49047, 16115, 14535, 6345, 4310], color: '#b8ff65' },
+            ],
+        });
+    </script>
+</body>
+</html>
