@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Actores sociales de Luchas sociales</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <style>
+        #container {
+            min-width: 310px;
+            max-width: 800px; /* Limita el ancho máximo si es necesario */
+            height: 500px; /* Ajusta la altura según el número de categorías */
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="container"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'bar' // Tipo de gráfico: barras horizontales
+                },
+                title: {
+                    text: 'Actores sociales de Luchas sociales asociadas al sector minero energético 2010-2022',
+                    align: 'center' // Centra el título
+                },
+                subtitle: {
+                    text: 'Fuente: Base de datos de luchas sociales - CINEP',
+                    align: 'right' // Alinea el subtítulo a la derecha según la referencia
+                },
+                xAxis: {
+                    // Categorías en el eje Y (vertica), que serán las etiquetas de las barras
+                    categories: [
+                        'Pobladores urbanos',
+                        'Asalariados',
+                        'Campesinos',
+                        'Pobladores de Fronteras Urbano - Rurales',
+                        'Grupos Etnicos',
+                        'Trabajadores Independientes',
+                        'Gremios',
+                        'Estudiantes',
+                        'Mujeres',
+                        'Familiares/Vcitimas - Violencia',
+                        'Desplazados',
+                        'Migrantes',
+                        'Ambientalistas'
+                    ],
+                    title: {
+                        text: null // No hay título para el eje de categorías
+                    },
+                    labels: {
+                         style: {
+                            fontSize: '12px' // Ajusta el tamaño de fuente de las categorías
+                        }
+                    }
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'No. de Luchas sociales', // Título del eje de valores (horizontal)
+                        align: 'high' // Alinea el título al final del eje
+                    },
+                     labels: {
+                        overflow: 'justify'
+                    }
+                },
+                tooltip: {
+                    // Formato del tooltip: muestra la categoría y el valor
+                    format: '{point.category}: {point.y}'
+                },
+                plotOptions: {
+                    bar: {
+                        dataLabels: {
+                            enabled: true, // Muestra el valor sobre cada barra
+                            align: 'right', // Alinea el valor a la derecha de la barra
+                            format: '{point.y}', // Formato del data label: solo el valor Y
+                            style: {
+                                fontWeight: 'bold'
+                            }
+                        },
+                         // Puedes añadir un color predeterminado para todas las barras aquí
+                         // color: '#4682B4' // Un azul, similar a la referencia
+                    }
+                },
+                 legend: {
+                    enabled: false // No necesitamos leyenda para una sola serie
+                },
+                credits: {
+                    enabled: false // Deshabilita los créditos de Highcharts
+                },
+                series: [{
+                    name: 'Luchas sociales', // Nombre de la serie (aparece en el tooltip)
+                    // Datos correspondientes a cada categoría en el mismo orden que categories
+                    data: [470, 361, 288, 286, 164, 154, 68, 58, 13, 7, 4, 1, 1],
+                    // Puedes definir el color aquí si no lo hiciste en plotOptions
+                    color: '#b8f600' // Un azul, similar a la referencia
+                }]
+            });
+        });
+    </script>
+</body>
+</html>

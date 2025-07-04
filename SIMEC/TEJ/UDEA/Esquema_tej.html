@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Transición Energética Justa – Esquema con Conexiones Completas</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <style>
+    body { margin:0; padding:0; font-family:'Segoe UI', sans-serif; }
+    #container { width:80%; height:500px; }
+    .highlight { filter: drop-shadow(0 0 6px #00ff00); }
+  </style>
+</head>
+<body>
+
+  <div id="container"></div>
+
+  <script>
+    Highcharts.chart('container', {
+      chart: {
+        backgroundColor: '#fff',
+        animation: false,
+        events: {
+          load: function() {
+            const chart = this,
+                  r     = chart.renderer,
+                  W     = chart.chartWidth,
+                  H     = chart.chartHeight;
+            const cols = [0.18, 0.34, 0.55, 0.83].map(f => W * f);
+
+            // Tooltip flotante
+            const ttDiv = document.createElement('div');
+            Object.assign(ttDiv.style, {
+              position: 'absolute', pointerEvents: 'none',
+              background: 'rgba(255,255,255,0.95)', border: '1px solid #666',
+              borderRadius: '4px', padding: '40px', maxWidth: '200px',
+              fontSize: '11px', boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+              display: 'none', zIndex: 1000
+            });
+            chart.renderTo.parentNode.appendChild(ttDiv);
+
+            // Dimensiones
+            const dims = {
+              raiz:       { w:140, h:56,  fill:'#fafafa' },
+              principios: { w:128, h:48,  fill:'#83FF57' },
+              principal:  { w:208, h:48,  fill:'#83FF57' },
+              subprin:    { w:208, h:24,  fill:'#D4FF88' },
+              subtema:    { w:208, h:24,  fill:'#F1FFC1' },
+              subtemaP:   { w:208, h:24,  fill:'#F1FFC1' }
+            };
+
+            // Textos tooltip
+            const tooltipTexts = {
+              principios: '4 Principios propuestos en la Hoja de Ruta de la TEJ',
+              justicia:   'Justicia Ambiental, climática y energética.',
+              politicas:  'Políticas de gobierno: acción climática, regulación…',
+              sub0: 'Equidad: distribución justa de cargas y beneficios.',
+              sub1: 'Gradualidad: paso a paso con confiabilidad.',
+              sub2: 'Participación vinculante de las comunidades.',
+              sub3: 'Intensiva en conocimiento y transferencia técnica.',
+              jt0: '¿Cómo y quién decide?',
+              jt1: 'Distribución de cargas y beneficios',
+              jt2: 'Reconocimiento de otros saberes',
+              jt3: 'Restauración',
+              pt0: 'Acción climática y descarbonización',
+              pt1: 'Reindustrialización y diversificación productiva',
+              pt2: 'Enfoque diferencial, DDHH y Paz Total',
+              pt3: 'Democratización energética'
+            };
+
+            // Crear nodo
+            function makeNode(id, text, cx, cy, { w, h, fill }) {
+              const x = cx - w/2, y = cy - h/2, g = r.g().add();
+              const radius = id==='raiz' ? h/2 : 6;
+              const rect = r.rect(x,y,w,h,radius)
+                            .attr({ fill, stroke:'limegreen','stroke-width':2 })
+                            .add(g);
+              if (tooltipTexts[id]) {
+                rect.element.addEventListener('mouseenter', e=>{
+                  ttDiv.innerHTML = tooltipTexts[id];
+                  ttDiv.style.display = 'block';
+                  ttDiv.style.left = e.pageX + 10 + 'px';
+                  ttDiv.style.top  = e.pageY + 10 + 'px';
+                });
+                rect.element.addEventListener('mousemove', e=>{
+                  ttDiv.style.left = e.pageX + 10 + 'px';
+                  ttDiv.style.top  = e.pageY + 10 + 'px';
+                });
+                rect.element.addEventListener('mouseleave', ()=> ttDiv.style.display='none');
+              }
+              const fs = (h>40?10:9) + 'px';
+              if (id==='justicia') {
+                const gap=2, totalH=2*parseInt(fs)+gap,
+                      startY=cy-totalH/2+parseInt(fs)/2+5;
+                r.text('Justicia Ambiental, climática y',cx,startY)
+                 .css({ fontSize:fs, textAlign:'center' })
+                 .attr({ align:'center' }).add(g);
+                r.text('energética',cx,startY+parseInt(fs)+gap)
+                 .css({ fontSize:fs, textAlign:'center' })
+                 .attr({ align:'center' }).add(g);
+              } else {
+                r.text(text, cx, cy)
+                 .css({ fontSize:fs, textAlign:'center',
+                        fontWeight:id==='raiz'?'bold':'normal' })
+                 .attr({ align:'center', y:cy+parseInt(fs)/2-2 }).add(g);
+              }
+              g.on('mouseover',()=>g.addClass('highlight'))
+               .on('mouseout', ()=>g.removeClass('highlight'));
+              return { id,x,y,w,h,cx,cy };
+            }
+
+            // Conectar curvas
+            function connect(a,b) {
+              const x1=a.x+a.w, y1=a.cy,
+                    x2=b.x,       y2=b.cy,
+                    m=(x1+x2)/2;
+              r.path(['M',x1,y1,'L',m,y1,'L',m,y2,'L',x2,y2])
+               .attr({ stroke:'limegreen','stroke-width':1.2 })
+               .add();
+            }
+
+            // 1) Raíz y Principios
+            const nodoRoot = makeNode('raiz','Transición Energética Justa', cols[0], H/2, dims.raiz);
+            const nodoPrin = makeNode('principios','Principios de la TEJ',      cols[1], H/2, dims.principios);
+
+            // 2) Conexión raíz→principios
+            const x1 = nodoRoot.x+nodoRoot.w, y1 = nodoRoot.cy,
+                  radiusPrin = nodoPrin.h/2-12,
+                  x2 = nodoPrin.x-radiusPrin, y2 = nodoPrin.cy,
+                  xMid = (x1+x2)/2;
+            r.path(['M',x1,y1,'L',xMid,y1,'L',xMid,y2,'L',x2,y2])
+             .attr({ stroke:'limegreen','stroke-width':2 }).add();
+
+            // 3) Nodos de nivel 2
+            const items2 = [
+              {id:'justicia', label:'Justicia Ambiental, climática y energética', dim:'principal'},
+              {id:'sub0',      label:'1. Equidad',                              dim:'subprin'},
+              {id:'sub1',      label:'2. Gradualidad, soberanía y confiabilidad', dim:'subprin'},
+              {id:'sub2',      label:'3. Participación social vinculante',      dim:'subprin'},
+              {id:'sub3',      label:'4. Intensiva en conocimiento',             dim:'subprin'},
+              {id:'politicas', label:'Políticas de gobierno',                  dim:'principal'}
+            ];
+            const step = 40, midY = nodoPrin.cy;
+            const nodos2 = items2.map((c,i)=>{
+              let cy;
+              if (c.id==='justicia'||c.id==='politicas') {
+                const gap2 = H/(items2.length+1);
+                cy = gap2*(i+1);
+              } else {
+                const idx = ['sub0','sub1','sub2','sub3'].indexOf(c.id);
+                cy = midY + (idx-1.5)*step;
+              }
+              return makeNode(c.id,c.label,cols[2],cy,dims[c.dim]);
+            });
+            const nodoJust = nodos2.find(n=>n.id==='justicia'),
+                  nodoPoli = nodos2.find(n=>n.id==='politicas'),
+                  subs     = nodos2.filter(n=>['sub0','sub1','sub2','sub3'].includes(n.id));
+
+            // 4) Curvas a Justicia y Políticas (sin puntos intermedios)
+            const ctrlX = xMid+40;
+            r.path(['M',xMid,y2,'C',ctrlX,y2,ctrlX,nodoJust.cy,nodoJust.x,nodoJust.cy])
+             .attr({ stroke:'limegreen','stroke-width':2 }).add();
+            r.path(['M',xMid,y2,'C',ctrlX,y2,ctrlX,nodoPoli.cy,nodoPoli.x,nodoPoli.cy])
+             .attr({ stroke:'limegreen','stroke-width':2 }).add();
+            // Añadimos los 2 puntos en los recuadros de Justicia y Políticas
+            r.circle(nodoJust.x, nodoJust.cy, 4).attr({ fill:'limegreen',stroke:'none' }).add();
+            r.circle(nodoPoli.x, nodoPoli.cy, 4).attr({ fill:'limegreen',stroke:'none' }).add();
+
+            // 5) Tronco a subprincipios (sin puntos)
+            const startSX = nodoPrin.x+nodoPrin.w,
+                  startSY = nodoPrin.cy,
+                  trunkX  = (startSX + subs[0].x)/2;
+            r.path(['M',startSX,startSY,'L',trunkX,startSY])
+             .attr({ stroke:'limegreen','stroke-width':2 }).add();
+            r.path(['M',trunkX,subs[0].cy,'L',trunkX,subs[subs.length-1].cy])
+             .attr({ stroke:'limegreen','stroke-width':2 }).add();
+
+            // 6) Ramas a cada subprincipio + punto en su recuadro
+            subs.forEach(n=>{
+              r.path(['M',trunkX,n.cy,'L',n.x,n.cy])
+               .attr({ stroke:'limegreen','stroke-width':2 }).add();
+              r.circle(n.x,n.cy,4)
+               .attr({ fill:'limegreen',stroke:'none' }).add();
+            });
+
+            // 7) Subtemas de Justicia (sin dot intermedio, con dot en cada recuadro)
+            ['¿Cómo y quién decide?','Distribución de cargas y beneficios',
+             'Reconocimiento de otros saberes','Restauración'
+            ].forEach((t,i)=>{
+              const cy = nodoJust.cy + (i-1.5)*dims.subtema.h*1.2;
+              const n  = makeNode('jt'+i, t, cols[3], cy, dims.subtema);
+              connect(nodoJust, n);
+              r.circle(n.x,n.cy,4).attr({ fill:'limegreen',stroke:'none' }).add();
+            });
+
+            // 8) Subtemas de Políticas
+            const ptCenterX = cols[3] + (dims.subtemaP.w - dims.subtema.w)/2;
+            ['Acción climática y descarbonización',
+             'Reindustrialización y diversificación productiva',
+             'Enfoque diferencial, DDHH y Paz Total',
+             'Democratización energética'
+            ].forEach((t,i)=>{
+              const cy = nodoPoli.cy + (i-1.5)*dims.subtemaP.h*1.2;
+              const n  = makeNode('pt'+i, t, ptCenterX, cy, dims.subtemaP);
+              connect(nodoPoli, n);
+              r.circle(n.x,n.cy,4).attr({ fill:'limegreen',stroke:'none' }).add();
+            });
+
+            // 9) Esferas huecas
+            [nodoPrin,nodoJust,nodoPoli].forEach(nd=>{
+              r.circle(nd.x,nd.cy,nd.h/2-12)
+               .attr({ fill:'#fff',stroke:'limegreen','stroke-width':4 })
+               .add().toFront();
+            });
+
+          } // end load
+        }   // end events
+      },
+      title:{ text:'' },
+      tooltip:{ enabled:false },
+      series:[]
+    });
+  </script>
+
+</body>
+</html>

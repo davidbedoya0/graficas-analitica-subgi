@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Figura 7. Emisiones totales de GEI por módulo y subcategoría en 2021</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/sunburst.js"></script>
+  <style>
+    body { margin:0; padding:0; background:#fff; }
+    #container {
+      width:100%;
+      max-width:900px;
+      height:700px;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const data = [
+      // raíz
+      { id: 'root',        parent: '',           name: 'Total 2021',                     color: 'transparent' },
+      // módulos (nivel 1) — paleta UPME
+      { id: 'lulucf',      parent: 'root',       name: 'LULUCF',      value: 39.43,  color: '#78BE20' },
+      { id: 'energia',     parent: 'root',       name: 'Energía',     value: 30.24,  color: '#FFD100' },
+      { id: 'agricultura', parent: 'root',       name: 'Agricultura', value: 19.13,  color: '#F37F27' },
+      { id: 'residuos',    parent: 'root',       name: 'Residuos',    value: 7.33,   color: '#8E44AD' },
+      { id: 'ippu',        parent: 'root',       name: 'IPPU',        value: 3.87,   color: '#005B99' },
+
+      // subcategorías LULUCF
+      { id: 'l1', parent: 'lulucf', name: '4.A.1 Tierras forestales que permanecen como forestales', value: 21.98 },
+      { id: 'l2', parent: 'lulucf', name: '4.C.2 Tierras convertidas en pastizales',                value: 13.27 },
+      { id: 'l3', parent: 'lulucf', name: '4.B.1 Cultivos que permanecen como tales',                value: 2.20  },
+      { id: 'l4', parent: 'lulucf', name: 'Otros LULUCF',                                           value: 2.0   },
+
+      // subcategorías Energía
+      { id: 'e1', parent: 'energia', name: '1.A.1 Industrias de la energía',                          value: 13.92 },
+      { id: 'e2', parent: 'energia', name: '1.A.2 Industrias manufactureras y construcción',         value: 6.47  },
+      { id: 'e3', parent: 'energia', name: '1.A.3 Transporte',                                       value: 5.38  },
+      { id: 'e4', parent: 'energia', name: 'Otros Energía',                                           value: 4.47  },
+
+      // subcategorías Agricultura
+      { id: 'a1', parent: 'agricultura', name: '3.A.1 Ganado',                                      value: 4.47  },
+      { id: 'a2', parent: 'agricultura', name: '3.D.1 E. Dir. de N₂O de suelos gestionados',      value: 2.06  },
+      { id: 'a3', parent: 'agricultura', name: '3.D.2 E. Indir. de N₂O de suelos gestionados',     value: 1.12  },
+      { id: 'a4', parent: 'agricultura', name: 'Otros Agricultura',                                 value: 11.48 },
+
+      // subcategorías Residuos
+      { id: 'r1', parent: 'residuos', name: '5.A.1 SERG',                                           value: 3.75 },
+      { id: 'r2', parent: 'residuos', name: '5.D.2 TEARI',                                         value: 2.02 },
+      { id: 'r3', parent: 'residuos', name: '5.D.1 TEARD',                                         value: 1.26 },
+      { id: 'r4', parent: 'residuos', name: 'Otros Residuos',                                     value: 0.30 },
+
+      // subcategorías IPPU
+      { id: 'i1', parent: 'ippu', name: '2.A.1 Producción de cemento',                            value: 1.58 },
+      { id: 'i2', parent: 'ippu', name: '2.F.1 RAC (Refrig. y aire acondicionado)',               value: 1.30 },
+      { id: 'i3', parent: 'ippu', name: '2.C.1 Producción de hierro y acero',                    value: 0.25 },
+      { id: 'i4', parent: 'ippu', name: 'Otros IPPU',                                            value: 0.74 }
+    ];
+
+    Highcharts.chart('container', {
+      chart: {
+        height: 600,
+        backgroundColor: '#ffffff',
+        marginTop: 80,
+        events: {
+          render: function () {
+            if (!this.customLabel) {
+              this.customLabel = this.renderer
+                .text(
+                  '302.934,03 kt CO₂eq',
+                  this.plotLeft + this.plotWidth / 2,
+                  this.plotTop + this.plotHeight / 2 + 6   // ajuste vertical fino
+                )
+                .attr({ align: 'center' })
+                .css({ fontSize: '18px', fontWeight: 'bold' })
+                .add();
+            }
+          }
+        }
+      },
+
+      
+      title: {
+        text: 'Figura 7. Emisiones totales de GEI por módulo y subcategoría en 2021',
+        align: 'center',
+        style: { fontSize: '16px', fontWeight: 'bold' }
+      },
+      tooltip: {
+        headerFormat: '',
+        pointFormat: '<b>{point.name}</b> – {point.value:.2f}%'
+      },   
+      series: [{
+        type: 'sunburst',
+        data: data,
+        allowDrillToNode: false,
+        cursor: 'default',
+        center: ['50%', '50%'],      // centrar ligeramente hacia abajo
+        size: '78%',
+        innerSize: '0%',             // eliminamos el anillo interior en blanco
+        levels: [
+          {
+            level: 1,
+    levelSize: { unit: 'percentage', value: 50 },
+    colorByPoint: true,
+    dataLabels: {
+      rotationMode: 'parallel',
+      distance: -15,            // <— empuja las etiquetas nivel 1 hacia adentro
+      align: 'center',
+      format: '{point.name} – {point.value:.2f}%',
+      style: { fontSize: '12px', fontWeight: 'bold' }
+    }
+  },
+  {
+    level: 2,
+    levelSize: { unit: 'percentage', value: 90 },
+    colorByPoint: true,
+    dataLabels: {
+      rotationMode: 'parallel',
+      distance: -30,            // <— empuja las etiquetas nivel 2 un poco menos
+      align: 'center',
+      format: '{point.name}: {point.value:.2f}%',
+      style: { fontSize: '10px' }
+            }
+          }
+        ]
+      }],
+      credits: { enabled: false }
+    });
+  });
+  </script>
+</body>
+</html>
+
+
