@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Timeline – Hitos TEJ</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/timeline.js"></script>
+  <style>
+    #container { 
+      width: 90%; 
+      max-width: 1000px; 
+      height: 400px; 
+      margin: 40px auto; 
+    }
+  </style>
+
+  
+</head>
+<body>
+  <div id="container"></div>
+  <script>
+    Highcharts.chart('container', {
+      chart: { type: 'timeline' },
+      title: { text: 'Hitos normativos y estratégicos de la TEJ en Colombia' },
+      xAxis: { visible: false },
+      yAxis: { visible: false },
+
+      // Aquí defines 8 tonos de verde fijos para cada segmento de la barra
+      colors: [
+        '#b0fdb0', '#7afd7a', '#50e353', '#1edb22',
+        '#05d80a', '#04c209', '#039a06', '#027d05'
+        ],
+
+      series: [{
+        data: [
+          { name: '<strong>2014:</strong> Ley 1715 – integración de FNCER', description: 'Regula la integración de las energías renovables no convencionales al Sistema Energético Nacional.' },
+          { name: '<strong>2019:</strong> Misión de Transformación Energética', description: 'Con el objetivo de generar propuestas de política pública, regulatoria y reforma institucional para fortalecer y modernizar el sector energético' },
+          { name: '<strong>2021:</strong> Ley 2099 - Transición Energética',  description: 'Ampliación de la ley 1715 de 2014' },
+          { name: '<strong>2022:</strong> CONPES 4075 – Política de Transición Energética', description: 'Diseña, articula e implementa estrategias intersectoriales para la transición energética' },
+          { name: '<strong>2022-2023:</strong> Dialogos sociales para definir la Hoja de Ruta de la TEJ',        description: 'Como parte de la estrategia para concretar el principio de participación vinculante, se realizaron 27 diálogos con la participación de más de 2000 personas de los diferentes sectores de la sociedad colombiana'},
+          { name: '<strong>2023-2024:</strong> Publicación Hoja de Ruta de la TEJ', description: 'Publicación de los 10 documentos que conforman la hoja de ruta de la TEJ' },
+        ]
+      }]
+    });
+  </script>
+</body>
+</html>
