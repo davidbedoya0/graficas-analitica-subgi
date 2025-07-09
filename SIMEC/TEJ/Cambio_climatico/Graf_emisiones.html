@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Evolución fluida de emisiones CO₂</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <style>
+    #container {
+      width: 80%;
+      max-width: 900px;
+      height: 500px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="container"></div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const years = [2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023];
+    const emissions = [
+      50339.3,59471.3,62820.6,68025.4,69382.9,67003.3,
+      71412.5,75471.1,78978.2,80341.2,83069.2,72768.9,
+      77912.4,81023.9,73969.2,79845.3,87221.4,92506.9
+    ];
+
+    Highcharts.chart('container', {
+      chart: {
+        type: 'line',
+        backgroundColor: '',
+        events: {
+          load: function() {
+            const chart  = this;
+            const series = chart.series[0];
+            const graph  = series.graph;         // el path SVG de la línea
+            const markers = series.markerGroup;  // grupo de marcadores
+            const pathEl = graph.element;
+
+            // 1) Calculamos la longitud total del path
+            const totalLength = pathEl.getTotalLength();
+
+            // 2) Ocultamos marcadores al inicio
+            markers.attr({ opacity: 0 });
+
+            // 3) Preparamos el dash para “dibujar” el trazo
+            graph.attr({
+              'stroke-dasharray': totalLength,
+              'stroke-dashoffset': totalLength
+            })
+            // 4) Animamos el dashoffset a 0 en 10 s, easing lineal
+            .animate({
+              'stroke-dashoffset': 0
+            }, {
+              duration: 5000,   // 10 000 ms = 10 s
+              easing: 'linear',
+              complete: function() {
+                // Al acabar, hacemos fade-in de los marcadores
+                markers.animate({ opacity: 1 }, { duration: 500 });
+              }
+            });
+          }
+        }
+      },
+      title: {
+        text: 'Emisiones de gases de efecto invernadero - Sector minero energético'
+      },
+      subtitle: {
+        text: 'Fuente: UPME - BECO',
+        align: 'left'
+      },
+      xAxis: {
+        categories: years,
+        title: { text: 'Año' },
+        tickInterval: 1,
+        showFirstLabel: true,
+        showLastLabel: true
+      },
+      yAxis: {
+        title: { text: 'KTn CO₂ eqv' },
+        gridLineColor: '#d9d9d9'
+      },
+      tooltip: {
+        pointFormat: '<b>{point.y:.1f}</b> KTn CO₂ eqv'
+      },
+      credits: { enabled: false },
+      plotOptions: {
+        line: {
+          marker: {
+            enabled: true,
+            radius: 3,
+            symbol: 'circle'
+          },
+          lineWidth: 2,
+          animation: false  // desactiva la animación default de Highcharts
+        }
+      },
+      series: [{
+        name: 'Emisiones',
+        data: emissions,
+        color: '#05d80a'
+      }]
+    });
+  });
+  </script>
+
+</body>
+</html>

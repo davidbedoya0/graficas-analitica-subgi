@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mapa de Colombia – Subtítulo en Leyenda</title>
+
+  <script src="https://code.highcharts.com/maps/highmaps.js"></script>
+  <script src="https://code.highcharts.com/maps/modules/map-navigation.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+  <style>
+    body { margin:0; padding:0; font-family:Arial,sans-serif; background:#ffffff }
+    h1  { text-align:center; margin:10px 0; font-size:16px }
+    #container {
+      width:90%;max-width:900px;height:650px;
+      margin:0 auto 40px;background:hsl(0, 0%, 100%);
+      border:1px solid #ddd;box-shadow:0 2px 6px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>Luchas sociales por departamento en el sector minero energético (2010–2022)</h1>
+  <div id="container"></div>
+  
+
+  <script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    // 1) GeoJSON y filtro San Andrés
+    const gj0 = await fetch(
+      'https://code.highcharts.com/mapdata/countries/co/co-all.geo.json'
+    ).then(r=>r.json());
+    const geojson = {
+      ...gj0,
+      features: gj0.features.filter(f =>
+        !f.properties.name || f.properties.name.trim() !== 'San Andrés y Providencia'
+      )
+    };
+
+    // 2) Datos por nombre
+    const datos = [
+      ['Santander',206],['Bolívar',185],['La Guajira',166],
+      ['Antioquia',161],['Córdoba',141],['Huila',141],
+      ['Tolima',127],['Meta',126],['Atlántico',114],
+      ['Magdalena',108],['Boyacá',98], ['Nariño',83],
+      ['Bogotá, D.C.',82],['Norte de Santander',81],
+      ['Cesar',74], ['Casanare',74], ['Cauca',70 ],
+      ['Putumayo',63],['Caldas',52],['Valle del Cauca',51],
+      ['Sucre',43], ['Chocó',42], ['Risaralda',42],
+      ['Cundinamarca',39],['Arauca',37], ['Quindío',34],
+      ['Caquetá',26], ['Vichada',13],
+      ['Arch. San Andrés y Providencia',10],
+      ['Guaviare',7],  ['Amazonas',5],
+      ['Guainía',3],   ['Vaupés',2]
+    ];
+
+    // 3) Pinta el mapa
+    Highcharts.mapChart('container', {
+
+      chart: {
+        map: geojson,
+        spacingBottom: 100,         // espacio extra para la leyenda
+        backgroundColor: '#f5f5f5'
+      },
+
+      // quitamos título global
+      title: { text: null },
+      subtitle: {
+                    text: 'Fuente: Base de datos de luchas sociales - CINEP',
+                    align: 'left' // Alinea el subtítulo a la derecha según la referencia
+                },
+
+      // leyenda GLOBAL para colorAxis (serie no aparece en ella)
+      legend: {
+        title: {
+          text: 'No. de Luchas Sociales',
+          style: { fontSize:'12px', color:'#555', fontWeight:'normal' }
+        },
+        layout: 'horizontal',
+        align: 'center',
+        verticalAlign: 'bottom',
+        symbolWidth: 300,
+        symbolHeight: 12,
+        itemStyle: { display: 'none' }, // oculta cualquier item de serie
+        y: 10
+      },
+
+      mapNavigation: {
+        enabled: true,
+        enableMouseWheelZoom: true,
+        buttonOptions: { verticalAlign: 'bottom' }
+      },
+
+      colorAxis: {
+        min: 0,
+        max: 206,
+        nullColor: '#eeeeee',
+        stops: [
+          [0.0, '#e0f3f8'],
+          [0.5, '#66c2a4'],
+          [1.0, '#238b45']
+        ],
+        labels: { format: '{value}' }
+      },
+
+      tooltip: {
+        formatter: function() {
+          const v = this.point.value;
+          return `<b>${this.point.name}</b><br/>Valor: ${v==null?'Sin dato':v}`;
+        }
+      },
+
+      series: [{
+        data: datos,
+        keys: ['name','value'],
+        joinBy: ['name','name'],
+        name: 'Luchas Sociales',
+        showInLegend: false,     // importante: que la serie no entre en la leyenda
+        states: { hover: { color: '#a4edba' } },
+        dataLabels: {
+          enabled: true,
+          format: '{point.name}'
+        }
+      }]
+    });
+  });
+  </script>
+</body>
+</html>
+</html>
