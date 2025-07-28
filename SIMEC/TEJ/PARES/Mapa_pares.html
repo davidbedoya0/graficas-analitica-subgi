@@ -19,9 +19,8 @@
   </style>
 </head>
 <body>
-  <h1>Luchas sociales por departamento en el sector minero energético (2010–2022)</h1>
+  <h1> Casos de conflictos sociales por departamento en el sector minero energético (2000–2023)</h1>
   <div id="container"></div>
-  
 
   <script>
   document.addEventListener('DOMContentLoaded', async () => {
@@ -38,19 +37,19 @@
 
     // 2) Datos por nombre
     const datos = [
-      ['Santander',206],['Bolívar',185],['La Guajira',166],
-      ['Antioquia',161],['Córdoba',141],['Huila',141],
-      ['Tolima',127],['Meta',126],['Atlántico',114],
-      ['Magdalena',108],['Boyacá',98], ['Nariño',83],
-      ['Bogotá, D.C.',82],['Norte de Santander',81],
-      ['Cesar',74], ['Casanare',74], ['Cauca',70 ],
-      ['Putumayo',63],['Caldas',52],['Valle del Cauca',51],
-      ['Sucre',43], ['Chocó',42], ['Risaralda',42],
-      ['Cundinamarca',39],['Arauca',37], ['Quindío',34],
-      ['Caquetá',26], ['Vichada',13],
-      ['Arch. San Andrés y Providencia',10],
-      ['Guaviare',7],  ['Amazonas',5],
-      ['Guainía',3],   ['Vaupés',2]
+      ['Santander',4],['Bolívar',1],['La Guajira',10],
+      ['Antioquia',27],['Córdoba',6],['Huila',3],
+      ['Tolima',6],['Meta',3],['Atlántico',2],
+      ['Magdalena',3],['Boyacá',5], ['Nariño',2],
+      ,['Norte de Santander',4],
+      ['Cesar',6], ['Casanare',3], ['Cauca',9],
+      ['Putumayo',2],['Caldas',5],['Valle del Cauca',5],
+      ['Sucre',0], ['Chocó',2], ['Risaralda',3],
+      ['Cundinamarca', 4],['Arauca',1], ['Quindío',0],
+      ['Caquetá',2], ['Vichada',0],
+      ['Arch. San Andrés y Providencia',1],
+      ['Guaviare',0],  ['Amazonas',1],
+      ['Guainía',0],   ['Vaupés',0]
     ];
 
     // 3) Pinta el mapa
@@ -64,15 +63,11 @@
 
       // quitamos título global
       title: { text: null },
-      subtitle: {
-                    text: 'Fuente: Base de datos de luchas sociales - CINEP',
-                    align: 'left' // Alinea el subtítulo a la derecha según la referencia
-                },
 
       // leyenda GLOBAL para colorAxis (serie no aparece en ella)
       legend: {
         title: {
-          text: 'No. de Luchas Sociales',
+          text: 'No. de casos',
           style: { fontSize:'12px', color:'#555', fontWeight:'normal' }
         },
         layout: 'horizontal',
@@ -92,12 +87,12 @@
 
       colorAxis: {
         min: 0,
-        max: 206,
+        max: 30,
         nullColor: '#eeeeee',
         stops: [
-          [0.0, '#e1f8e2'],
-          [0.5, '#96e699'],
-          [1.0, '#05d80a']
+          [0.0, '#fef4d4'],
+          [0.5, '#f5d061'],
+          [1.0, '#ecb000']
         ],
         labels: { format: '{value}' }
       },
