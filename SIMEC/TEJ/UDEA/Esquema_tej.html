@@ -1,225 +1,236 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Transición Energética Justa – Esquema con Conexiones Completas</title>
-  <script src="https://code.highcharts.com/highcharts.js"></script>
-  <style>
-    body { margin:0; padding:0; font-family:'Segoe UI', sans-serif; }
-    #container { width:80%; height:500px; }
-    .highlight { filter: drop-shadow(0 0 6px #00ff00); }
-  </style>
+<meta charset="UTF-8">
+<title>Esquema Transición Energética Justa</title>
+
+<!-- Highcharts core -->
+<script src="https://code.highcharts.com/highcharts.js"></script>
+
+<!-- Fuente -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* Fondo con la foto de aerogeneradores + velo oscuro para contraste */
+html,body{
+  margin:0;
+  height:100%;
+  font-family:'Inter','Segoe UI',sans-serif;
+}
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.4)),
+    url('holaxd.png') center/cover no-repeat;
+  z-index:-1;
+}
+/* Lienzo Highcharts */
+#container{
+  width:100%;
+  height:680px;
+  max-width:1400px;
+  margin:0 auto;
+  user-select:none;
+}
+/* Sombra al pasar el cursor */
+.highlight rect,
+.highlight circle{
+  filter:drop-shadow(0 0 6px #00ff95);
+}
+</style>
 </head>
 <body>
 
-  <div id="container"></div>
+<div id="container"></div>
 
-  <script>
-    Highcharts.chart('container', {
-      chart: {
-        backgroundColor: '#fff',
-        animation: false,
-        events: {
-          load: function() {
-            const chart = this,
-                  r     = chart.renderer,
-                  W     = chart.chartWidth,
-                  H     = chart.chartHeight;
-            const cols = [0.18, 0.34, 0.55, 0.83].map(f => W * f);
+<script>
+Highcharts.chart('container',{
+  chart:{
+    backgroundColor:'rgba(0,0,0,0)',
+    spacing:[40,20,40,20],
+    animation:false,
+    events:{
+      load:function(){
+        /*--- CONFIGURACIÓN GENERAL ---*/
+        const chart=this,
+              R     = chart.renderer,
+              W     = chart.chartWidth,
+              H     = chart.chartHeight;
 
-            // Tooltip flotante
-            const ttDiv = document.createElement('div');
-            Object.assign(ttDiv.style, {
-              position: 'absolute', pointerEvents: 'none',
-              background: 'rgba(255,255,255,0.95)', border: '1px solid #666',
-              borderRadius: '4px', padding: '40px', maxWidth: '200px',
-              fontSize: '11px', boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-              display: 'none', zIndex: 1000
+        /* Posiciones X de las tres columnas principales */
+        const CX=[0.2,0.5,0.8].map(f=>W*f);
+
+        /* Dimensiones y colores */
+        const COLORS={
+          root:'#d9e6e5',
+          group:'#d9e6e5',
+          sub:'#cfd2d2'
+        };
+        const DIMS={
+          root:{w:290,h:60,r:14},
+          group:{w:290,h:54,r:10},
+          sub:{w:320,h:38,r:8}
+        };
+
+        /* Texto de tooltip */
+        const TOOLTIPS={
+          principios:'Cuatro principios propuestos en la Hoja de Ruta de la TEJ',
+          justicia  :'Perspectiva que integra derechos humanos y salvaguardas ambientales, priorizando territorios y poblaciones vulnerables frente al cambio climático',
+          politicas :'Líneas estratégicas del gobierno<br>para acelerar la TEJ',
+          s0:'Asegurar que los beneficios y costos de la transición se distribuyan sin reproducir desigualdades territoriales, socioeconómicas ni de género',
+          s1:'Cambiar el modelo energético a ritmos realistas, fortaleciendo la seguridad de suministro y el control nacional de los recursos',
+          s2:'Incluir comunidades y actores locales en la toma de decisiones con mecanismos que hagan sus aportes',
+          s3:'Basar la transición en ciencia, innovación y formación técnica y profesional, involucrando activamente a la academia en la TEJ',
+          j0:'Pregunta sobre la gobernanza: exige transparencia, representatividad y control ciudadano en las decisiones energéticas',
+          j1:'Establece criterios para repartir impactos negativos y retornos económicos de manera proporcional y justa',
+          j2:'Incorpora conocimientos ancestrales, comunitarios y locales en la planificación y gestión de la energía',
+          j3:'Acciones de reparación ecosistémica y social en zonas afectadas por actividades extractivas o infraestructuras energéticas',
+          p0:'Estrategias para reducir emisiones de GEI y aumentar la resiliencia climática del país',
+          p1:'Impulso a nuevas cadenas de valor y tecnologías limpias que sustituyan actividades intensivas en carbono',
+          p2:'Incorporación de derechos humanos, enfoque étnico-territorial y construcción de paz en los proyectos energéticos',
+          p3:'Promoción de comunidades energéticas, generación distribuida y acceso universal a energía asequible y sostenible',
+        };
+
+        /* Utilidad para crear nodos */
+        function nodo(id,txt,cx,cy,{w,h,r,fill},cls=''){
+          const g = R.g().attr({ zIndex: 5 }).add();
+          
+          const x=cx-w/2,y=cy-h/2;
+          const rect=R.rect(x,y,w,h,r)
+                      .attr({fill,stroke:'#ffffff','stroke-width':2})
+                      .add(g);
+          /* Icono + texto */
+          const fsRoot=id===''?18:15
+          const fs=id.startsWith('sub')?12:14;
+          if(id==='root'||id===''||id===''||id===''){
+            const icon={
+              root:'',principios:'',justicia:'',politicas:''
+            }[id];
+            R.text(icon,x+8,cy+5)
+             .css({fontSize:fsRoot+'px',fontWeight:600,color:'#000'})
+             .attr({align:'center',y:cy+fsRoot/2-4})
+             .add(g);
+            R.text(txt,x+60,cy+5,w-70)
+             .css({fontSize:fsRoot+'px',fontWeight:600,color:'#000'})
+             .attr({align:'left',y:cy+fsRoot/2-4})
+             .add(g);
+          }else{
+            R.text(txt,cx,cy+2)
+             .css({fontSize:fs+'px',fontWeight:500,color:'#000'})
+             .attr({align:'center',y:cy+fs/2-3})
+             .add(g);
+          }
+
+          /* Interacción tooltip */
+          if(TOOLTIPS[id]){
+            const div=document.createElement('div');
+            div.innerHTML=TOOLTIPS[id];
+            Object.assign(div.style,{
+              position:'absolute',
+              background:'#ffffffee',
+              border:'1px solid #666',
+              borderRadius:'6px',
+              padding:'8px 10px',
+              fontSize:'12px',
+              maxWidth:'220px',
+              display:'none',
+              pointerEvents:'none',
+              zIndex:1000,
+              boxShadow:'0 3px 8px rgba(0,0,0,.25)'
             });
-            chart.renderTo.parentNode.appendChild(ttDiv);
-
-            // Dimensiones
-            const dims = {
-              raiz:       { w:140, h:56,  fill:'#fafafa' },
-              principios: { w:128, h:48,  fill:'#83FF57' },
-              principal:  { w:208, h:48,  fill:'#83FF57' },
-              subprin:    { w:208, h:24,  fill:'#D4FF88' },
-              subtema:    { w:208, h:24,  fill:'#F1FFC1' },
-              subtemaP:   { w:208, h:24,  fill:'#F1FFC1' }
-            };
-
-            // Textos tooltip
-            const tooltipTexts = {
-              principios: '4 Principios propuestos en la Hoja de Ruta de la TEJ',
-              justicia:   'Justicia Ambiental, climática y energética.',
-              politicas:  'Políticas de gobierno: acción climática, regulación…',
-              sub0: 'Equidad: distribución justa de cargas y beneficios.',
-              sub1: 'Gradualidad: paso a paso con confiabilidad.',
-              sub2: 'Participación vinculante de las comunidades.',
-              sub3: 'Intensiva en conocimiento y transferencia técnica.',
-              jt0: '¿Cómo y quién decide?',
-              jt1: 'Distribución de cargas y beneficios',
-              jt2: 'Reconocimiento de otros saberes',
-              jt3: 'Restauración',
-              pt0: 'Acción climática y descarbonización',
-              pt1: 'Reindustrialización y diversificación productiva',
-              pt2: 'Enfoque diferencial, DDHH y Paz Total',
-              pt3: 'Democratización energética'
-            };
-
-            // Crear nodo
-            function makeNode(id, text, cx, cy, { w, h, fill }) {
-              const x = cx - w/2, y = cy - h/2, g = r.g().add();
-              const radius = id==='raiz' ? h/2 : 6;
-              const rect = r.rect(x,y,w,h,radius)
-                            .attr({ fill, stroke:'limegreen','stroke-width':2 })
-                            .add(g);
-              if (tooltipTexts[id]) {
-                rect.element.addEventListener('mouseenter', e=>{
-                  ttDiv.innerHTML = tooltipTexts[id];
-                  ttDiv.style.display = 'block';
-                  ttDiv.style.left = e.pageX + 10 + 'px';
-                  ttDiv.style.top  = e.pageY + 10 + 'px';
-                });
-                rect.element.addEventListener('mousemove', e=>{
-                  ttDiv.style.left = e.pageX + 10 + 'px';
-                  ttDiv.style.top  = e.pageY + 10 + 'px';
-                });
-                rect.element.addEventListener('mouseleave', ()=> ttDiv.style.display='none');
-              }
-              const fs = (h>40?10:9) + 'px';
-              if (id==='justicia') {
-                const gap=2, totalH=2*parseInt(fs)+gap,
-                      startY=cy-totalH/2+parseInt(fs)/2+5;
-                r.text('Justicia Ambiental, climática y',cx,startY)
-                 .css({ fontSize:fs, textAlign:'center' })
-                 .attr({ align:'center' }).add(g);
-                r.text('energética',cx,startY+parseInt(fs)+gap)
-                 .css({ fontSize:fs, textAlign:'center' })
-                 .attr({ align:'center' }).add(g);
-              } else {
-                r.text(text, cx, cy)
-                 .css({ fontSize:fs, textAlign:'center',
-                        fontWeight:id==='raiz'?'bold':'normal' })
-                 .attr({ align:'center', y:cy+parseInt(fs)/2-2 }).add(g);
-              }
-              g.on('mouseover',()=>g.addClass('highlight'))
-               .on('mouseout', ()=>g.removeClass('highlight'));
-              return { id,x,y,w,h,cx,cy };
-            }
-
-            // Conectar curvas
-            function connect(a,b) {
-              const x1=a.x+a.w, y1=a.cy,
-                    x2=b.x,       y2=b.cy,
-                    m=(x1+x2)/2;
-              r.path(['M',x1,y1,'L',m,y1,'L',m,y2,'L',x2,y2])
-               .attr({ stroke:'limegreen','stroke-width':1.2 })
-               .add();
-            }
-
-            // 1) Raíz y Principios
-            const nodoRoot = makeNode('raiz','Transición Energética Justa', cols[0], H/2, dims.raiz);
-            const nodoPrin = makeNode('principios','Principios de la TEJ',      cols[1], H/2, dims.principios);
-
-            // 2) Conexión raíz→principios
-            const x1 = nodoRoot.x+nodoRoot.w, y1 = nodoRoot.cy,
-                  radiusPrin = nodoPrin.h/2-12,
-                  x2 = nodoPrin.x-radiusPrin, y2 = nodoPrin.cy,
-                  xMid = (x1+x2)/2;
-            r.path(['M',x1,y1,'L',xMid,y1,'L',xMid,y2,'L',x2,y2])
-             .attr({ stroke:'limegreen','stroke-width':2 }).add();
-
-            // 3) Nodos de nivel 2
-            const items2 = [
-              {id:'justicia', label:'Justicia Ambiental, climática y energética', dim:'principal'},
-              {id:'sub0',      label:'1. Equidad',                              dim:'subprin'},
-              {id:'sub1',      label:'2. Gradualidad, soberanía y confiabilidad', dim:'subprin'},
-              {id:'sub2',      label:'3. Participación social vinculante',      dim:'subprin'},
-              {id:'sub3',      label:'4. Intensiva en conocimiento',             dim:'subprin'},
-              {id:'politicas', label:'Políticas de gobierno',                  dim:'principal'}
-            ];
-            const step = 40, midY = nodoPrin.cy;
-            const nodos2 = items2.map((c,i)=>{
-              let cy;
-              if (c.id==='justicia'||c.id==='politicas') {
-                const gap2 = H/(items2.length+1);
-                cy = gap2*(i+1);
-              } else {
-                const idx = ['sub0','sub1','sub2','sub3'].indexOf(c.id);
-                cy = midY + (idx-1.5)*step;
-              }
-              return makeNode(c.id,c.label,cols[2],cy,dims[c.dim]);
+            chart.container.parentNode.appendChild(div);
+            g.element.addEventListener('mouseenter',e=>{
+              div.style.left=e.pageX+12+'px';
+              div.style.top =e.pageY+12+'px';
+              div.style.display='block';
+              g.addClass('highlight');
             });
-            const nodoJust = nodos2.find(n=>n.id==='justicia'),
-                  nodoPoli = nodos2.find(n=>n.id==='politicas'),
-                  subs     = nodos2.filter(n=>['sub0','sub1','sub2','sub3'].includes(n.id));
-
-            // 4) Curvas a Justicia y Políticas (sin puntos intermedios)
-            const ctrlX = xMid+40;
-            r.path(['M',xMid,y2,'C',ctrlX,y2,ctrlX,nodoJust.cy,nodoJust.x,nodoJust.cy])
-             .attr({ stroke:'limegreen','stroke-width':2 }).add();
-            r.path(['M',xMid,y2,'C',ctrlX,y2,ctrlX,nodoPoli.cy,nodoPoli.x,nodoPoli.cy])
-             .attr({ stroke:'limegreen','stroke-width':2 }).add();
-            // Añadimos los 2 puntos en los recuadros de Justicia y Políticas
-            r.circle(nodoJust.x, nodoJust.cy, 4).attr({ fill:'limegreen',stroke:'none' }).add();
-            r.circle(nodoPoli.x, nodoPoli.cy, 4).attr({ fill:'limegreen',stroke:'none' }).add();
-
-            // 5) Tronco a subprincipios (sin puntos)
-            const startSX = nodoPrin.x+nodoPrin.w,
-                  startSY = nodoPrin.cy,
-                  trunkX  = (startSX + subs[0].x)/2;
-            r.path(['M',startSX,startSY,'L',trunkX,startSY])
-             .attr({ stroke:'limegreen','stroke-width':2 }).add();
-            r.path(['M',trunkX,subs[0].cy,'L',trunkX,subs[subs.length-1].cy])
-             .attr({ stroke:'limegreen','stroke-width':2 }).add();
-
-            // 6) Ramas a cada subprincipio + punto en su recuadro
-            subs.forEach(n=>{
-              r.path(['M',trunkX,n.cy,'L',n.x,n.cy])
-               .attr({ stroke:'limegreen','stroke-width':2 }).add();
-              r.circle(n.x,n.cy,4)
-               .attr({ fill:'limegreen',stroke:'none' }).add();
+            g.element.addEventListener('mousemove',e=>{
+              div.style.left=e.pageX+12+'px';
+              div.style.top =e.pageY+12+'px';
             });
-
-            // 7) Subtemas de Justicia (sin dot intermedio, con dot en cada recuadro)
-            ['¿Cómo y quién decide?','Distribución de cargas y beneficios',
-             'Reconocimiento de otros saberes','Restauración'
-            ].forEach((t,i)=>{
-              const cy = nodoJust.cy + (i-1.5)*dims.subtema.h*1.2;
-              const n  = makeNode('jt'+i, t, cols[3], cy, dims.subtema);
-              connect(nodoJust, n);
-              r.circle(n.x,n.cy,4).attr({ fill:'limegreen',stroke:'none' }).add();
+            g.element.addEventListener('mouseleave',()=>{
+              div.style.display='none';
+              g.removeClass('highlight');
             });
+          }
+          return {id,cx,cy,w,h};
+        }
 
-            // 8) Subtemas de Políticas
-            const ptCenterX = cols[3] + (dims.subtemaP.w - dims.subtema.w)/2;
-            ['Acción climática y descarbonización',
-             'Reindustrialización y diversificación productiva',
-             'Enfoque diferencial, DDHH y Paz Total',
-             'Democratización energética'
-            ].forEach((t,i)=>{
-              const cy = nodoPoli.cy + (i-1.5)*dims.subtemaP.h*1.2;
-              const n  = makeNode('pt'+i, t, ptCenterX, cy, dims.subtemaP);
-              connect(nodoPoli, n);
-              r.circle(n.x,n.cy,4).attr({ fill:'limegreen',stroke:'none' }).add();
-            });
+        /* Utilidad para dibujar conexión ortogonal */
+        function conectar(a,b,col='#ffffff',sw=2){
+          const x1=a.cx+(a.cx<b.cx?a.w/2:-a.w/2),
+                y1=a.cy,
+                x2=b.cx+(a.cx<b.cx?-b.w/2:+b.w/2),
+                y2=b.cy,
+                xm=(x1+x2)/2;
+          R.path(['M',x1,y1,'L',xm,y1,'L',xm,y2,'L',x2,y2])
+           .attr({stroke:col,'stroke-width':sw})
+           .add();
+        }
 
-            // 9) Esferas huecas
-            [nodoPrin,nodoJust,nodoPoli].forEach(nd=>{
-              r.circle(nd.x,nd.cy,nd.h/2-12)
-               .attr({ fill:'#fff',stroke:'limegreen','stroke-width':4 })
-               .add().toFront();
-            });
+        /*--- CREAR NODOS PRINCIPALES ---*/
+        const root=nodo('root','Transición Energética Justa',CX[1],110,
+                        {...DIMS.root,fill:COLORS.root});
 
-          } // end load
-        }   // end events
-      },
-      title:{ text:'' },
-      tooltip:{ enabled:false },
-      series:[]
-    });
-  </script>
+        const principios=nodo('principios','Principios de la TEJ',CX[0],250,
+                              {...DIMS.group,fill:COLORS.group});
+        const justicia =nodo('justicia','Justicia Ambiental, climática y energética',
+                              CX[1],250,{...DIMS.group,fill:COLORS.group});
+        const politicas=nodo('politicas','Políticas de Gobierno',CX[2],250,
+                              {...DIMS.group,fill:COLORS.group});
 
+        conectar(root,principios);
+        conectar(root,justicia);
+        conectar(root,politicas);
+
+        /*--- SUB-NODOS DE PRINCIPIOS ---*/
+        const subsP=['1. Equidad',
+                     '2. Gradualidad, soberanía y confiabilidad',
+                     '3. Participación social vinculante',
+                     '4. Intensiva en conocimiento'];
+
+        const nodosSubsP=subsP.map((t,i)=>{
+          const cy=principios.cy+90+(i*50);
+          return nodo('s'+i,t,CX[0],cy,{...DIMS.sub,fill:COLORS.sub});
+        });
+        nodosSubsP.forEach(n=>conectar(principios,n, '#ffffff',1.6));
+
+        /*--- SUB-NODOS DE JUSTICIA ---*/
+        const subsJ=['¿Cómo y quién decide?',
+                     'Distribución de cargas y beneficios',
+                     'Reconocimiento de otros saberes',
+                     'Restauración'];
+
+        const nodosSubsJ=subsJ.map((t,i)=>{
+          const cy=justicia.cy+90+(i*50);
+          return nodo('j'+i,t,CX[1],cy,{...DIMS.sub,fill:COLORS.sub});
+        });
+        nodosSubsJ.forEach(n=>conectar(justicia,n,'#ffffff',1.6));
+
+        /*--- SUB-NODOS DE POLÍTICAS ---*/
+        const subsPol=['Acción climática y descarbonización',
+                       'Reindustrialización y diversificación productiva',
+                       'Enfoque diferencial DDHH y Paz Total',
+                       'Democratización energética'];
+
+        const nodosSubsPol=subsPol.map((t,i)=>{
+          const cy=politicas.cy+90+(i*50);
+          return nodo('p'+i,t,CX[2],cy,{...DIMS.sub,fill:COLORS.sub});
+        });
+        nodosSubsPol.forEach(n=>conectar(politicas,n,'#ffffff',1.6));
+
+      }/* fin load */
+    }/* fin events */
+  },
+  title:{text:''},
+  tooltip:{enabled:false},
+  series:[] /* Dibujamos todo con el renderer; no se requieren series */
+});
+</script>
 </body>
 </html>
+
+
