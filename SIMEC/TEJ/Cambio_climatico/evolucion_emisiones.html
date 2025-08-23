@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Evolución histórica de emisiones (1990–2021)</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <style>
+    body { margin: 0; font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif; }
+    #wrap { max-width: 1100px; margin: 20px auto; padding: 0 12px; }
+    #actions { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+    button#play { border:0; padding:8px 12px; border-radius:10px; cursor:pointer; }
+    #container { height: 560px; }
+  </style>
+</head>
+<body>
+<div id="wrap">
+  <div id="actions">
+    <button id="play">▶ Animar</button>
+    <span style="opacity:.8">Evolución 1990–2021 (ktCO₂ eq)</span>
+  </div>
+  <div id="container"></div>
+</div>
+
+<script>
+// === Opciones globales: español, miles, sin "k" ===
+Highcharts.setOptions({
+  lang: {
+    decimalPoint: ',',
+    thousandsSep: '.',
+    numericSymbols: null,      // sin k/M/G
+    contextButtonTitle: 'Exportar',
+    viewFullscreen: 'Ver en pantalla completa',
+    printChart: 'Imprimir gráfico',
+    downloadPNG: 'Descargar PNG',
+    downloadJPEG: 'Descargar JPEG',
+    downloadPDF: 'Descargar PDF',
+    downloadSVG: 'Descargar SVG'
+  }
+});
+
+// === Datos (transcritos de tu tabla y redondeados a 2 decimales) ===
+const years = [1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
+               2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
+               2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+               2020, 2021];
+
+const S_1A1 = [
+  11267.31, 11970.67, 13407.89, 12212.41, 10818.50, 12879.95, 11897.70, 15211.00,
+  15628.07, 13505.67, 15317.48, 15076.49, 14563.75, 14679.45, 13232.36, 13994.90,
+  15974.51, 16213.85, 15960.07, 19757.74, 21964.29, 18014.62, 19830.76, 22595.77,
+  23344.62, 25951.10, 24779.75, 19053.00, 21550.49, 24323.29, 24193.56, 19593.86
+];
+
+const S_1A2 = [
+  9124.29, 9410.35, 9956.48, 11052.91, 11520.71, 10900.57, 11146.97, 11721.18,
+  11061.50, 10765.35, 11661.56, 10719.50, 10787.49, 11165.08, 12630.62, 13250.62,
+  13381.27, 11650.14, 14477.16, 13939.30, 15335.35, 14151.75, 13146.23, 14071.16,
+  14941.00, 13471.00, 13398.23, 12827.07, 13486.87, 13208.49, 12065.23, 13535.02
+];
+
+const S_1A3 = [
+  19773.25, 20590.47, 22329.24, 23672.09, 24347.76, 24680.47, 25341.32, 25924.31,
+  25696.63, 23139.15, 22571.97, 21304.37, 20899.22, 21906.85, 23358.83, 24619.43,
+  25909.93, 25896.90, 25179.93, 26139.10, 27336.34, 29513.89, 30698.15, 32963.42,
+  33584.31, 36243.21, 37935.73, 37853.72, 38492.61, 40123.76, 32650.09, 42170.58
+];
+
+const S_1A4 = [
+  6164.22, 6137.92, 6127.11, 6193.80, 6128.04, 6184.92, 6492.85, 6493.09,
+  6748.00, 6856.71, 6907.43, 7170.97, 7143.09, 7099.09, 7121.43, 7227.43,
+  7862.13, 7979.49, 7244.28, 6864.67, 7038.90, 7435.10, 7403.43, 7403.80,
+  7732.73, 7586.97, 7704.17, 7667.89, 8285.47, 8354.57, 8493.20, 9039.79
+];
+
+const S_1B1 = [
+  1555.00, 1620.66, 1670.76, 1567.99, 1542.07, 1677.46, 1617.41, 1545.06,
+  1482.78, 1256.79, 1527.14, 1796.16, 1786.41, 1778.60, 1929.13, 2182.53,
+  2760.12, 2781.66, 3122.20, 2788.66, 3091.72, 3656.56, 3759.93, 3507.37,
+  3507.61, 3513.66, 3775.89, 3700.75, 3647.28, 3384.54, 2448.57, 2323.36
+];
+
+const S_1B2 = [
+  2352.93, 2294.00, 2348.01, 2402.47, 2407.26, 3051.34, 3181.96, 3494.92,
+  4001.68, 4209.60, 3715.51, 3354.62, 3242.15, 3402.19, 3003.76, 3109.93,
+  3493.87, 3120.92, 3528.99, 4430.36, 5041.48, 5622.45, 5913.02, 6310.90,
+  6369.16, 6300.88, 5454.99, 5380.29, 5506.18, 5669.68, 5138.05, 4947.95
+];
+
+// === Gráfico ===
+const chart = Highcharts.chart('container', {
+  chart: { type: 'line', animation: { duration: 800 } },
+  title: { text: 'Evolución histórica de emisiones – 1990–2021' },
+  subtitle: { text: 'Unidades: ktCO₂ eq' },
+  credits: { enabled: false },
+  exporting: { enabled: true },
+
+  xAxis: {
+    categories: years,
+    tickInterval: 2,
+    labels: { style: { fontSize: '11px' } }
+  },
+
+  yAxis: {
+    title: { text: 'Emisiones (ktCO₂ eq)' },
+    labels: {
+      formatter() { return Highcharts.numberFormat(this.value, 0, ',', '.'); }
+    }
+  },
+
+  tooltip: {
+    shared: true,
+    valueSuffix: ' ktCO₂ eq',
+    valueDecimals: 2
+  },
+
+  legend: { layout: 'horizontal', align: 'center', verticalAlign: 'bottom' },
+
+  plotOptions: {
+    series: {
+      marker: { enabled: false, symbol: 'circle' },
+      lineWidth: 2,
+      states: { hover: { lineWidth: 3 } }
+    }
+  },
+
+  series: [
+    { name: '1A1 Industrias de la energía',           color: '#183e34', data: S_1A1 },
+    { name: '1A2 Industrias manufactureras y construcción', color: '#efca18', data: S_1A2 },
+    { name: '1A3 Transporte',                          color: '#0a8c00', data: S_1A3 },
+    { name: '1A4 Otros sectores',                      color: '#05d80a', data: S_1A4 },
+    { name: '1B1 Combustibles sólidos',                color: '#deed1b', data: S_1B1 },
+    { name: '1B2 Petróleo y gas natural',              color: '#ecb000', data: S_1B2 }
+  ]
+});
+
+// === Animación opcional: dibuja año a año ===
+document.getElementById('play').addEventListener('click', () => {
+  // Construye arrays de nulos
+  const empty = years.map(() => null);
+  const full = [S_1A1, S_1A2, S_1A3, S_1A4, S_1B1, S_1B2];
+
+  // Resetea series a nulls
+  chart.series.forEach(s => s.setData(empty.slice(), false));
+  chart.redraw();
+
+  let i = 0;
+  const timer = setInterval(() => {
+    if (i >= years.length) { clearInterval(timer); return; }
+    chart.series.forEach((s, idx) => {
+      const d = s.data;
+      // si no existe el punto, lo añadimos; si existe (null), lo actualizamos
+      if (d.length <= i) s.addPoint(full[idx][i], false);
+      else d[i].update(full[idx][i], false);
+    });
+    chart.redraw();
+    i++;
+  }, 120); // velocidad de la animación (ms por año)
+});
+</script>
+</body>
+</html>
