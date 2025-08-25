@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Concentraciones de metano atmosférico desde 1984</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <style>
+    :root { --verde: #0a8c00; }
+    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;}
+    #wrap{max-width:1100px;margin:20px auto;padding:0 12px;}
+    #chart{height:520px;}
+  </style>
+</head>
+<body>
+<div id="wrap"><div id="chart"></div></div>
+
+<script>
+(async () => {
+  // Cargar y parsear NOAA CH4: columnas -> year, month, decimal, average, ...
+  const raw = await fetch('Metano_historico.txt').then(r => r.text());
+
+  const serie = [];
+  raw.split(/\r?\n/).forEach(line => {
+    const s = line.trim();
+    if (!s || s.startsWith('#')) return;
+    if (!/^\d{4}\s+/.test(s)) return;
+
+    const t = s.split(/\s+/);
+    if (t.length < 4) return;
+
+    const year = +t[0];
+    const month = +t[1];
+    const avg = +t[3]; // average (ppb)
+
+    // Filtrar meses inválidos y mantener solo 1984 en adelante (como en tu figura)
+    if (!isFinite(year) || !isFinite(month) || !isFinite(avg)) return;
+    if (avg <= 0 || year < 1984) return;
+
+    const x = Date.UTC(year, month - 1, 1);
+    const y = +avg.toFixed(1);  // una decimal como NOAA suele reportar
+    serie.push([x, y]);
+  });
+
+  // Ordenar y deduplicar por fecha
+  serie.sort((a,b) => a[0]-b[0]);
+  const data = [];
+  for (let i=0;i<serie.length;i++){
+    if (i===0 || serie[i][0] !== serie[i-1][0]) data.push(serie[i]);
+  }
+
+  const lastPoint = data[data.length - 1];
+
+  Highcharts.setOptions({ lang: { decimalPoint: ',', thousandsSep: '.' } });
+
+  Highcharts.chart('chart', {
+    chart: { spacingTop: 16, spacingRight: 18 },
+    title: {
+      text: 'Concentraciones de metano atmosférico 1984 - 2025',
+      style: { color: '#000', fontWeight: 700, fontSize: '18px' }
+    },
+    subtitle: {
+      text: 'Fuente: adapatado de la NASA. Datos de NOAA, red global de sitios de muestreo de aire.',
+      style: { color: '#6b6b6b' },
+      y: 33
+    },
+    credits: { enabled: false },
+    legend: { enabled: false },
+    xAxis: {
+      type: 'datetime',
+      tickInterval: 5 * 365 * 24 * 36e5, // ~cada 5 años
+      lineColor: '#e8e8e8',
+      tickColor: '#e8e8e8'
+    },
+    yAxis: {
+      title: { text: 'CH₄ (partes por billón)' },
+      gridLineColor: '#ededed',
+      tickAmount: 7
+    },
+    tooltip: {
+      xDateFormat: '%B %Y',
+      pointFormat: '<b>{point.y:.1f} ppb</b>'
+    },
+    plotOptions: {
+      series: { animation: { duration: 2200 } },
+      line: { marker: { enabled: false } }
+    },
+    series: [
+      {
+        type: 'line',
+        name: 'CH₄ mensual',
+        data,
+        color: '#0a8c00',
+        lineWidth: 2.5
+      },
+      {
+        type: 'scatter',
+        data: [lastPoint],
+        marker: { enabled: true, radius: 5, lineWidth: 0, fillColor: '#0a8c00' },
+        enableMouseTracking: false,
+        tooltip: { pointFormat: '' }
+      }
+    ]
+  });
+})();
+</script>
+</body>
+</html>

@@ -5,6 +5,8 @@
   <title>Emisiones netas nacionales – 2021</title>
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
   <style>
     body { margin:0; font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif; }
     #container { width: 100%; max-width: 1100px; height: 520px; margin: 24px auto; }
@@ -41,8 +43,10 @@ const data = [
 
 Highcharts.chart('container', {
   chart: { type: 'column', backgroundColor: '#ffffff' },
-  title: { text: 'Emisiones netas nacionales – 2021' },
-  subtitle: { text: 'Unidades: ktCO₂ eq' },
+  title: { text: 'Emisiones netas GEI - 2021' },
+  subtitle: { text: 'Fuente: adaptado de (IDEAM, 2024)', align: 'center' },
+  colors: ['#b8f600', '#ecb000', '#05d80a', '#183e34', '#deff64'],
+  
 
   xAxis: {
     type: 'category',
@@ -85,14 +89,14 @@ Highcharts.chart('container', {
       }
     },
     series: {
-      color: '#efca18', // color único para todas las barras
       states: { hover: { enabled: true } }
     }
   },
 
   series: [{
     name: 'Emisiones',
-    data: data
+    data: data,
+    colorByPoint: true 
   }],
 
   responsive: {
