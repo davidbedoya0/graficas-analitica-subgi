@@ -7,7 +7,7 @@
 <script src="https://code.highcharts.com/highcharts-more.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/modules/export-data.js"></script>
-  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
 <style>
   body { margin:0; font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif; }
   #container { max-width: 960px; margin: 20px auto; height: 540px; }
@@ -18,12 +18,17 @@
 <script>
 // ===== Paleta (tu set) =====
 const PALETTE = {
-  amber:"#ecb000",      // implemented policies
-  deep:"#183e34",       // NDC alto overshoot
+  amber:"#ecb000",      // implemented policies (línea y, si quisieras, banda)
+  deep:"#b8f600",       // NDC (línea)
   green:"#0a8c00",      // 2°C (línea)
-  neon:"#05d80a",       // 1.5°C (línea)
-  chartreuse:"#c7f425", // 2°C (banda)
-  lemon:"#9befd7"       // 1.5°C (banda)
+  neon:"#0145FF",       // 1.5°C (línea)
+  chartreuse:"#c7f425", // 2°C (banda - NO USADA ahora, dejamos la nueva c2_area)
+  lemon:"#9befd7",      // 1.5°C (banda)
+  violet:"#8C009B",
+
+  // NUEVOS: fondos diferenciados para las dos bandas del medio
+  ndc_area:"#e8e6ff",   // NDCs fondo lavanda MUY claro
+  c2_area:"#e8f0ff"     // 2°C fondo azul MUY claro
 };
 
 // ====== Datos (extraídos de la hoja "Data") ======
@@ -90,7 +95,7 @@ Highcharts.chart('container', {
     min:2010, max:2050, tickInterval:5,
     plotLines:[{
       value:2030, color:'#9ea7b3', width:1.5, dashStyle:'Dash', zIndex:3,
-      label:{ text: null, rotation:0, align:'left', y:-6, x:4, style:{ color:'#6b7280' } }
+      label:{ text: null, rotation:0, align:'left', y:-6, x:14, style:{ color:'#6b7280' } }
     }]
   },
 
@@ -107,9 +112,10 @@ Highcharts.chart('container', {
   },
 
   plotOptions: {
-    series: { animation:{ duration:2200 }, marker:{ enabled:false } },
-    arearange: { lineWidth:0, fillOpacity:0.18, showInLegend:false },
-    line: { lineWidth:3 }
+    series: { animation:{ duration:2200 } },
+    line: { lineWidth:3, marker:{ enabled:true, radius:4, lineWidth:1.5, lineColor:'#fff' } },
+    // Quitamos marcas en TODAS las bandas y dejamos solo las de las líneas
+    arearange: { lineWidth:0, fillOpacity:0.18, showInLegend:false, marker:{ enabled:false } }
   },
 
   series: [
@@ -124,12 +130,12 @@ Highcharts.chart('container', {
     { type:'arearange', name:'Implemented policies (range)', data: toAreaRange(impl_low, impl_high), color:PALETTE.amber, zIndex:1 },
     { type:'line', name:'Tendencia de las políticas implementadas', data: impl_med, color:PALETTE.amber, zIndex:3 },
 
-    // NDCs to 2030 (high overshoot)
-    { type:'arearange', name:'NDCs to 2030 — high overshoot (range)', data: toAreaRange(ndc_low, ndc_high), color:PALETTE.deep, zIndex:1 },
+    // NDCs to 2030 (high overshoot) — FONDO DIFERENCIADO
+    { type:'arearange', name:'NDCs to 2030 — high overshoot (range)', data: toAreaRange(ndc_low, ndc_high), color:'#f4e8', zIndex:1 },
     { type:'line', name:'Limitar a 2 °C (>67 %) o que el calentamiento vuelva a 1,5 °C (>50 %).', data: ndc_med, color:PALETTE.deep, zIndex:3 },
 
-    // Limitar a 2°C
-    { type:'arearange', name:'Limit warming to 2°C (>67%) (range)', data: toAreaRange(c2_low, c2_high), color:PALETTE.chartreuse, zIndex:1 },
+    // Limitar a 2°C — FONDO DIFERENCIADO
+    { type:'arearange', name:'Limit warming to 2°C (>67%) (range)', data: toAreaRange(c2_low, c2_high), color:'#deff64', zIndex:1 },
     { type:'line', name:'Limitar a 2 °C (>67 %) con acción inmediata.', data: c2_med, color:PALETTE.green, zIndex:3 },
 
     // Limitar a 1.5°C

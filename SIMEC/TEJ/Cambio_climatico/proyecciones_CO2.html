@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Escenarios de emisiones – UPME</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/highcharts-more.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <style>
+    body { margin:0; font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif; }
+    #container { width: 100%; max-width: 1100px; height: 520px; margin: 28px auto; }
+  </style>
+</head>
+<body>
+<div id="container"></div>
+
+<script>
+// === Paleta institucional (ajusta estos HEX por los oficiales UPME si deseas) ===
+const PALETTE = {
+  azul_oscuro: '#0b3b75',   // Actualización (línea sólida)
+  azul_medio:  '#b8f600',   // Innovación (línea punteada)
+  verde:       '#05d80a',   // Modernización
+  amarillo:    '#ecb000',   // Inflexión
+  verde_area:  '#deff64',   // Relleno rango superior
+  verde_area_low: '#deff64',// Relleno rango inferior (para degradado)
+  negro:       '#111111'    // NDC 2020
+};
+
+// === Datos (extraídos de la imagen) ===
+const categorias = [2021, 2022, 2030, 2040, 2050];
+
+const actualizacion = [63.14, 64.95, 77.12, 90.92, 98.45];
+const modernizacion = [63.14, 64.96, 76.20, 85.37, 87.92];
+const inflexion     = [63.14, 65.24, 74.42, 75.96, 71.93];
+const innovacion    = [63.14, 65.59, 69.36, 67.06, 54.08];
+
+// Rango Transición energética (TE B = low, TE A = high)
+const TE_A = [63.14, 65.58, 68.35, 61.12, 44.33];
+const TE_B = [63.14, 65.58, 65.54, 49.42, 31.37];
+
+// NDC 2020 (línea punteada con marcadores)
+const ndc2020 = [68.396, 71.167, 94.273, 130.362, 175.63];
+
+// Convierte dos arreglos (low/high) en pares para arearange
+function toAreaRange(lowArr, highArr) {
+  return lowArr.map((low, i) => [i, low, highArr[i]]);
+}
+
+// Formato numérico en español
+Highcharts.setOptions({
+  lang: {
+    decimalPoint: ',',
+    thousandsSep: '.',
+    downloadCSV: 'Downland CSV',
+    downloadPNG: 'Downland PNG',
+    downloadSVG: 'Downland SVG',
+    downloadPDF: 'Downland PDF',
+    contextButtonTitle: 'Exportar/Downland'
+  }
+});
+
+Highcharts.chart('container', {
+  chart: { spacingTop: 12 },
+  title: { text: 'Trayectorias de emisiones por escenario' },
+  subtitle: { text: 'Mt CO₂e por año' },
+  xAxis: {
+    categories: categorias,
+    tickmarkPlacement: 'on',
+    crosshair: true
+  },
+  yAxis: {
+    title: { text: 'Mt CO₂e·año' },
+    max: 180,
+    gridLineDashStyle: 'ShortDot'
+  },
+  legend: { align: 'center', verticalAlign: 'bottom' },
+  tooltip: {
+    shared: true,
+    valueDecimals: 2,
+    valueSuffix: ' Mt CO₂e'
+  },
+  credits: { enabled: false },
+  exporting: { enabled: true },
+
+  series: [
+    // Rango de Transición Energética
+    {
+      type: 'arearange',
+      name: 'Transición energética',
+      data: toAreaRange(TE_B, TE_A),
+      zIndex: 0,
+      lineWidth: 0,
+      marker: { enabled: false },
+      color: {
+        linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+        stops: [
+          [0, PALETTE.verde_area],
+          [1, PALETTE.verde_area_low]
+        ]
+      },
+      fillOpacity: 0.35
+    },
+
+    // Líneas de escenarios
+    {
+      type: 'line',
+      name: 'Actualización',
+      data: actualizacion,
+      color: PALETTE.azul_oscuro,
+      marker: { symbol: 'circle', radius: 3 },
+      zIndex: 3
+    },
+    {
+      type: 'line',
+      name: 'Modernización',
+      data: modernizacion,
+      color: PALETTE.verde,
+      marker: { symbol: 'circle', radius: 3 },
+      zIndex: 3
+    },
+    {
+      type: 'line',
+      name: 'Inflexión',
+      data: inflexion,
+      color: PALETTE.amarillo,
+      marker: { symbol: 'triangle', radius: 4 },
+      zIndex: 3
+    },
+    {
+      type: 'line',
+      name: 'Innovación',
+      data: innovacion,
+      color: PALETTE.azul_medio,
+      dashStyle: 'ShortDash',
+      marker: { symbol: 'circle', radius: 3 },
+      zIndex: 3
+    },
+
+    // NDC 2020
+    {
+      type: 'line',
+      name: 'NDC 2020',
+      data: ndc2020,
+      color: PALETTE.negro,
+      dashStyle: 'Dot',
+      marker: { enabled: true, radius: 3 },
+      zIndex: 2
+    }
+  ]
+});
+</script>
+</body>
+</html>
