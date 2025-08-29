@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>World energy supply — escenarios WEO 2024</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <style>
+    body { margin:0; font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif; background:#fff; }
+    #wrap { max-width: 1200px; margin: 24px auto; padding: 0 12px; }
+    h1 { font-size: 18px; margin: 0 0 8px 0; font-weight: 700;text-align: center; }
+
+    /* Leyenda global */
+    #global-legend { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center; margin: 6px 0 10px 0; }
+    .legend-item { display:flex; align-items:center; gap:6px; cursor:pointer; user-select:none;
+                   font-size:12px; padding:4px 6px; border-radius:6px; transition:.15s opacity; }
+    .legend-item.off { opacity:.45; }
+    .swatch { width:14px; height:14px; border-radius:2px; background: var(--c); border:1px solid #0001; }
+    .swatch.line { width:22px; height:0; border-top:3px dashed var(--c); background:none; border-radius:0; }
+
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .panel { height: 410px;}
+    .source{
+    font-size: 13px;
+    line-height: 1.35;
+    color: #555;
+    margin: 2px 0 12px;
+    text-align: center;
+}
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <h1 style="margin-bottom:4px;">Suministro de energía global por fuente y escenario: 2010-2050</h1>
+    <div class="source" style="text-align:center;">Fuente: base de datos (IEA, 2024).</div>
+  </div>
+  
+
+    <div class="grid">
+      <div id="chart-steps" class="panel"></div>
+      <div id="chart-aps" class="panel"></div>
+      <div id="chart-nze" class="panel"></div>
+    </div>
+
+    <!-- Leyenda global fuera de los charts -->
+    <div id="global-legend" aria-label="Leyenda global"></div>
+    
+
+  <script>
+    Highcharts.setOptions({ lang: { decimalPoint: ',', thousandsSep: '.' } });
+
+    const PALETTE = {"amber": "#ecb000", "gold": "#05d80a", "citron": "#deff64",
+                     "green": "#05d80a", "green_dark": "#0a8c00", "green_deep": "#183e34",
+                     "lemon": "#deff64", "lime": "#c7f425", "neon": "#b8f600"};
+
+    /* ==== Datos (tal como los pasaste) ==== */
+    const D_STEPS = {"years":[2010,2023,2030,2035,2040,2050],"Coal":[[2010,152.881],[2022,172.312],[2023,175.444],[2030,155.548],[2035,130.52],[2040,113.804],[2050,93.53]],"Oil":[[2010,173.304],[2022,187.34],[2023,192.277],[2030,195.141],[2035,188.734],[2040,181.646],[2050,175.507]],"Natural gas":[[2010,114.586],[2022,144.377],[2023,145.065],[2030,153.325],[2035,153.06],[2040,152.074],[2050,151.595]],"Renewables":[[2010,43.155],[2022,74.381],[2023,77.934],[2030,120.062],[2035,152.936],[2040,184.807],[2050,240.591]],"Nuclear":[[2010,30.091],[2022,29.309],[2023,30.193],[2030,35.845],[2035,41.169],[2040,44.664],[2050,49.205]],"Other":[[2010,46.381],[2022,49.089],[2023,49.958],[2030,50.715],[2035,51.8],[2040,51.912],[2050,50.986]],"Fossil share %":[[2010,82.18],[2022,80.13],[2023,79.86],[2030,74.51],[2035,69.29],[2040,64.78],[2050,58.26]]};
+    const D_APS = {"years":[2023,2030,2035,2040,2050],"Coal":[[2023,175.444],[2030,137.801],[2035,94.695],[2040,65.611],[2050,40.157]],"Oil":[[2023,192.277],[2030,178.41],[2035,156.301],[2040,132.744],[2050,99.919]],"Natural gas":[[2023,145.065],[2030,138.416],[2035,120.886],[2040,106.166],[2050,85.878]],"Renewables":[[2023,77.934],[2030,139.519],[2035,196.542],[2040,251.348],[2050,336.251]],"Nuclear":[[2023,30.193],[2030,38.587],[2035,49.381],[2040,59.01],[2050,69.093]],"Other":[[2023,49.958],[2030,40.879],[2035,39.919],[2040,38.487],[2050,35.682]],"Fossil share %":[[2023,79.86],[2030,70.94],[2035,59.6],[2040,49.15],[2050,35.6]]};
+    const D_NZE = {"years":[2023,2030,2035,2040,2050],"Coal":[[2023,175.444],[2030,100.827],[2035,51.069],[2040,25.009],[2050,14.676]],"Oil":[[2023,192.277],[2030,150.575],[2035,109.315],[2040,77.148],[2050,40.231]],"Natural gas":[[2023,145.065],[2030,125.885],[2035,78.555],[2040,53.095],[2050,30.694]],"Renewables":[[2023,77.934],[2030,165.361],[2035,245.265],[2040,312.214],[2050,399.292]],"Nuclear":[[2023,30.193],[2030,43.975],[2035,58.988],[2040,70.191],[2050,78.434]],"Other":[[2023,49.958],[2030,32.82],[2035,32.359],[2040,31.359],[2050,28.169]],"Fossil share %":[[2023,79.86],[2030,64.17],[2035,43.91],[2040,28.83],[2050,15.18]]};
+
+    /* Ejes comunes */
+    const COMMON_Y = { min: 0, max: 800,  tickInterval: 200, title: { text: null } };
+    const PCT_AXIS = { min: 0, max: 100, tickInterval: 25, title: { text: null }, opposite: true };
+
+    /* Crea cada panel sin leyenda */
+    function makePanel(el, title, data, showPctAxis) {
+      return Highcharts.chart(el, {
+        chart: { type: 'area', spacingTop: 8, spacingBottom: 8, alignTicks: false },
+        title: { text: title, align: 'center', style: { fontSize: '13px', fontWeight: '700' } },
+        xAxis: {
+          type: 'linear',
+          tickPositions: data.years,
+          plotLines: (title==='STEPS') ? [{ value: 2023, color: '#888', width: 1, dashStyle: 'Dash', zIndex: 5 }] : [],
+          labels: { formatter() { return this.value; } }
+        },
+        yAxis: [ COMMON_Y, Object.assign({ visible: showPctAxis,labels: { format: '{value}%' } }, PCT_AXIS) ],
+        legend: { enabled: false },   // <— sin leyenda dentro del chart
+        tooltip: { shared: true },
+        plotOptions: {
+          area: {
+            stacking: 'normal',
+            marker: { enabled: false },
+            lineWidth: 0,
+            fillOpacity: 0.9
+          }
+        },
+        series: [
+  // apilado (de abajo hacia arriba) — empieza por "Otros"
+  { id:'otros',     type:'area', name:'Otros',        data: data["Other"],       color: PALETTE.citron },
+  { id:'nuclear',   type:'area', name:'Nuclear',      data: data["Nuclear"],     color: PALETTE.gold },
+  { id:'renovables',type:'area', name:'Renovables',   data: data["Renewables"],  color: PALETTE.green_dark },
+  { id:'gas',       type:'area', name:'Gas Natural',  data: data["Natural gas"], color: PALETTE.lime },
+  { id:'petroleo',  type:'area', name:'Petróleo',     data: data["Oil"],         color: PALETTE.amber },
+  { id:'carbon',    type:'area', name:'Carbón',       data: data["Coal"],        color: PALETTE.green_deep },
+
+  // línea de % fósiles (eje derecho)
+  { id:'fosiles_pct', type:'spline', name:'Fósiles (%)', data: data["Fossil share %"], yAxis:1,
+    color: PALETTE.green_deep, lineWidth: 2.5, marker:{ enabled:false }, dashStyle:'ShortDash',
+    tooltip:{ valueSuffix:'%' }
+  }
+],
+        credits: { enabled: false }
+      });
+    }
+
+    // Construye leyenda global
+    function buildGlobalLegend(containerId, charts) {
+      const items = [
+        { name:'Fosiles (%)', color: PALETTE.green_deep, line:true },
+        { name:'Otros',       color: PALETTE.citron },
+        { name:'Nuclear',     color: PALETTE.gold },
+        { name:'Renovables',  color: PALETTE.green_dark },
+        { name:'Gas Natural', color: PALETTE.lime },
+        { name:'Petróleo',         color: PALETTE.amber },
+        { name:'Carbón',        color: PALETTE.green_deep }
+      ];
+      const el = document.getElementById(containerId);
+      el.innerHTML = '';
+      items.forEach(it => {
+        const div = document.createElement('div');
+        div.className = 'legend-item';
+        div.setAttribute('role','button');
+        div.setAttribute('aria-label', it.name);
+        div.dataset.name = it.name;
+
+        const sw = document.createElement('span');
+        sw.className = 'swatch' + (it.line ? ' line' : '');
+        sw.style.setProperty('--c', it.color);
+        div.appendChild(sw);
+
+        const label = document.createElement('span');
+        label.textContent = it.name;
+        div.appendChild(label);
+
+        div.addEventListener('click', () => {
+          // Determinar nueva visibilidad (invertida con base en la primera coincidencia)
+          let targetVisible = null;
+          charts.forEach(ch => {
+            const s = ch.series.find(sr => sr.name === it.name);
+            if (s) { if (targetVisible === null) targetVisible = !s.visible; }
+          });
+          charts.forEach(ch => {
+            const s = ch.series.find(sr => sr.name === it.name);
+            if (s) s.setVisible(targetVisible, false);
+          });
+          charts.forEach(ch => ch.redraw());
+          div.classList.toggle('off', !targetVisible);
+        });
+
+        el.appendChild(div);
+      });
+    }
+
+    // Render
+    document.addEventListener('DOMContentLoaded', function() {
+      const chartSteps = makePanel('chart-steps', 'STEPS', D_STEPS, false);
+      const chartAPS   = makePanel('chart-aps',   'APS',   D_APS,   false);
+      const chartNZE   = makePanel('chart-nze',   'NZE',   D_NZE,   true);
+
+      buildGlobalLegend('global-legend', [chartSteps, chartAPS, chartNZE]);
+      const items = [
+  { id:'otros',       label:'Otros',        color: PALETTE.citron },
+  { id:'nuclear',     label:'Nuclear',      color: PALETTE.gold },
+  { id:'renovables',  label:'Renovables',   color: PALETTE.green_dark },
+  { id:'gas',         label:'Gas Natural',  color: PALETTE.lime },
+  { id:'petroleo',    label:'Petróleo',     color: PALETTE.amber },
+  { id:'carbon',      label:'Carbón',       color: PALETTE.green_deep },
+  { id:'fosiles_pct', label:'Fósiles (%)',  color: PALETTE.green_deep, line:true }
+];
+    });
+  </script>
+</body>
+</html>
