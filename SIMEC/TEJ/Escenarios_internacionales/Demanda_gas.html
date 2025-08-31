@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Demanda mundial de gas natural</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <style>
+    body{margin:0;font-family:"Segoe UI", Roboto, system-ui, -apple-system, sans-serif;background:#fff;}
+    #wrap{max-width:980px;margin:22px auto;padding:0 12px;}
+    #container{height:520px;}
+  </style>
+</head>
+<body>
+<div id="wrap">
+  <div id="container"></div>
+</div>
+
+<script>
+// Paleta escenarios (coherente con las demás gráficas)
+const PALETTE = {
+  steps:  '#0a8c00',  // STEPS
+  aps:    '#efca18',  // APS
+  nze:    '#05d80a',  // NZE
+  hist:   '#c7f425'   // Histórico
+};
+
+// Formato ES
+Highcharts.setOptions({ lang: { decimalPoint: ',', thousandsSep: '.' } });
+
+// ==== Datos (bcm) ====
+// Histórico (de tu tabla): 2010 = 3 312, 2022 = 4 166, 2023 = 4 186
+const HIST = [
+  [2010, 3312],
+  [2022, 4166],
+  [2023, 4186]
+];
+
+// Escenarios anclados al valor de 2023 (4 186)
+const STEPS = [
+  [2023, 4186],
+  [2030, 4430],
+  [2035, 4422],
+  [2050, 4377]
+];
+
+const APS = [
+  [2023, 4186],
+  [2030, 4003],
+  [2035, 3493],
+  [2050, 2466]
+];
+
+const NZE = [
+  [2023, 4186],
+  [2030, 3617],
+  [2035, 2257],
+  [2050,  882]
+];
+
+Highcharts.chart('container', {
+  chart: { type: 'line', spacing: [10,10,12,10] },
+  title: {
+    text: 'Demanda mundial de gas natural (bcm)',
+    align: 'center',
+    style: { fontSize: '18px', fontWeight: 600 }
+  },
+  subtitle: {
+    text: 'Fuente: adaptado de base de datos (IEA, 2024)',
+    align: 'center',
+    style: { fontSize: '13px', color: '#555', fontWeight: '400' }
+  },
+  credits: { enabled: false },
+
+  legend: {
+    enabled: true,
+    align: 'center',
+    verticalAlign: 'bottom',
+    layout: 'horizontal',
+    itemStyle: { fontSize: '12px' },
+    symbolWidth: 32
+  },
+
+  exporting: { enabled: true },
+
+  xAxis: {
+    min: 2010,
+    max: 2050,
+    tickPositions: [2010,2023, 2030, 2035, 2050],
+    startOnTick: true,
+    endOnTick: true,
+    title: { text: null },
+    labels: { formatter(){ return this.value; } }
+  },
+  yAxis: {
+    title: { text: 'bcm' },
+    min: 0,
+    max: 5000, // “aire” sobre 2023 = 4186
+    tickPositions: [0,1000,2000,3000,4000,5000],
+    gridLineColor: '#e6e6e6',
+    labels: { format: '{value:,.0f}' }
+  },
+
+  tooltip: {
+    shared: false,
+    useHTML: true,
+    pointFormatter: function () {
+      return `<span style="color:${this.color}">\u25CF</span> ${this.series.name}: <b>${Highcharts.numberFormat(this.y, 0, ',', '.')} bcm</b><br/>Año: <b>${this.x}</b>`;
+    }
+  },
+
+  plotOptions: {
+    series: {
+      lineWidth: 3,
+      marker: { enabled: true, radius: 3, symbol: 'circle' }
+    }
+  },
+
+  series: [
+    {
+      name: 'Histórico',
+      data: HIST,
+      color: PALETTE.hist,
+      lineWidth: 4,
+      zIndex: 5,
+      showInLegend: false // mantenemos la leyenda solo para escenarios
+    },
+    {
+      name: 'STEPS (Políticas vigentes)',
+      data: STEPS,
+      color: PALETTE.steps,
+      zIndex: 4
+    },
+    {
+      name: 'APS (Compromisos anunciados)',
+      data: APS,
+      color: PALETTE.aps,
+      zIndex: 3
+    },
+    {
+      name: 'NZE (Cero Neto 2050)',
+      data: NZE,
+      color: PALETTE.nze,
+      zIndex: 2
+    }
+  ]
+});
+</script>
+</body>
+</html>
