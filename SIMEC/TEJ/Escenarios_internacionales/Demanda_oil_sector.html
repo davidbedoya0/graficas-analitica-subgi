@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Demanda de petróleo por sector – escenarios (mb/d)</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <style>
+    body{margin:0;font-family:"Segoe UI", Roboto, system-ui, -apple-system, sans-serif;background:#fff;}
+    #wrap{max-width:1100px;margin:20px auto;padding:0 12px;}
+    h1{margin:0 0 2px 0;text-align:center;font-size:20px;font-weight:700}
+    h2{margin:0 0 14px 0;text-align:center;font-size:13px;color:#555;font-weight:500}
+    #grid{display:grid;grid-template-columns: repeat(3, 1fr); gap:10px;}
+    .chart{height:420px;min-width:260px;}
+    .source{font-size:11px;color:#555;text-align:center;margin-top:6px}
+
+    /* Leyenda global */
+    #global-legend{
+      display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+      margin:12px auto 0 auto;max-width:900px
+    }
+    .legend-item{
+      display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;
+      font-size:12px;padding:none;
+      border:none solid #e5e5e5;background: none
+    }
+    .legend-item.off{ opacity:.4; }
+    .legend-item .swatch{
+      width:16px;height:10px;border-radius:2px;border:1px solid rgba(0,0,0,.15);
+      background: var(--c);
+    }
+    .legend-item .swatch.line{
+      width:28px;height:0;border:none;border-top:3px solid var(--c);background:none
+    }
+
+    @media (max-width: 980px){
+      #grid{grid-template-columns:1fr;}
+      .chart{height:420px;}
+    }
+  </style>
+</head>
+<body>
+<div id="wrap">
+  <h1>Demanda de petróleo por sector</h1>
+  <div class="source" style="text-align:center;">Fuente: adaptado de base de datos IEA. World Energy Outlook 2024</h2>
+
+  <div id="grid">
+    <div id="container-steps" class="chart"></div>
+    <div id="container-aps" class="chart"></div>
+    <div id="container-nze" class="chart"></div>
+  </div>
+
+  <!-- Leyenda global -->
+  <div id="global-legend" aria-label="Leyenda global por sector"></div>
+
+</div>
+
+<script>
+// === Paleta UPME ===
+const PALETTE = {
+  green: '#0a8c00',    // Road transport
+  gold:  '#ecb000',    // Aviation & shipping
+  teal:  '#183e34',    // Industry & petrochemicals
+  lemon: '#deff64',    // Buildings & power
+  wasabi:'#b8f600'     // Other sectors
+};
+
+// Formato ES
+Highcharts.setOptions({ lang: { decimalPoint: ',', thousandsSep: '.' } });
+
+// Puntos de tiempo
+const X = [2023, 2030, 2035, 2050];
+
+/* === Datos (orden de abajo→arriba iniciando en 'Other sectors') === */
+// STEPS
+const STEPS_SERIES = {
+  'Transporte por carretera':        [42.7, 43.3, 40.2, 34.8],
+  'Aviación y transporte marítimo':   [11.6, 13.0, 13.5, 14.5],
+  'Industria y petroquímica': [20.0, 23.3, 24.6, 25.3],
+  'Edificios y energía':     [11.4,  9.0,  7.7,  6.1],
+  'Otros sectores':         [13.3, 13.1, 13.1, 12.5]
+};
+
+// APS
+const APS_SERIES = {
+  'Transporte por carretera':        [42.7, 40.5, 34.1, 16.8],
+  'Aviación y transporte marítimo':   [11.6, 11.0, 10.1,  7.5],
+  'Industria y petroquímica': [20.0, 21.4, 20.9, 17.5],
+  'Edificios y energía':     [11.4,  8.1,  6.1,  3.6],
+  'Otros sectores':         [13.3, 11.8, 10.9,  8.4]
+};
+
+// NZE
+const NZE_SERIES = {
+  'Transporte por carretera':        [42.7, 31.9, 20.1,  2.3],
+  'Aviación y transporte marítimo':   [11.6,  9.3,  7.0,  1.8],
+  'Industria y petroquímica': [20.0, 19.7, 18.2, 13.1],
+  'Edificios y energía':     [11.4,  6.6,  3.6,  0.4],
+  'Otros sectores':         [13.3, 10.8,  8.9,  5.3]
+};
+
+// Colores por sector
+const COLOR_BY_SECTOR = {
+  'Transporte por carretera':        PALETTE.green,
+  'Aviación y transporte marítimo':   PALETTE.gold,
+  'Industria y petroquímica': PALETTE.teal,
+  'Edificios y energía':    PALETTE.lemon,
+  'Otros sectores':PALETTE.wasabi
+};
+
+// Utilidad: objeto de series → arreglo de series Highcharts
+function buildSeries(sectorData){
+  return Object.keys(sectorData).map(name => ({
+    type: 'areaspline',
+    name,
+    data: X.map((x,i) => [x, sectorData[name][i]]),
+    color: COLOR_BY_SECTOR[name],
+    lineColor: COLOR_BY_SECTOR[name],
+    fillOpacity: 0.85,
+    marker: { enabled: false },
+    tooltip: { valueDecimals: 1 }
+  }));
+}
+
+// Constructor de charts (sin leyenda interna)
+function makeChart(renderTo, titleText, sectorData){
+  return Highcharts.chart(renderTo, {
+    chart: { spacing: [6,6,6,6] },
+    title: { text: titleText, align: 'center', style: { fontSize: '14px', fontWeight: 700 } },
+    credits: { enabled: false },
+    legend: { enabled: false },               // leyenda global externa
+    xAxis: {
+      categories: X,
+      tickmarkPlacement: [2023 , 2030, 2035, 2050],
+      tickInterval: 5,
+      title: { text: null }
+    },
+    yAxis: {
+      title: { text: 'mb/d' },
+      min: 0, max: 110, tickInterval:10,
+      gridLineColor: '#e6e6e6',
+      reversedStacks: false,
+      labels: { format: '{value:,.0f}' }
+    },
+    tooltip: {
+      shared: true,
+      valueSuffix: ' mb/d',
+      valueDecimals: 1
+    },
+    plotOptions: { series: { stacking: 'normal' } },
+    exporting: { enabled: true },
+    series: buildSeries(sectorData)
+  });
+}
+
+// Renderizar charts
+const chSteps = makeChart('container-steps', 'STEPS', STEPS_SERIES);
+const chAPS   = makeChart('container-aps',   'APS',   APS_SERIES);
+const chNZE   = makeChart('container-nze',   'NZE',   NZE_SERIES);
+// Ocultar título del eje Y en APS y NZE
+chAPS.yAxis[0].setTitle({ text: null });
+chNZE.yAxis[0].setTitle({ text: null });
+
+/* ==== Leyenda global (adaptada a tu fragmento) ==== */
+function buildGlobalLegend(containerId, charts) {
+  const items = [
+    { name:'Otros sectores',         color: COLOR_BY_SECTOR['Otros sectores'] },
+    { name:'Edificios y energía',     color: COLOR_BY_SECTOR['Edificios y energía'] },
+    { name:'Industria y petroquímica', color: COLOR_BY_SECTOR['Industria y petroquímica'] },
+    { name:'Aviación y transporte marítimo',   color: COLOR_BY_SECTOR['Aviación y transporte marítimo'] },
+    { name:'Transporte por carretera',        color: COLOR_BY_SECTOR['Transporte por carretera'] }
+  ];
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  items.forEach(it => {
+    const div = document.createElement('div');
+    div.className = 'legend-item';
+    div.setAttribute('role','button');
+    div.setAttribute('aria-label', it.name);
+    div.dataset.name = it.name;
+
+    const sw = document.createElement('span');
+    sw.className = 'swatch';              // áreas → swatch de relleno
+    sw.style.setProperty('--c', it.color);
+    div.appendChild(sw);
+
+    const label = document.createElement('span');
+    label.textContent = it.name;
+    div.appendChild(label);
+
+    // Toggle visibilidad en TODOS los charts
+    div.addEventListener('click', () => {
+      let targetVisible = null;
+      charts.forEach(ch => {
+        const s = ch.series.find(sr => sr.name === it.name);
+        if (s) { if (targetVisible === null) targetVisible = !s.visible; }
+      });
+      charts.forEach(ch => {
+        const s = ch.series.find(sr => sr.name === it.name);
+        if (s) s.setVisible(targetVisible, false);
+      });
+      charts.forEach(ch => ch.redraw());
+      div.classList.toggle('off', !targetVisible);
+    });
+
+    el.appendChild(div);
+  });
+}
+
+// Construir leyenda global
+buildGlobalLegend('global-legend', [chSteps, chAPS, chNZE]);
+</script>
+</body>
+</html>

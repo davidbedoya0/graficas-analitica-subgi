@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Demanda de gas natural por sector – escenarios (bcm)</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <style>
+    body{margin:0;font-family:"Segoe UI", Roboto, system-ui, -apple-system, sans-serif;background:#fff;}
+    #wrap{max-width:1100px;margin:20px auto;padding:0 12px;}
+    h1{margin:0 0 2px 0;text-align:center;font-size:20px;font-weight:700}
+    h2{margin:0 0 14px 0;text-align:center;font-size:13px;color:#555;font-weight:400}
+    #grid{display:grid;grid-template-columns: repeat(3, 1fr); gap:10px;}
+    .chart{height:420px;min-width:260px;}
+    .source{font-size:11px;color:#555;text-align:center;margin-top:6px}
+
+    /* Leyenda global (sin fondo ni borde) */
+    #global-legend{
+      display:flex;flex-wrap:wrap;gap:12px;justify-content:center;
+      margin:10px auto 0 auto;max-width:980px
+    }
+    #global-legend .legend-item{
+      display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;
+      font-size:12px;padding:0 6px;border:none;background:transparent;border-radius:0;
+      transition:opacity .12s ease;
+    }
+    #global-legend .legend-item.off{ opacity:.35; }
+    #global-legend .legend-item .swatch{
+      width:16px;height:10px;border-radius:2px;border:none;background: var(--c);
+    }
+
+    @media (max-width: 980px){
+      #grid{grid-template-columns:1fr;}
+      .chart{height:420px;}
+    }
+  </style>
+</head>
+<body>
+<div id="wrap">
+  <h1>Demanda de gas natural por sector y escenario</h1>
+  <h2>Fuente: adaptado de base de datos IEA. World Energy Outlook 2024</h2>
+
+  <div id="grid">
+    <div id="container-steps" class="chart"></div>
+    <div id="container-aps"   class="chart"></div>
+    <div id="container-nze"   class="chart"></div>
+  </div>
+  
+
+  <!-- Leyenda global -->
+  <div id="global-legend" aria-label="Leyenda global por sector"></div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // ===== Paleta UPME (adjunta) + un tono UPME extra para el 6.º sector =====
+  const PALETTE = {
+    teal:   '#183e34', // Generación eléctrica (base)
+    gold:   '#ecb000', // Industria
+    lemon:  '#deff64', // Edificios
+    wasabi: '#b8f600', // Otros
+    green:  '#0a8c00', // Transporte
+    lime:   '#deed1b'  // Hidrógeno de bajas emisiones (tono UPME)
+  };
+
+  Highcharts.setOptions({ lang: { decimalPoint: ',', thousandsSep: '.' } });
+
+  // Puntos de tiempo
+  const X = [2023, 2030, 2035, 2050];
+
+  // ===== Datos (bcm) – ordenados base→cima como en la referencia =====
+  // STEPS
+  const STEPS_SERIES = {
+    'Generación eléctrica':           [1642, 1657, 1602, 1513],  // Power
+    'Industria':                      [ 936, 1037, 1080, 1136],
+    'Edificios':                      [ 809,  877,  868,  855],
+    'Otros':                          [ 647,  671,  668,  651],
+    'Transporte':                     [ 151,  183,  191,  191],
+    'Hidrógeno de bajas emisiones':   [   0,    5,   13,   31]   // 2023 es 0
+  };
+  // APS
+  const APS_SERIES = {
+    'Generación eléctrica':           [1642, 1519, 1258,  786],
+    'Industria':                      [ 936,  941,  888,  674],
+    'Edificios':                      [ 809,  780,  649,  418],
+    'Otros':                          [ 647,  593,  510,  302],
+    'Transporte':                     [ 151,  143,  116,   56],
+    'Hidrógeno de bajas emisiones':   [   0,   26,   55,  219]
+  };
+  // NZE
+  const NZE_SERIES = {
+    'Generación eléctrica':           [1642, 1537,  773,  136],
+    'Industria':                      [ 936,  852,  711,  338],
+    'Edificios':                      [ 809,  570,  307,    1],
+    'Otros':                          [ 647,  482,  279,  156],
+    'Transporte':                     [ 151,  113,   67,    7],
+    'Hidrógeno de bajas emisiones':   [   0,   64,  120,  246]
+  };
+
+  // Colores por sector
+  const COLOR_BY_SECTOR = {
+    'Generación eléctrica':           PALETTE.teal,
+    'Industria':                      PALETTE.gold,
+    'Edificios':                      PALETTE.lemon,
+    'Otros':                          PALETTE.wasabi,
+    'Transporte':                     PALETTE.green,
+    'Hidrógeno de bajas emisiones':   PALETTE.lime
+  };
+
+  // Utilidad: objeto → series Highcharts
+  function buildSeries(sectorData){
+    return Object.keys(sectorData).map(name => ({
+      type: 'areaspline',
+      name,
+      data: X.map((x,i) => [x, sectorData[name][i]]),
+      color: COLOR_BY_SECTOR[name],
+      lineColor: COLOR_BY_SECTOR[name],
+      fillOpacity: 0.9,
+      marker: { enabled: false },
+      showInLegend: false,
+      tooltip: { valueDecimals: 0 }
+    }));
+  }
+
+  function makeChart(renderTo, titleText, sectorData){
+    return Highcharts.chart(renderTo, {
+      chart: { spacing: [6,6,6,6] },
+      title: { text: titleText, align: 'center', style: { fontSize: '14px', fontWeight: 700 } },
+      credits: { enabled: false },
+      legend: { enabled: false }, // leyenda global
+      xAxis: {
+      categories: X,
+      tickmarkPlacement: [2023, 2030, 2035, 2050],
+      tickInterval: 5,
+      title: { text: null }
+    },
+      yAxis: {
+        title: { text: 'bcm' },
+        min: 0, max: 5000, tickInterval: 1000,
+        gridLineColor: '#e6e6e6',
+        reversedStacks: false,
+        labels: { format: '{value:,.0f}' }
+      },
+      tooltip: { shared: true, valueSuffix: ' bcm' },
+      plotOptions: { series: { stacking: 'normal' } },
+      exporting: { enabled: true },
+      series: buildSeries(sectorData)
+    });
+  }
+
+  // Render de los tres escenarios
+  const chSteps = makeChart('container-steps', 'STEPS', STEPS_SERIES);
+  const chAPS   = makeChart('container-aps',   'APS',   APS_SERIES);
+  const chNZE   = makeChart('container-nze',   'NZE',   NZE_SERIES);
+  // Ocultar título del eje Y en APS y NZE
+  chAPS.yAxis[0].setTitle({ text: null });
+  chNZE.yAxis[0].setTitle({ text: null });
+
+  // ===== Leyenda global (en español) =====
+  function buildGlobalLegend(containerId, charts) {
+    const order = [
+      'Generación eléctrica',
+      'Industria',
+      'Edificios',
+      'Otros',
+      'Transporte',
+      'Hidrógeno de bajas emisiones'
+    ];
+    const el = document.getElementById(containerId);
+    el.innerHTML = '';
+    order.forEach(name => {
+      const div = document.createElement('div');
+      div.className = 'legend-item';
+      div.setAttribute('role','button');
+      div.setAttribute('aria-label', name);
+
+      const sw = document.createElement('span');
+      sw.className = 'swatch';
+      sw.style.setProperty('--c', COLOR_BY_SECTOR[name]);
+      div.appendChild(sw);
+
+      const label = document.createElement('span');
+      label.textContent = name;
+      div.appendChild(label);
+
+      div.addEventListener('click', () => {
+        let targetVisible = null;
+        charts.forEach(ch => {
+          const s = ch.series.find(sr => sr.name === name);
+          if (s) { if (targetVisible === null) targetVisible = !s.visible; }
+        });
+        charts.forEach(ch => {
+          const s = ch.series.find(sr => sr.name === name);
+          if (s) s.setVisible(targetVisible, false);
+        });
+        charts.forEach(ch => ch.redraw());
+        div.classList.toggle('off', !targetVisible);
+      });
+
+      el.appendChild(div);
+    });
+  }
+  buildGlobalLegend('global-legend', [chSteps, chAPS, chNZE]);
+});
+</script>
+</body>
+</html>

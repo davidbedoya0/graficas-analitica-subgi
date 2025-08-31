@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Capacidad instalada Eólica – proyección por escenario (GW)</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <style>
+    body{margin:0;font-family:"Segoe UI", Roboto, system-ui, -apple-system, sans-serif;}
+    #wrap{max-width:980px;margin:22px auto;padding:0 12px;}
+    #container{height:540px;}
+  </style>
+</head>
+<body>
+<div id="wrap">
+  <div id="container"></div>
+</div>
+
+<script>
+// Paleta institucional UPME (coherente con tus otras gráficas)
+const PALETTE = {
+  green:  '#05d80a',  // STEPS
+  amber:  ' #00FBFA',  // APS
+  neon:   '#0991B5',  // NZE2050
+  wasabi:   '#c7f425'   // Histórico
+};
+
+// Formato ES
+Highcharts.setOptions({ lang: { decimalPoint: ',', thousandsSep: '.' } });
+
+// ===== Datos (GW) – convertidos desde kW (÷ 1e6) =====
+const HIST = [
+  [2010, 181.11],
+  [2022, 899.28],
+  [2023, 1015.18]
+];
+
+const STEPS = [
+  [2023, 1015.18],
+  [2030, 2078.57],
+  [2035, 2861.83],
+  [2040, 3419.25],
+  [2050, 4189.21]
+];
+
+const APS = [
+  [2023, 1015.18],
+  [2030, 2410.04],
+  [2035, 3553.07],
+  [2040, 4487.34],
+  [2050, 6031.77]
+];
+
+const NZE = [
+  [2023, 1015.18],
+  [2030, 2730.63],
+  [2035, 4541.80],
+  [2040, 5944.72],
+  [2050, 7901.33]
+];
+
+Highcharts.chart('container', {
+  chart: { type: 'line', spacing: [10,10,12,10] },
+  title: {
+    text: 'Capacidad instalada eólica por escenario',
+    align: 'center',
+    style: { fontSize: '18px', fontWeight: 600 }
+  },
+  subtitle: {
+    text: 'Fuente: adaptado de RFF. Base de datos (IEA, 2024)',
+    align: 'center',
+    style: { fontSize: '13px', color: '#555', fontWeight: '400' }
+  },
+  credits: { enabled: false },
+
+  legend: {
+    enabled: true,
+    align: 'center',
+    verticalAlign: 'bottom',
+    layout: 'horizontal',
+    itemStyle: { fontSize: '12px' },
+    symbolWidth: 32
+  },
+
+  exporting: { enabled: true },
+
+  xAxis: {
+    min: 2010,
+    max: 2050,
+    tickPositions: [2010, 2023, 2030, 2035, 2040, 2050],
+    startOnTick: true,
+    endOnTick: true,
+    title: { text: 'Año' },
+    labels: { formatter(){ return this.value; } }
+  },
+  yAxis: {
+    title: { text: 'GW' },
+    min: 0,
+    // Si quieres margen fijo, descomenta la siguiente línea:
+    max: 8000,
+    gridLineColor: '#e6e6e6',
+    labels: { format: '{value:,.0f}' }
+  },
+
+  tooltip: {
+    shared: false,
+    useHTML: true,
+    pointFormatter: function () {
+      return `<span style="color:${this.color}">\u25CF</span> ${this.series.name}: <b>${Highcharts.numberFormat(this.y, 2, ',', '.')} GW</b><br/>Año: <b>${this.x}</b>`;
+    }
+  },
+
+  plotOptions: {
+    series: {
+      lineWidth: 3,
+      marker: { enabled: true, radius: 3, symbol: 'circle' }
+    }
+  },
+
+  series: [
+    {
+      name: 'Histórico',
+      data: HIST,
+      color: PALETTE.wasabi,
+      lineWidth: 4,
+      zIndex: 5,
+      showInLegend: false
+    },
+    {
+      name: 'STEPS (Políticas Declaradas)',
+      data: STEPS,
+      color: PALETTE.green,
+      zIndex: 4
+    },
+    {
+      name: 'APS (Compromisos anunciados)',
+      data: APS,
+      color: PALETTE.amber,
+      zIndex: 3
+    },
+    {
+      name: 'NZE (Cero Neto 2050)',
+      data: NZE,
+      color: PALETTE.neon,
+      zIndex: 2
+    }
+  ]
+});
+</script>
+</body>
+</html>

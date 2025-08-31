@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Demanda mundial de petróleo – histórico y proyecciones (mb/d)</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <style>
+    body{margin:0;font-family:"Segoe UI", Roboto, system-ui, -apple-system, sans-serif;background:#fff;}
+    #wrap{max-width:980px;margin:22px auto;padding:0 12px;}
+    #container{height:520px;}
+    .source{font-size:11px;color:#555;text-align:center;margin-top:4px}
+  </style>
+</head>
+<body>
+<div id="wrap">
+  <div id="container"></div>
+</div>
+
+<script>
+// Paleta institucional UPME
+const PALETTE = {
+  gold: '#ecb000',
+  yellow: '#efca18',
+  lime: '#deed1b',
+  neon: '#05d80a',
+  green: '#0a8c00',
+  teal: '#183e34',
+  lemon: '#deff64',
+  wasabi: '#c7f425',
+  chartreuse: '#b8f600'
+};
+
+// Formato numérico ES
+Highcharts.setOptions({
+  lang: { decimalPoint: ',', thousandsSep: '.' }
+});
+
+// ==== Datos (World) de tu tabla (mb/d) ====
+// Histórico
+const HIST = [
+  [2010, 87.2],
+  [2022, 97.1],
+  [2023, 99.1]
+];
+// Proyecciones
+const STEPS = [
+  [2023, 99.1], // ancla
+  [2030, 101.7],
+  [2035, 99.1],
+  [2050, 93.1]
+];
+const APS = [
+  [2023, 99.1], // ancla
+  [2030, 92.8],
+  [2035, 82.0],
+  [2050, 53.7]
+];
+const NZE = [
+  [2023, 99.1], // ancla
+  [2030, 78.9],
+  [2035, 57.8],
+  [2050, 23.0]
+];
+
+Highcharts.chart('container', {
+  chart: { type: 'line', spacing: [10,10,10,10] },
+  title: {
+    text: 'Demanda mundial de petróleo',
+    align: 'center',
+    style: { fontSize: '18px', fontWeight: 600 }
+  },
+  subtitle: {
+    text: 'Fuente: adaptado de base de datos IEA. World Energy Outlook 2024',
+    align: 'center',
+    style: { fontSize: '13px', color: '#555' }
+  },
+  credits: { enabled: false },
+
+  legend: {
+    enabled: true,
+    align: 'center',
+    verticalAlign: 'bottom',
+    layout: 'horizontal',
+    itemStyle: { fontSize: '12px' },
+    symbolWidth: 32
+  },
+
+  exporting: { enabled: true },
+
+  xAxis: {
+    title: { text: null },
+    tickInterval: 5,
+    min: 2010,
+    max: 2050,
+    labels: { formatter(){ return this.value; } }
+  },
+  yAxis: {
+    title: { text: 'mb/d' },
+    min: 0,
+    max: 110,          // cubre el pico ~102
+    tickInterval: 10,
+    gridLineColor: '#e6e6e6',
+    labels: { format: '{value:,.0f}' }
+  },
+  tooltip: {
+    shared: false,
+    useHTML: true,
+    pointFormatter: function () {
+      return `<span style="color:${this.color}">\u25CF</span> ${this.series.name}: <b>${Highcharts.numberFormat(this.y, 1, ',', '.')} mb/d</b><br/>Año: <b>${this.x}</b>`;
+    }
+  },
+  plotOptions: {
+    series: {
+      lineWidth: 3,
+      marker: { enabled: true, radius: 3, symbol: 'circle' },
+      dataLabels: { enabled: false } // usamos leyenda
+    }
+  },
+
+  series: [
+    {
+      name: 'Histórico',
+      data: HIST,
+      color: PALETTE.wasabi,
+      lineWidth: 4,
+      zIndex: 5,
+      showInLegend: false
+    },
+    {
+      name: 'STEPS (Políticas Declaradas)',
+      data: STEPS,
+      color: PALETTE.green,
+      zIndex: 4
+    },
+    {
+      name: 'APS (Compromisos Anunciados)',
+      data: APS,
+      color: PALETTE.neon,
+      zIndex: 3
+    },
+    {
+      name: 'NZE (Cero Neto)',
+      data: NZE,
+      color: PALETTE.yellow,
+      zIndex: 2
+    }
+  ]
+});
+</script>
+</body>
+</html>

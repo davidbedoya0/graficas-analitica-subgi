@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Demanda mundial de carbón(Mtce)</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <style>
+    body{margin:0;font-family:"Segoe UI", Roboto, system-ui, -apple-system, sans-serif;background:#fff;}
+    #wrap{max-width:980px;margin:22px auto;padding:0 12px;}
+    #container{height:520px;}
+    .source{font-size:11px;color:#555;text-align:center;margin-top:4px}
+  </style>
+</head>
+<body>
+<div id="wrap">
+  <div id="container"></div>
+  
+</div>
+
+<script>
+// Paleta institucional UPME (de tu imagen)
+const PALETTE = {
+  gold: '#ecb000',
+  yellow: '#efca18',
+  lime: '#deed1b',
+  neon: '#05d80a',
+  green: '#0a8c00',
+  teal: '#183e34',
+  lemon: '#deff64',
+  wasabi: '#c7f425',
+  chartreuse: '#b8f600'
+};
+
+// Formato numérico ES
+Highcharts.setOptions({
+  lang: { decimalPoint: ',', thousandsSep: '.' }
+});
+
+// Datos (World) extraídos de la tabla (Mtce)
+const HISTORICO = [
+  [2010, 5216],
+  [2022, 5879],
+  [2023, 5986]
+];
+
+const STEPS = [
+  [2023, 5986],
+  [2030, 5307],
+  [2035, 4453],
+  [2050, 3191]
+];
+
+const APS = [
+  [2023, 5986],
+  [2030, 4702],
+  [2035, 3231],
+  [2050, 1370]
+];
+const NZE = [
+  [2023, 5986],
+  [2030, 3440],
+  [2035, 1743],
+  [2050, 501]
+];
+
+Highcharts.chart('container', {
+  chart: { type: 'line', spacing: [10,10,10,10] },
+  title: {
+    text: 'Demanda mundial de carbón',
+    align: 'center',
+    style: { fontSize: '18px', fontWeight: 600 }
+  },
+  subtitle: {
+    text: 'Fuente: adaptado de base de datos IEA. World Energy Outlook 2024',
+    align: 'center',
+    style: { fontSize: '13px', color: '#555' }
+  },
+  credits: { enabled: false },
+
+  // Leyenda inferior (solo escenarios)
+  legend: {
+    enabled: true,
+    align: 'center',
+    verticalAlign: 'bottom',
+    layout: 'horizontal',
+    itemStyle: { fontSize: '12px' },
+    symbolWidth: 32
+  },
+
+  exporting: { enabled: true },
+
+  xAxis: {
+    title: { text: null },
+    tickInterval: 5,
+    min: 2010,
+    max: 2050,
+    gridLineWidth: 0,
+    labels: { formatter(){ return this.value; } }
+  },
+  yAxis: {
+    title: { text: 'Mtce' },
+    min: 0,
+    max: 6000,
+    tickInterval: 1000,
+    gridLineColor: '#e6e6e6',
+    labels: { format: '{value:,.0f}' }
+  },
+  tooltip: {
+    shared: false,
+    useHTML: true,
+    pointFormatter: function () {
+      return `<span style="color:${this.color}">\u25CF</span> ${this.series.name}: <b>${Highcharts.numberFormat(this.y, 0, ',', '.')} Mtce</b><br/>Año: <b>${this.x}</b>`;
+    }
+  },
+  plotOptions: {
+    series: {
+      lineWidth: 3,
+      marker: { enabled: true, radius: 3, symbol: 'circle' },
+      dataLabels: { enabled: false } // usamos leyenda, no etiquetas en la línea
+    }
+  },
+
+  series: [
+    {
+      name: 'Histórico',
+      data: HISTORICO,
+      color: '#c7f425',
+      lineWidth: 4,
+      zIndex: 5,
+      showInLegend: true // no mostrar en leyenda
+    },
+    {
+      name: 'STEPS (Políticas Declaradas)',
+      data: STEPS,
+      color: PALETTE.green,
+      zIndex: 4
+    },
+    {
+      name: 'APS (Compromisos Anunciados)',
+      data: APS,
+      color: PALETTE.neon,
+      zIndex: 3
+    },
+    {
+      name: 'NZE (Cero Neto)',
+      data: NZE,
+      color: PALETTE.yellow,
+      zIndex: 3
+    }
+  ]
+});
+</script>
+</body>
+</html>
