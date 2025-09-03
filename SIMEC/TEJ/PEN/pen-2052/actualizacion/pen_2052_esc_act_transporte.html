@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Actualizacion-transporte</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root { --maxw: 1100px; --accent: #22c55e; --track: #e5e7eb; --knob: #374151; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif; color: #111; background: #fff; }
+    header { max-width: var(--maxw); margin: 20px auto 6px; padding: 0 16px; }
+    h1 { margin: 0 0 4px 0; font-size: 1.5rem; font-weight: 700; text-align: left; }
+    .sub { color: #6b7280; font-size: .95rem; text-align: left; }
+    #container-wrap { max-width: var(--maxw); margin: 6px auto 8px; padding: 0 16px; }
+    #container { min-width: 400px; height: 500px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px; background: #ffffff; }
+    .bottom { max-width: var(--maxw); margin: 10px auto 18px; padding: 0 16px; display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .controls-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .segmented { display: inline-flex; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; width: fit-content; }
+    .segmented button { all: unset; padding: 6px 12px; cursor: pointer; font-weight: 500; }
+    .segmented button.active { background: #111827; color: #fff; }
+    .segmented button:not(.active) { background: #f3f4f6; color: #111; }
+    .inline-metrics { display: inline-flex; align-items: center; gap: 10px; margin-left: 0; font-size: .95rem; }
+    .metric-label { color: #374151; }
+    .metric-value { font-weight: 700; }
+    .rangerow { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 12px; }
+    .range-labels { display: flex; gap: 14px; align-items: center; font-size: .95rem; color: #374151; }
+    .range { position: relative; height: 28px; }
+    .range input[type="range"] { position: absolute; left: 0; right: 0; top: 8px; width: 100%; margin: 0; appearance: none; background: none; pointer-events: none; }
+    .range input[type="range"]::-webkit-slider-runnable-track { height: 6px; background: var(--track); border-radius: 999px; }
+    .range input[type="range"]::-moz-range-track { height: 6px; background: var(--track); border-radius: 999px; }
+    .range input[type="range"]::-webkit-slider-thumb { appearance: none; pointer-events: auto; width: 16px; height: 16px; border-radius: 50%; background: var(--knob); border: 2px solid #fff; margin-top: -5px; }
+    .range input[type="range"]::-moz-range-thumb { pointer-events: auto; width: 16px; height: 16px; border-radius: 50%; background: var(--knob); border: 2px solid #fff; }
+    .range .fill { position: absolute; left: 0; right: 0; top: 11px; height: 6px; background: var(--accent); border-radius: 999px; z-index: -1; }
+    select.yearpick { padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 8px; font-size: .9rem; }
+  </style>
+</head>
+<body>
+
+  <div id="container-wrap"><div id="container"></div></div>
+
+  <div class="bottom">
+    <div class="controls-row">
+      <div class="segmented" role="group" aria-label="Tipo de gráfica">
+        <button id="btnAbs" class="active" aria-pressed="true">Área Absoluta</button>
+        <button id="btnPct" aria-pressed="false">Área 100%</button>
+      </div>
+      <div class="inline-metrics">
+        <label for="yearSelect">Año:</label>
+        <select id="yearSelect" class="yearpick"></select>
+        <span class="metric-label">Total Energético:</span>
+        <span id="totalValue" class="metric-value">— PJ</span>
+      </div>
+    </div>
+
+    <div class="rangerow">
+      <div class="range-labels">
+        <span>From</span>
+        <select id="fromSelect" class="yearpick"></select>
+        <span>to</span>
+        <select id="toSelect" class="yearpick"></select>
+      </div>
+      <div class="range">
+        <div id="rangeFill" class="fill"></div>
+        <input id="rangeMin" type="range" min="0" step="1" value="0">
+        <input id="rangeMax" type="range" min="0" step="1" value="0">
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // ========================
+  // Parámetros
+  // ========================
+const PAGE = {
+      title: 'Demanda de energía por sector transporte',
+      subtitle: '',
+      unitAbs: 'PJ/año',
+      colors: ['#C5F126', '#DFEC1D', '#F0CA19', '#EDB000', '#B8F600','#00D90B', '#0C8C01', '#183E33', '#FF75C3', '#F950B5','#A582C5', '#7030A0', '#D9D9D9', '#7FB8D0', '#6B96F5','#0991B5', '#0145FF'],
+      excelUrl: '../data/pen_2052_demanda.xlsx',
+      sheetName: 'pen_52_act',
+      range: 'AB2:AT9999',
+      categories: ['Bagazo','Carbón Mineral','Gas Natural','Leña','Petróleo','Residuos','Gasolina','Diesel','Carbón Leña','Coque','Fuel oil','Glp','Jet fuel','Electricidad SIN','Electricidad AUTG','Hidroenergía','AVgas'],
+    };
+
+  // ========================
+  // Estado
+  // ========================
+  let YEARS = [];
+  let SERIES_ABS = []; 
+  let TOTALS = [];
+  let MODE = 'abs'; 
+  let chart = null;
+
+  // ========================
+  // Utilidades
+  // ========================
+  const nf = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 2 });
+  const fmt = (n) => nf.format(n);
+  const toNumber = (x) => {
+    const v = Number(x);
+    return Number.isFinite(v) ? v : NaN;
+  };
+
+  function computeTotals() {
+    const n = YEARS.length;
+    TOTALS = Array.from({ length: n }, (_, i) =>
+      SERIES_ABS.reduce((acc, s) => acc + (Number(s.data[i]) || 0), 0)
+    );
+  }
+
+  function populateYearSelect(elYear) {
+    elYear.innerHTML = YEARS.map((y, i) => `<option value="${i}">${y}</option>`).join('');
+    elYear.value = '0';
+    updateTotalForYear(0);
+  }
+
+  function updateTotalForYear(idx) {
+    const val = TOTALS[idx] ?? 0;
+    document.getElementById('totalValue').textContent = `${fmt(val)} PJ`;
+  }
+
+  // ========================
+  // Leer Excel
+  // ========================
+  async function loadExcel(){
+    const res = await fetch(PAGE.excelUrl);
+    if (!res.ok) throw new Error('No se pudo cargar ' + PAGE.excelUrl);
+    const buf = await res.arrayBuffer();
+    const wb = XLSX.read(buf, { type: 'array' });
+    const ws = wb.Sheets[PAGE.sheetName] || wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, range: PAGE.range, blankrows: false });
+    if (!rows.length) throw new Error('Rango vacío: ' + PAGE.range);
+
+    const dataRows = rows.slice(1).filter(r => r && r.length >= 2);
+    const years = [];
+    const vals = PAGE.categories.map(() => []);
+
+    for (const r of dataRows) {
+      const y = toNumber(r[0]);
+      if (!Number.isFinite(y)) continue;
+      years.push(String(y));
+      for (let i = 0; i < PAGE.categories.length; i++) {
+        vals[i].push(toNumber(r[i + 1]) || 0);
+      }
+    }
+    YEARS = years;
+    SERIES_ABS = PAGE.categories.map((name, i) => ({ name, data: vals[i] }));
+
+    const lenOK = SERIES_ABS.every(s => s.data.length === YEARS.length);
+    if (!lenOK) {
+      console.warn('Longitudes disparejas entre columnas o años.', {
+        years: YEARS.length,
+        seriesLengths: SERIES_ABS.map(s => s.data.length)
+      });
+    }
+
+    computeTotals();
+  }
+
+  // ========================
+  // ========================
+  let _tickTimer;
+  function updateTickIntervalFromExtremes(){
+    clearTimeout(_tickTimer);
+    _tickTimer = setTimeout(() => {
+      const xa = chart.xAxis[0];
+      const e = xa.getExtremes();
+      const visible = Math.max(1, Math.round(e.max - e.min + 1));
+      const plotW = chart.plotWidth || 600;
+      const estLabelW = 42;
+      const maxLabels = Math.max(2, Math.floor(plotW / estLabelW));
+      const step = Math.max(1, Math.ceil(visible / maxLabels));
+      xa.update({ tickInterval: step }, false);
+      chart.redraw();
+    }, 50);
+  }
+
+  function buildSeriesFromAbs(absSeries) {
+    return absSeries.map((s, idx) => ({
+      name: s.name,
+      type: 'area',
+      color: PAGE.colors[idx % PAGE.colors.length],
+      data: s.data.map(v => Number(v) || 0),
+      tooltip: { valueDecimals: MODE === 'pct' ? 1 : 2 }
+    }));
+  }
+
+  function makeChart() {
+    chart = Highcharts.chart('container', {
+      chart: { type: 'area', backgroundColor: '#ffffff', height: 500, style: { fontFamily: 'Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif' } },
+      title: { text: PAGE.title, align: 'center' },
+      subtitle: { text: PAGE.subtitle, align: 'left' },
+      credits: { enabled: false },
+      colors: PAGE.colors,
+      legend: { enabled: true, layout: 'horizontal', align: 'left', verticalAlign: 'bottom', backgroundColor: '#ffffff', borderWidth: 0 },
+
+      xAxis: {
+        type: 'category',
+        categories: YEARS,
+        tickmarkPlacement: 'on',
+        min: -1,
+        max: Math.max(0, YEARS.length - 1),
+        labels: { rotation: 0 },
+        events: {
+          afterSetExtremes: function(){
+            syncRangeUIFromChart();
+            updateTickIntervalFromExtremes();
+          }
+        }
+      },
+
+      yAxis: {
+        opposite: false,
+        min: 0,
+        title: { text: PAGE.unitAbs, align: 'high', rotation: -90, offset: 10, y: 125, x: 0, style: { fontWeight: 'bold', fontSize: '14px' } },
+        labels: { align: 'left', x: 0, formatter: function(){ return MODE === 'pct' ? this.value + '%' : this.value; } },
+        gridLineColor: '#e5e7eb'
+      },
+
+      tooltip: {
+        shared: true,
+        valueDecimals: 2,
+        headerFormat: '<span style="font-size: 11px">Año: {point.key}</span><br/>',
+        pointFormatter: function () {
+          if (MODE === 'pct') {
+            return `<span style="color:${this.color}">●</span> ${this.series.name}: <b>${Highcharts.numberFormat(this.percentage, 1)}%</b><br/>`;
+          }
+          return `<span style="color:${this.color}">●</span> ${this.series.name}: <b>${Highcharts.numberFormat(this.y, 2)}</b><br/>`;
+        }
+      },
+
+      plotOptions: {
+        series: { stacking: 'normal', marker: { enabled: false } },
+        area: { lineWidth: 1, fillOpacity: .6 }
+      },
+
+      series: buildSeriesFromAbs(SERIES_ABS)
+    });
+
+    updateTickIntervalFromExtremes();
+  }
+
+  function setMode(absMode) {
+    MODE = absMode ? 'abs' : 'pct';
+    el.btnAbs.classList.toggle('active', absMode);
+    el.btnPct.classList.toggle('active', !absMode);
+    el.btnAbs.setAttribute('aria-pressed', String(absMode));
+    el.btnPct.setAttribute('aria-pressed', String(!absMode));
+
+    chart.update({
+      yAxis: {
+        title: { text: absMode ? PAGE.unitAbs : 'Participación (%)' },
+        labels: { formatter: function(){ return absMode ? this.value : (this.value + '%'); } }
+      },
+      plotOptions: {
+        series: { stacking: absMode ? 'normal' : 'percent' }
+      },
+      tooltip: {
+        valueDecimals: absMode ? 2 : 1
+      }
+    }, false);
+    chart.redraw();
+  }
+
+  // ========================
+  // Controles & sincronización
+  // ========================
+  const el = {}; 
+
+  function initRangeUI(){
+    const maxIndex = Math.max(0, YEARS.length - 1);
+    el.rangeMin.max = String(maxIndex);
+    el.rangeMax.max = String(maxIndex);
+    el.rangeMin.value = '0';
+    el.rangeMax.value = String(maxIndex);
+
+    el.fromSelect.innerHTML = YEARS.map((y,i)=>`<option value="${i}">${y}</option>`).join('');
+    el.toSelect.innerHTML   = YEARS.map((y,i)=>`<option value="${i}">${y}</option>`).join('');
+    el.fromSelect.value = '0';
+    el.toSelect.value   = String(maxIndex);
+
+    updateRangeFill();
+    el.rangeMin.addEventListener('input', onRangeInput);
+    el.rangeMax.addEventListener('input', onRangeInput);
+    el.fromSelect.addEventListener('change', onSelectChange);
+    el.toSelect.addEventListener('change', onSelectChange);
+  }
+
+  function onRangeInput(){
+    let a = parseInt(el.rangeMin.value, 10);
+    let b = parseInt(el.rangeMax.value, 10);
+    if (a > b) [a, b] = [b, a];
+    el.rangeMin.value = String(a);
+    el.rangeMax.value = String(b);
+    el.fromSelect.value = String(a);
+    el.toSelect.value   = String(b);
+    updateRangeFill();
+    chart.xAxis[0].setExtremes(a, b, true, false); 
+    updateTickIntervalFromExtremes();
+    syncYearSelectWithinRange(a, b);
+  }
+
+  function onSelectChange(){
+    let a = parseInt(el.fromSelect.value, 10);
+    let b = parseInt(el.toSelect.value, 10);
+    if (a > b) [a, b] = [b, a];
+    el.rangeMin.value = String(a);
+    el.rangeMax.value = String(b);
+    updateRangeFill();
+    chart.xAxis[0].setExtremes(a, b, true, false);
+    updateTickIntervalFromExtremes();
+    syncYearSelectWithinRange(a, b);
+  }
+
+  function updateRangeFill(){
+    const max = Math.max(1, YEARS.length - 1); 
+    const a = parseInt(el.rangeMin.value, 10);
+    const b = parseInt(el.rangeMax.value, 10);
+    const leftPct  = (a / max) * 100;
+    const rightPct = (b / max) * 100;
+    el.rangeFill.style.left  = leftPct + '%';
+    el.rangeFill.style.right = (100 - rightPct) + '%';
+  }
+
+  function syncRangeUIFromChart(){
+    const xa = chart.xAxis[0];
+    const e = xa.getExtremes();
+    const a = Math.max(0, Math.floor(e.min));
+    const b = Math.min(YEARS.length - 1, Math.ceil(e.max));
+    el.rangeMin.value = String(a);
+    el.rangeMax.value = String(b);
+    el.fromSelect.value = String(a);
+    el.toSelect.value   = String(b);
+    updateRangeFill();
+    syncYearSelectWithinRange(a, b);
+  }
+
+  function syncYearSelectWithinRange(minIdx, maxIdx) {
+    let idx = parseInt(el.yearSelect.value, 10);
+    if (Number.isNaN(idx)) idx = 0;
+    if (idx < minIdx) idx = minIdx;
+    if (idx > maxIdx) idx = maxIdx;
+    el.yearSelect.value = String(idx);
+    updateTotalForYear(idx);
+  }
+
+  // ========================
+  // Init
+  // ========================
+  document.addEventListener('DOMContentLoaded', async () => {
+    el.btnAbs = document.getElementById('btnAbs');
+    el.btnPct = document.getElementById('btnPct');
+    el.yearSelect = document.getElementById('yearSelect');
+    el.totalValue = document.getElementById('totalValue');
+    el.rangeMin = document.getElementById('rangeMin');
+    el.rangeMax = document.getElementById('rangeMax');
+    el.rangeFill = document.getElementById('rangeFill');
+    el.fromSelect = document.getElementById('fromSelect');
+    el.toSelect = document.getElementById('toSelect');
+    el.btnAbs.addEventListener('click', () => setMode(true));
+    el.btnPct.addEventListener('click', () => setMode(false));
+    el.yearSelect.addEventListener('change', (e) => {
+      const idx = parseInt(e.target.value, 10);
+      updateTotalForYear(idx);
+    });
+
+    try {
+      await loadExcel();
+    } catch (e) {
+      console.error(e);
+      alert('No se pudo cargar el Excel. Asegúrate de servir el HTML desde un servidor local y de que exista /data/pen_2052_demanda.xlsx');
+      return;
+    }
+
+    populateYearSelect(el.yearSelect);
+    makeChart();
+    initRangeUI();
+  });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+

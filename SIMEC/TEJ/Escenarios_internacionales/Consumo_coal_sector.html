@@ -7,12 +7,24 @@
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
   <script src="https://code.highcharts.com/modules/accessibility.js"></script>
   <style>
+    :root { --maxw: 1100px; --accent: #22c55e; --track: #e5e7eb; --knob: #374151; }
+    * { box-sizing: border-box; }
     body{margin:0;font-family:"Segoe UI", Roboto, system-ui, -apple-system, sans-serif;background:#fff;}
-    #wrap{max-width:1100px;margin:20px auto;padding:0 12px;}
+    #wrap{max-width:var(--maxw);margin:20px auto;padding:0 12px;}
     h1{margin:0 0 2px 0;text-align:center;font-size:20px;font-weight:700}
     .subtitle{margin:0 0 14px 0;text-align:center;font-size:13px;color:#555;font-weight:400}
     #grid{display:grid;grid-template-columns: repeat(3, 1fr); gap:10px;}
     .chart{height:430px;min-width:260px;}
+    .bottom { max-width: var(--maxw); margin: 10px auto 18px; padding: 0 16px; display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .controls-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .segmented { display: inline-flex; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; width: fit-content; }
+    .segmented button { all: unset; padding: 6px 12px; cursor: pointer; font-weight: 500; }
+    .segmented button.active { background: #111827; color: #fff; }
+    .segmented button:not(.active) { background: #f3f4f6; color: #111; }
+    .inline-metrics { display: inline-flex; align-items: center; gap: 10px; margin-left: 0; font-size: .95rem; }
+    .metric-label { color: #374151; }
+    .metric-value { font-weight: 700; }
+    select.yearpick { padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 8px; font-size: .9rem; }
     /* Leyenda global sin fondo ni borde */
     #global-legend{
       display:flex;flex-wrap:wrap;gap:12px;justify-content:center;
@@ -48,6 +60,21 @@
   <div id="global-legend" aria-label="Leyenda global por sector"></div>
 </div>
 
+<div class="bottom">
+  <div class="controls-row">
+    <div class="segmented" role="group" aria-label="Tipo de gráfica">
+      <button id="btnAbs" class="active" aria-pressed="true">Área Absoluta</button>
+      <button id="btnPct" aria-pressed="false">Área 100%</button>
+    </div>
+    <div class="inline-metrics">
+      <label for="yearSelect">Año:</label>
+      <select id="yearSelect" class="yearpick"></select>
+      <span class="metric-label">Total:</span>
+      <span id="totalValue" class="metric-value">— Mtce</span>
+    </div>
+  </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   // ===== Paleta UPME (coherente con el gráfico de consumo final) =====
@@ -59,8 +86,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
   Highcharts.setOptions({ lang: { decimalPoint: ',', thousandsSep: '.' } });
 
-  // Eje X común
+  // Eje X común y estado global
   const YEARS = [2023, 2030, 2035, 2050];
+  let YEARS_STR = YEARS.map(String);
+  let TOTALS = [];
+  let MODE = 'abs';
+  let charts = [];
+
+  // Utilidades
+  const nf = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 2 });
+  const fmt = (n) => nf.format(n);
+
+  function computeTotals() {
+    const n = YEARS.length;
+    TOTALS = Array.from({ length: n }, (_, i) => {
+      let total = 0;
+      // Usar solo STEPS para el total en unidades originales
+      Object.keys(DATA.STEPS).forEach(sector => {
+        total += DATA.STEPS[sector][i] || 0;
+      });
+      return total;
+    });
+  }
+
+  function populateYearSelect(elYear) {
+    elYear.innerHTML = YEARS_STR.map((y, i) => `<option value="${i}">${y}</option>`).join('');
+    elYear.value = '0';
+    updateTotalForYear(0);
+  }
+
+  function updateTotalForYear(idx) {
+    const val = TOTALS[idx] ?? 0;
+    document.getElementById('totalValue').textContent = `${fmt(val)} Mtce`;
+  }
+
+  function convertMtceToPj(mtceValue) {
+    // 1 Mtce ≈ 29.31 PJ (aproximación para carbón)
+    return mtceValue * 29.31;
+  }
 
   // ===== Datos (Mtce) de tu tabla – sectores =====
   // Orden base→cima (para parecerse a la referencia): Electricidad, Industria, Otros
@@ -106,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return Object.keys(obj).map(name => ({
       type: 'areaspline',
       name,
-      data: YEARS.map((x,i) => [x, obj[name][i]]),
+      data: obj[name].map((value, i) => [i, value]),
       color: COLOR[name],
       lineColor: COLOR[name],
       fillOpacity: 0.9,
@@ -124,10 +187,15 @@ document.addEventListener('DOMContentLoaded', () => {
       credits: { enabled: false },
       legend: { enabled: false },
       xAxis: {
-        tickPositions: YEARS,
-        startOnTick: true, endOnTick: true,
-        tickmarkPlacement: 'on',
-        labels: { formatter(){ return this.value; } }
+        type: 'linear',
+        min: 0,
+        max: YEARS.length - 1,
+        tickPositions: [0, 1, 2, 3],
+        labels: {
+          formatter: function() {
+            return YEARS[this.value] || '';
+          }
+        }
       },
       yAxis: {
         ...COMMON_Y_AXIS,
@@ -183,7 +251,72 @@ document.addEventListener('DOMContentLoaded', () => {
       el.appendChild(div);
     });
   }
-  buildGlobalLegend('global-legend', [chSteps, chAPS, chNZE]);
+  charts = [chSteps, chAPS, chNZE];
+  buildGlobalLegend('global-legend', charts);
+
+  // Computar totales en unidades originales (Mtce)
+  computeTotals();
+
+  // ========================
+  // Controles & sincronización
+  // ========================
+  const el = {};
+
+  function setMode(absMode) {
+    MODE = absMode ? 'abs' : 'pct';
+    el.btnAbs.classList.toggle('active', absMode);
+    el.btnPct.classList.toggle('active', !absMode);
+    el.btnAbs.setAttribute('aria-pressed', String(absMode));
+    el.btnPct.setAttribute('aria-pressed', String(!absMode));
+
+    charts.forEach(chart => {
+      chart.update({
+        plotOptions: {
+          series: { stacking: absMode ? 'normal' : 'percent' }
+        }
+      }, false);
+      
+      // Actualizar el eje Y con la escala correcta
+      if (absMode) {
+        // Modo absoluto: restaurar escala original
+        chart.yAxis[0].update({
+          min: 0,
+          max: 6000,
+          tickPositions: [0,1000,2000,3000,4000,5000,6000],
+          title: { text: 'Mtce' },
+          labels: { formatter: function(){ return this.value; } }
+        }, false);
+      } else {
+        // Modo porcentaje: escala 0-100%
+        chart.yAxis[0].update({
+          min: 0,
+          max: 100,
+          tickInterval: 25,
+          tickPositions: null,
+          title: { text: 'Participación (%)' },
+          labels: { formatter: function(){ return this.value + '%'; } }
+        }, false);
+      }
+      
+      chart.redraw();
+    });
+  }
+
+
+  // Init controles
+  el.btnAbs = document.getElementById('btnAbs');
+  el.btnPct = document.getElementById('btnPct');
+  el.yearSelect = document.getElementById('yearSelect');
+  el.totalValue = document.getElementById('totalValue');
+
+  el.btnAbs.addEventListener('click', () => setMode(true));
+  el.btnPct.addEventListener('click', () => setMode(false));
+  el.yearSelect.addEventListener('change', (e) => {
+    const idx = parseInt(e.target.value, 10);
+    updateTotalForYear(idx);
+  });
+
+  populateYearSelect(el.yearSelect);
 });
 </script>
 </body>

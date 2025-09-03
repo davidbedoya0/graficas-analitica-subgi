@@ -7,13 +7,25 @@
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
   <script src="https://code.highcharts.com/modules/accessibility.js"></script>
   <style>
+    :root { --maxw: 1100px; --accent: #22c55e; --track: #e5e7eb; --knob: #374151; }
+    * { box-sizing: border-box; }
     body{margin:0;font-family:"Segoe UI", Roboto, system-ui, -apple-system, sans-serif;background:#fff;}
-    #wrap{max-width:1100px;margin:20px auto;padding:0 12px;}
+    #wrap{max-width:var(--maxw);margin:20px auto;padding:0 12px;}
     h1{margin:0 0 2px 0;text-align:center;font-size:20px;font-weight:700}
     h2{margin:0 0 14px 0;text-align:center;font-size:13px;color:#555;font-weight:400}
     #grid{display:grid;grid-template-columns: repeat(3, 1fr); gap:10px;}
     .chart{height:420px;min-width:260px;}
     .source{font-size:11px;color:#555;text-align:center;margin-top:6px}
+    .bottom { max-width: var(--maxw); margin: 10px auto 18px; padding: 0 16px; display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .controls-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .segmented { display: inline-flex; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; width: fit-content; }
+    .segmented button { all: unset; padding: 6px 12px; cursor: pointer; font-weight: 500; }
+    .segmented button.active { background: #111827; color: #fff; }
+    .segmented button:not(.active) { background: #f3f4f6; color: #111; }
+    .inline-metrics { display: inline-flex; align-items: center; gap: 10px; margin-left: 0; font-size: .95rem; }
+    .metric-label { color: #374151; }
+    .metric-value { font-weight: 700; }
+    select.yearpick { padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 8px; font-size: .9rem; }
 
     /* Leyenda global (sin fondo ni borde) */
     #global-legend{
@@ -52,6 +64,21 @@
   <div id="global-legend" aria-label="Leyenda global por sector"></div>
 </div>
 
+<div class="bottom">
+  <div class="controls-row">
+    <div class="segmented" role="group" aria-label="Tipo de gráfica">
+      <button id="btnAbs" class="active" aria-pressed="true">Área Absoluta</button>
+      <button id="btnPct" aria-pressed="false">Área 100%</button>
+    </div>
+    <div class="inline-metrics">
+      <label for="yearSelect">Año:</label>
+      <select id="yearSelect" class="yearpick"></select>
+      <span class="metric-label">Total:</span>
+      <span id="totalValue" class="metric-value">— bcm</span>
+    </div>
+  </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   // ===== Paleta UPME (adjunta) + un tono UPME extra para el 6.º sector =====
@@ -66,8 +93,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
   Highcharts.setOptions({ lang: { decimalPoint: ',', thousandsSep: '.' } });
 
-  // Puntos de tiempo
+  // Puntos de tiempo y estado global
   const X = [2023, 2030, 2035, 2050];
+  let YEARS = X.map(String);
+  let TOTALS = [];
+  let MODE = 'abs';
+  let charts = [];
+
+  // Utilidades
+  const nf = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 2 });
+  const fmt = (n) => nf.format(n);
+
+  function computeTotals() {
+    const n = YEARS.length;
+    TOTALS = Array.from({ length: n }, (_, i) => {
+      let total = 0;
+      // Usar solo STEPS para el total en unidades originales
+      Object.keys(STEPS_SERIES).forEach(sector => {
+        total += STEPS_SERIES[sector][i] || 0;
+      });
+      return total;
+    });
+  }
+
+  function populateYearSelect(elYear) {
+    elYear.innerHTML = YEARS.map((y, i) => `<option value="${i}">${y}</option>`).join('');
+    elYear.value = '0';
+    updateTotalForYear(0);
+  }
+
+  function updateTotalForYear(idx) {
+    const val = TOTALS[idx] ?? 0;
+    document.getElementById('totalValue').textContent = `${fmt(val)} bcm`;
+  }
+
+  function convertBcmToPj(bcmValue) {
+    // 1 bcm ≈ 0.036 PJ (aproximación para gas natural)
+    return bcmValue * 0.036;
+  }
 
   // ===== Datos (bcm) – ordenados base→cima como en la referencia =====
   // STEPS
@@ -113,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return Object.keys(sectorData).map(name => ({
       type: 'areaspline',
       name,
-      data: X.map((x,i) => [x, sectorData[name][i]]),
+      data: sectorData[name].map((value, i) => [i, value]),
       color: COLOR_BY_SECTOR[name],
       lineColor: COLOR_BY_SECTOR[name],
       fillOpacity: 0.9,
@@ -130,11 +193,17 @@ document.addEventListener('DOMContentLoaded', () => {
       credits: { enabled: false },
       legend: { enabled: false }, // leyenda global
       xAxis: {
-      categories: X,
-      tickmarkPlacement: [2023, 2030, 2035, 2050],
-      tickInterval: 5,
-      title: { text: null }
-    },
+        type: 'linear',
+        min: 0,
+        max: X.length - 1,
+        tickPositions: [0, 1, 2, 3],
+        labels: {
+          formatter: function() {
+            return X[this.value] || '';
+          }
+        },
+        title: { text: null }
+      },
       yAxis: {
         title: { text: 'bcm' },
         min: 0, max: 5000, tickInterval: 1000,
@@ -201,7 +270,71 @@ document.addEventListener('DOMContentLoaded', () => {
       el.appendChild(div);
     });
   }
-  buildGlobalLegend('global-legend', [chSteps, chAPS, chNZE]);
+  charts = [chSteps, chAPS, chNZE];
+  buildGlobalLegend('global-legend', charts);
+
+  // Computar totales en unidades originales (bcm)
+  computeTotals();
+
+  // ========================
+  // Controles & sincronización
+  // ========================
+  const el = {};
+
+  function setMode(absMode) {
+    MODE = absMode ? 'abs' : 'pct';
+    el.btnAbs.classList.toggle('active', absMode);
+    el.btnPct.classList.toggle('active', !absMode);
+    el.btnAbs.setAttribute('aria-pressed', String(absMode));
+    el.btnPct.setAttribute('aria-pressed', String(!absMode));
+
+    charts.forEach(chart => {
+      chart.update({
+        plotOptions: {
+          series: { stacking: absMode ? 'normal' : 'percent' }
+        }
+      }, false);
+      
+      // Actualizar el eje Y con la escala correcta
+      if (absMode) {
+        // Modo absoluto: restaurar escala original
+        chart.yAxis[0].update({
+          min: 0,
+          max: 5000,
+          tickInterval: 1000,
+          title: { text: 'bcm' },
+          labels: { formatter: function(){ return this.value; } }
+        }, false);
+      } else {
+        // Modo porcentaje: escala 0-100%
+        chart.yAxis[0].update({
+          min: 0,
+          max: 100,
+          tickInterval: 25,
+          title: { text: 'Participación (%)' },
+          labels: { formatter: function(){ return this.value + '%'; } }
+        }, false);
+      }
+      
+      chart.redraw();
+    });
+  }
+
+
+  // Init controles
+  el.btnAbs = document.getElementById('btnAbs');
+  el.btnPct = document.getElementById('btnPct');
+  el.yearSelect = document.getElementById('yearSelect');
+  el.totalValue = document.getElementById('totalValue');
+
+  el.btnAbs.addEventListener('click', () => setMode(true));
+  el.btnPct.addEventListener('click', () => setMode(false));
+  el.yearSelect.addEventListener('change', (e) => {
+    const idx = parseInt(e.target.value, 10);
+    updateTotalForYear(idx);
+  });
+
+  populateYearSelect(el.yearSelect);
 });
 </script>
 </body>
