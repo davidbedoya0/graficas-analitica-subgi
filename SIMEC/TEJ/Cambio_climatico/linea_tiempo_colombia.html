@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Timeline – Hitos Cambio Climático Colombia</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/timeline.js"></script>
+  <style>
+    #container {
+      width: 96%;
+      max-width: 1600px;   /* más ancho para 13 cuadros */
+      height: 450px;
+      margin: 40px auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+
+  <script>
+    Highcharts.chart('container', {
+      chart: { type: 'timeline' },
+      title: { text: 'Hitos del Cambio Climático en Colombia' },
+      credits: { enabled: false },
+      xAxis: { visible: false },
+      yAxis: { visible: false },
+
+      // 13 tonos de verde (uno por cuadro).
+      colors: [
+        '#b0fdb0', '#9af89a', '#84f384', '#6eed6e', '#58e858',
+        '#41e241', '#2bdc2b', '#18c918', '#0fb20f', '#079a07',
+        '#058805', '#037603', '#025502'
+      ],
+
+      plotOptions: {
+        timeline: {
+          marker: {
+            enabledThreshold: 0
+          }
+        }
+      },
+      
+      tooltip: {
+        formatter: function() {
+          return '<b>' + this.point.name + '</b><br/>' + this.point.description;
+        },
+        style: {
+          width: '250px',
+          fontSize: '10px'
+        },
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        borderColor: '#2c5330',
+        borderRadius: 6,
+        borderWidth: 1,
+        shadow: true
+      },
+
+      series: [{
+  type: 'timeline',
+  data: [
+    {
+      name: 'Ratificación Convención Marco (CMNUCC)',
+      label: '<strong>1994',
+      description: 'La Ley 164 ratificó la Convención Marco de las Naciones Unidas sobre el Cambio Climático, marcando el inicio del compromiso climático internacional de Colombia.<br><br><strong>Medidas y acciones concretas:</strong><br>• Adhesión formal a los compromisos climáticos globales<br>• Obligación de reportar inventarios de gases de efecto invernadero'
+    },
+    {
+      name: 'Ratificación Protocolo de Kyoto',
+      label: '<strong>2000',
+      description: 'La Ley 629 ratificó el Protocolo de Kyoto, confirmado constitucionalmente por la Sentencia C-860 de 2001, permitiendo acceso a mecanismos de desarrollo limpio.<br><br><strong>Medidas y acciones concretas:</strong><br>• Participación en mecanismos de desarrollo limpio (MDL)<br>• Desarrollo de proyectos de reducción de emisiones certificadas'
+    },
+    {
+      name: 'Primera Comunicación Nacional',
+      label: '<strong>2001',
+      description: 'Colombia presentó su Primera Comunicación Nacional coordinada por IDEAM, estableciendo el primer inventario de GEI y reconociendo la alta vulnerabilidad del país.<br><br><strong>Medidas y acciones concretas:</strong><br>• Primer inventario nacional de gases de efecto invernadero<br>• Identificación de sectores vulnerables y primer mapa de riesgos climáticos'
+    },
+    {
+      name: 'Segunda Comunicación Nacional',
+      label: '<strong>2010',
+      description: 'Incluyó inventarios de GEI para 2000 y 2004, consolidó información sectorial e identificó oportunidades de mitigación. Determinó la alta vulnerabilidad de Colombia mediante análisis riguroso.<br><br><strong>Medidas y acciones concretas:</strong><br>• Actualización y ampliación del inventario nacional de GEI<br>• Análisis de oportunidades de mitigación sectorial y evaluación de vulnerabilidad'
+    },
+    {
+      name: 'CONPES 3700',
+      label: '<strong>2011',
+      description: 'Documento marco que estableció la "Estrategia Institucional para la articulación de políticas y acciones en materia de cambio climático" y definió la necesidad del SISCLIMA.<br><br><strong>Medidas y acciones concretas:</strong><br>• Articulación intersectorial de políticas climáticas<br>• Bases conceptuales para el Sistema Nacional de Cambio Climático'
+    },
+    {
+      name: 'Primera NDC',
+      label: '<strong>2015',
+      description: 'Colombia presentó su primera Contribución Nacionalmente Determinada, comprometiéndose a reducir 20% de las emisiones proyectadas a 2030.<br><br><strong>Medidas y acciones concretas:</strong><br>• Compromiso de reducir 20% emisiones al 2030<br>• Definición de medidas de mitigación sectoriales'
+    },
+    {
+      name: 'Creación SISCLIMA',
+      label: '<strong>2016',
+      description: 'El Decreto 298 estableció formalmente el Sistema Nacional de Cambio Climático, coordinando políticas, normas y estrategias climáticas con nodos regionales.<br><br><strong>Medidas y acciones concretas:</strong><br>• Coordinación intersectorial de políticas climáticas<br>• Establecimiento de nodos regionales de cambio climático'
+    },
+    {
+      name: 'Tercera Comunicación Nacional',
+      label: '<strong>2017',
+      description: 'Presentó por primera vez escenarios de cambio climático 2011-2100 a escala departamental y municipal. Herramienta estratégica para toma de decisiones territoriales y sectoriales.<br><br><strong>Medidas y acciones concretas:</strong><br>• Proyecciones climáticas por modelos RCP a nivel departamental<br>• Identificación del 100% de municipios en riesgo climático e insumos para políticas adaptativas'
+    },
+    {
+      name: 'Ratificación Acuerdo de París',
+      label: '<strong>2017',
+      description: 'Colombia ratificó el Acuerdo de París mediante la Ley 1844 y lanzó la Política Nacional de Cambio Climático para gestión integral del cambio climático.<br><br><strong>Medidas y acciones concretas:</strong><br>• Compromiso con metas del Acuerdo de París<br>• Implementación de política nacional integral'
+    },
+    {
+      name: 'Ley Marco de Cambio Climático',
+      label: '<strong>2018',
+      description: 'La Ley 1931 estableció las directrices para la gestión del cambio climático, enfocándose en adaptación, mitigación y transición hacia una economía baja en carbono.<br><br><strong>Medidas y acciones concretas:</strong><br>• Marco legal integral para gestión climática<br>• Instrumentos para transición a economía baja en carbono'
+    },
+    {
+      name: 'Actualización NDC',
+      label: '<strong>2020',
+      description: 'Colombia actualizó su NDC elevando significativamente su ambición climática al comprometerse con una reducción del 51% de emisiones proyectadas a 2030.<br><br><strong>Medidas y acciones concretas:</strong><br>• Reducción de 267 a 169.4 millones de toneladas CO2eq anuales<br>• Fortalecimiento de metas sectoriales de mitigación'
+    },
+    {
+      name: 'Ley de Acción Climática',
+      label: '<strong>2021',
+      description: 'La Ley 2169 estableció metas específicas incluyendo carbono neutralidad a 2050, cero deforestación y reducción del 40% de emisiones de carbono negro.<br><br><strong>Medidas y acciones concretas:</strong><br>• Meta de carbono neutralidad a 2050<br>• Reducir a cero la deforestación y 40% emisiones carbono negro'
+    },
+    {
+      name: 'Cuarta Comunicación Nacional',
+      label: '<strong>2024',
+      description: 'Presenta escenarios regionales actualizados y simulaciones climáticas al 2100 basadas en el último estado del arte IPCC. Información robusta para planificación territorial y sectorial.<br><br><strong>Medidas y acciones concretas:</strong><br>• Escenarios climáticos regionales con resolución 10x10 km<br>• Integración sectorial en agricultura, salud, energía y fortalecimiento de sistemas de transparencia'
+    }
+  ]
+}]
+
+    });
+
+  </script>
+</body>
+</html>

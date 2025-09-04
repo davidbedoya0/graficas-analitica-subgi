@@ -8,8 +8,8 @@
   <style>
     #container {
       width: 96%;
-      max-width: 1300px;   /* más ancho para 10 cuadros */
-      height: 420px;
+      max-width: 1500px;   /* más ancho para 12 cuadros */
+      height: 450px;
       margin: 40px auto;
     }
   </style>
@@ -25,11 +25,35 @@
       xAxis: { visible: false },
       yAxis: { visible: false },
 
-      // 10 tonos de verde (uno por cuadro)
+      // 12 tonos de verde (uno por cuadro).
       colors: [
         '#b0fdb0', '#9af89a', '#84f384', '#6eed6e', '#58e858',
-        '#41e241', '#2bdc2b', '#18c918', '#0fb20f', '#079a07'
+        '#41e241', '#2bdc2b', '#18c918', '#0fb20f', '#079a07',
+        '#058805', '#037603'
       ],
+
+      plotOptions: {
+        timeline: {
+          marker: {
+            enabledThreshold: 0
+          }
+        }
+      },
+      
+      tooltip: {
+        formatter: function() {
+          return '<b>' + this.point.name + '</b><br/>' + this.point.description;
+        },
+        style: {
+          width: '250px',
+          fontSize: '10px'
+        },
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        borderColor: '#2c5330',
+        borderRadius: 6,
+        borderWidth: 1,
+        shadow: true
+      },
 
       series: [{
   type: 'timeline',
@@ -37,57 +61,68 @@
     {
       name: 'Informe Brundtland',
       label: '<strong>1987',
-      description: 'Estableció por primera vez el concepto de desarrollo sostenible, uniendo el progreso económico, la equidad social y la protección ambiental para el bienestar presente y futuro.'
+description: 'Estableció por primera vez el concepto de desarrollo sostenible, uniendo el progreso económico, la equidad social y la protección ambiental para el bienestar presente y futuro.<br><br><strong>Medidas y acciones concretas:</strong><br>• Integración de consideraciones ambientales en políticas económicas globales<br>• Promoción de la cooperación internacional para el desarrollo sostenible'
     },
     {
       name: 'Protocolo de Montreal',
       label: '<strong>1987',
-      description: 'Acuerdo internacional diseñado para proteger la capa de ozono mediante la eliminación progresiva de las sustancias químicas que la destruyen.'
+description: 'Acuerdo internacional diseñado para proteger la capa de ozono mediante la eliminación progresiva de las sustancias químicas que la destruyen.<br><br><strong>Medidas y acciones concretas:</strong><br>• Eliminación gradual de CFCs, halones y otras sustancias agotadoras del ozono<br>• Establecimiento de calendarios de reducción obligatorios para países desarrollados y en desarrollo'
     },
     {
       name: 'Creación IPCC',
       label: '<strong>1988',
-      description: 'Creación del Grupo Intergubernamental de Expertos sobre el Cambio Climático para evaluar de forma objetiva la información científica y asesorar a los gobiernos.'
+description: 'Creación del Grupo Intergubernamental de Expertos sobre el Cambio Climático para evaluar de forma objetiva la información científica y asesorar a los gobiernos.<br><br><strong>Medidas y acciones concretas:</strong><br>• Publicación de informes científicos regulares sobre el estado del clima global<br>• Evaluación de opciones de mitigación y adaptación al cambio climático'
     },
     {
       name: 'Cumbre de Río de Janeiro',
       label: '<strong>1992',
-      description: 'Conocida como la Cumbre de la Tierra, estableció un plan de acción global para el desarrollo sostenible, abordando una amplia gama de temas ambientales y de desarrollo.'
+description: 'Conocida como la Cumbre de la Tierra, estableció un plan de acción global para el desarrollo sostenible, abordando una amplia gama de temas ambientales y de desarrollo.<br><br><strong>Medidas y acciones concretas:</strong><br>• Adopción de la Agenda 21 como plan de acción para el desarrollo sostenible<br>• Creación de la Convención Marco de las Naciones Unidas sobre el Cambio Climático (CMNUCC)'
     },
     {
       name: 'Protocolo de Kyoto',
       label: '<strong>1997',
-      description: 'Fue el primer acuerdo internacional que estableció objetivos legalmente vinculantes para que los países industrializados redujeran sus emisiones de gases de efecto invernadero.'
+description: 'Fue el primer acuerdo internacional que estableció objetivos legalmente vinculantes para que los países industrializados redujeran sus emisiones de gases de efecto invernadero.<br><br><strong>Medidas y acciones concretas:</strong><br>• Reducción del 5.2% de emisiones GEI para países desarrollados (período 2008-2012)<br>• Establecimiento de mecanismos de flexibilidad: comercio de emisiones, MDL y aplicación conjunta'
     },
     {
       name: 'Cumbre de Johannesburgo',
       label: '<strong>2002',
-      description: 'Reafirmó los compromisos globales con el desarrollo sostenible y evaluó los avances realizados diez años después de la Cumbre de la Tierra.'
+description: 'Reafirmó los compromisos globales con el desarrollo sostenible y evaluó los avances realizados diez años después de la Cumbre de la Tierra.<br><br><strong>Medidas y acciones concretas:</strong><br>• Compromiso de reducir a la mitad la población sin acceso a agua potable para 2015<br>• Promoción de energías renovables y eficiencia energética a nivel global'
     },
     {
       name: 'Acuerdo de Copenhague',
       label: '<strong>2009',
-      description: 'Acuerdo no vinculante que reconoció formalmente la necesidad de limitar el calentamiento global a un máximo de 2°C, aunque sin establecer compromisos obligatorios.'
+description: 'Acuerdo no vinculante que reconoció formalmente la necesidad de limitar el calentamiento global a un máximo de 2°C, aunque sin establecer compromisos obligatorios.<br><br><strong>Medidas y acciones concretas:</strong><br>• Compromiso de financiamiento climático de $100 mil millones anuales para 2020<br>• Establecimiento de mecanismos de reporte y verificación de acciones de mitigación'
     },
     {
       name: 'Acuerdos de Cancún',
       label: '<strong>2010',
-      description: 'Estableció una serie de mecanismos y fondos, como el Fondo Verde para el Clima, para ayudar a los países en desarrollo a mitigar el cambio climático y adaptarse a sus efectos.'
+description: 'Estableció una serie de mecanismos y fondos, como el Fondo Verde para el Clima, para ayudar a los países en desarrollo a mitigar el cambio climático y adaptarse a sus efectos.<br><br><strong>Medidas y acciones concretas:</strong><br>• Creación del Fondo Verde para el Clima con capitalización inicial de $10.3 mil millones<br>• Establecimiento del mecanismo REDD+ para reducción de emisiones por deforestación'
     },
     {
       name: 'Acuerdos de París',
       label: '<strong>2016',
-      description: 'Acuerdo histórico que busca limitar el calentamiento global muy por debajo de los 2°C (preferiblemente a 1.5°C) mediante compromisos nacionales de reducción de emisiones presentados por cada país.'
+description: 'Acuerdo histórico que busca limitar el calentamiento global muy por debajo de los 2°C (preferiblemente a 1.5°C) mediante compromisos nacionales de reducción de emisiones presentados por cada país.<br><br><strong>Medidas y acciones concretas:</strong><br>• Presentación de Contribuciones Determinadas a Nivel Nacional (NDC) cada 5 años<br>• Mecanismo de revisión y aumento progresivo de la ambición climática'
     },
     {
       name: 'COP26 (Glasgow)',
       label: '<strong>2021',
-      description: 'Cumbre que se centró en aumentar la ambición para cumplir las metas de París, finalizando su reglamento y logrando acuerdos clave sobre la reducción del uso del carbón y las emisiones de metano.'
+description: 'Cumbre que se centró en aumentar la ambición para cumplir las metas de París, finalizando su reglamento y logrando acuerdos clave sobre la reducción del uso del carbón y las emisiones de metano.<br><br><strong>Medidas y acciones concretas:</strong><br>• Compromiso de reducción de emisiones de metano en 30% para 2030<br>• Acuerdo para "reducir gradualmente" el uso del carbón sin captura de carbono'
+    },
+    {
+      name: 'COP27 (Sharm el-Sheikh)',
+      label: '<strong>2022',
+description: 'Cumbre centrada en la implementación de los acuerdos de París y el establecimiento de un fondo histórico para pérdidas y daños climáticos en países vulnerables.<br><br><strong>Medidas y acciones concretas:</strong><br>• Creación del fondo para pérdidas y daños climáticos con contribuciones iniciales de países desarrollados<br>• Refuerzo de compromisos de financiamiento climático para alcanzar los $100 mil millones anuales'
+    },
+    {
+      name: 'COP28 (Dubái)',
+      label: '<strong>2023',
+description: 'Primera cumbre que menciona explícitamente la transición hacia el abandono de combustibles fósiles, marcando un hito en las negociaciones climáticas globales.<br><br><strong>Medidas y acciones concretas:</strong><br>• Acuerdo para "transicionar hacia el abandono" de combustibles fósiles de manera justa y equitativa<br>• Compromiso de triplicar la capacidad de energías renovables y duplicar la eficiencia energética para 2030'
     }
   ]
 }]
 
     });
+
   </script>
 </body>
 </html>
