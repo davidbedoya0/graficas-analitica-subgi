@@ -6,9 +6,9 @@
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <style>
         #container {
-            min-width: 310px;
-            height: 600px;
-            margin: 0 auto;
+            max-width: 1100px;
+            height: 540px;
+            margin: 20px auto;
         }
     </style>
 </head>
@@ -19,27 +19,23 @@
             Highcharts.chart('container', {
                 chart: {
                     type: 'area',
-                    backgroundColor: '#f4f4f4'
+                    backgroundColor: '#ffffff',
+                    spacingTop: 8,
+                    spacingRight: 12
                 },
                 title: {
                     text: 'Consumo de energía H2 - Escenario TEJ',
                     // align: 'left'
                 },
                 subtitle: {
-                    text: 'Fuente: Minenergia - Hoja de Ruta TEJ',
-                    align: 'left'
+                    text: 'Fuente: Minenergia - Hoja de Ruta TEJ'
                 },
                 xAxis: {
-                    categories: ['2022','2023', '2024','2025','2026','2027','2028','2029','2030','2031','2032','2033','2034','2035','2036','2037','2038','2039','2040','2041','2042','2043','2044','2045','2046','2047','2048','2049','2050'],
-                    tickmarkPlacement: 'on',
+                    categories: ['2022','2023','2024','2025','2026','2027','2028','2029','2030','2031','2032','2033','2034','2035','2036','2037','2038','2039','2040','2041','2042','2043','2044','2045','2046','2047','2048','2049','2050'],
+                    tickPositions: [3, 8, 13, 18, 23, 28],
+                    tickLength: 0,
                     title: {
                         enabled: false
-                    },
-                    labels: {
-                        rotation: -45,
-                        // style: {
-                        //     fontSize: '10px'
-                        // }
                     }
                 },
                 yAxis: {
@@ -55,24 +51,32 @@
                     //         return this.value / 1000;
                     //     }
                     // },
-                    gridLineColor: '#d9d9d9'
+                    gridLineDashStyle: 'Dash'
                 },
                 tooltip: {
                     split: true,
-                    valueSuffix: '(kt/año)'
+                    valueSuffix: ' kt/año'
                 },
-                credits: {
-                enabled: false
-                },
+                credits: { enabled: false },
+                exporting: { enabled: true },
                 plotOptions: {
                     area: {
                         stacking: 'normal',
                         lineColor: '#666666',
-                        lineWidth: 1,
+                        lineWidth: 0,
                         marker: {
-                            lineWidth: 1,
+                            enabled: false,
+                            lineWidth: 0.5,
                             lineColor: '#666666',
-                            radius:1
+                            radius: 3,
+                            states: {
+                                hover: {
+                                    enabled: true,
+                                    radius: 5,
+                                    lineWidth: 2,
+                                    lineColor: '#ffffff'
+                                }
+                            }
                         }
                     }
                 },
@@ -80,8 +84,7 @@
                     layout: 'horizontal',
                     align: 'center',
                     verticalAlign: 'bottom',
-                    backgroundColor: '#ffffff',
-                    borderWidth: 1
+                    borderWidth: 0
                 },
                 series: [{
 
@@ -114,7 +117,7 @@
     {
         name: 'Exportaciones',
         data: [0, 0, 0, 0, 0, 0, 0, 0, 50, 73, 96, 119, 142, 165, 188, 211, 234, 257, 280, 311, 342, 373, 404, 435, 466, 497, 528, 559, 590],
-        color: '#deff64' // 6to color de la paleta
+        color: '#e4b33c' // 6to color primario de la paleta
         }]
             });
         });
