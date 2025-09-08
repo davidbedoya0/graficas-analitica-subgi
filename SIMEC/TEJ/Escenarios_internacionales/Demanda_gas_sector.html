@@ -68,9 +68,11 @@
 
 <div class="bottom">
   <div class="controls-row">
-    <div class="segmented" role="group" aria-label="Tipo de gráfica">
-      <button id="btnAbs" class="active" aria-pressed="true">Área Absoluta</button>
-      <button id="btnPct" aria-pressed="false">Área 100%</button>
+    <div class="segmented" role="group" aria-label="Tipo de escenario">
+      <button id="btnTodos" class="active" aria-pressed="true">Todos</button>
+      <button id="btnSteps" aria-pressed="false">STEPS</button>
+      <button id="btnAps" aria-pressed="false">APS</button>
+      <button id="btnNze" aria-pressed="false">NZE</button>
     </div>
     <div class="inline-metrics">
       <label for="yearSelect">Año:</label>
@@ -213,7 +215,18 @@ document.addEventListener('DOMContentLoaded', () => {
         reversedStacks: false,
         labels: { format: '{value:,.0f}' }
       },
-      tooltip: { shared: true, valueSuffix: ' bcm' },
+      tooltip: { 
+        shared: true, 
+        valueSuffix: ' bcm',
+        formatter: function() {
+          const year = X[this.x];
+          let s = `<span style="font-size: 11px;"><b>${year}</b></span><br/>`;
+          this.points.forEach(function(point) {
+            s += `<span style="color:${point.color}">●</span> ${point.series.name}: <b>${point.y}</b> bcm<br/>`;
+          });
+          return s;
+        }
+      },
       plotOptions: { series: { stacking: 'normal' } },
       exporting: { enabled: true },
       series: buildSeries(sectorData)
@@ -283,57 +296,79 @@ document.addEventListener('DOMContentLoaded', () => {
   // ========================
   const el = {};
 
-  function setMode(absMode) {
-    MODE = absMode ? 'abs' : 'pct';
-    el.btnAbs.classList.toggle('active', absMode);
-    el.btnPct.classList.toggle('active', !absMode);
-    el.btnAbs.setAttribute('aria-pressed', String(absMode));
-    el.btnPct.setAttribute('aria-pressed', String(!absMode));
-
-    charts.forEach(chart => {
-      chart.update({
-        plotOptions: {
-          series: { stacking: absMode ? 'normal' : 'percent' }
-        }
-      }, false);
-      
-      // Actualizar el eje Y con la escala correcta
-      if (absMode) {
-        // Modo absoluto: restaurar escala original
-        chart.yAxis[0].update({
-          min: 0,
-          max: 5000,
-          tickInterval: 1000,
-          title: { text: 'bcm' },
-          labels: { formatter: function(){ return this.value; } }
-        }, false);
-      } else {
-        // Modo porcentaje: escala 0-100%
-        chart.yAxis[0].update({
-          min: 0,
-          max: 100,
-          tickInterval: 25,
-          title: { text: 'Participación (%)' },
-          labels: { formatter: function(){ return this.value + '%'; } }
-        }, false);
-      }
-      
-      chart.redraw();
-    });
-  }
 
 
   // Init controles
-  el.btnAbs = document.getElementById('btnAbs');
-  el.btnPct = document.getElementById('btnPct');
+  el.btnTodos = document.getElementById('btnTodos');
+  el.btnSteps = document.getElementById('btnSteps');
+  el.btnAps = document.getElementById('btnAps');
+  el.btnNze = document.getElementById('btnNze');
   el.yearSelect = document.getElementById('yearSelect');
   el.totalValue = document.getElementById('totalValue');
 
-  el.btnAbs.addEventListener('click', () => setMode(true));
-  el.btnPct.addEventListener('click', () => setMode(false));
+  let currentView = 'Todos';
+  let currentScenario = 'STEPS';
+
+  function switchView(viewName) {
+    currentView = viewName;
+    
+    // Actualizar botones activos
+    el.btnTodos.classList.toggle('active', viewName === 'Todos');
+    el.btnSteps.classList.toggle('active', viewName === 'STEPS');
+    el.btnAps.classList.toggle('active', viewName === 'APS');
+    el.btnNze.classList.toggle('active', viewName === 'NZE');
+    
+    el.btnTodos.setAttribute('aria-pressed', String(viewName === 'Todos'));
+    el.btnSteps.setAttribute('aria-pressed', String(viewName === 'STEPS'));
+    el.btnAps.setAttribute('aria-pressed', String(viewName === 'APS'));
+    el.btnNze.setAttribute('aria-pressed', String(viewName === 'NZE'));
+
+    // Mostrar/ocultar gráficos según vista seleccionada
+    const stepsCont = document.getElementById('container-steps');
+    const apsCont = document.getElementById('container-aps');
+    const nzeCont = document.getElementById('container-nze');
+    const grid = document.getElementById('grid');
+    
+    if (viewName === 'Todos') {
+      // Mostrar todas las gráficas en grilla
+      stepsCont.style.display = 'block';
+      apsCont.style.display = 'block';
+      nzeCont.style.display = 'block';
+      grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+      currentScenario = 'STEPS'; // Usar STEPS para totales por defecto
+    } else {
+      // Mostrar solo una gráfica
+      stepsCont.style.display = viewName === 'STEPS' ? 'block' : 'none';
+      apsCont.style.display = viewName === 'APS' ? 'block' : 'none';
+      nzeCont.style.display = viewName === 'NZE' ? 'block' : 'none';
+      grid.style.gridTemplateColumns = '1fr';
+      currentScenario = viewName;
+    }
+
+    // Actualizar totales
+    updateTotals();
+  }
+
+  function updateTotals() {
+    const scenarioData = currentScenario === 'STEPS' ? STEPS_SERIES : 
+                        currentScenario === 'APS' ? APS_SERIES : NZE_SERIES;
+    
+    const yearIdx = parseInt(el.yearSelect.value, 10);
+    let total = 0;
+    Object.keys(scenarioData).forEach(sector => {
+      total += scenarioData[sector][yearIdx] || 0;
+    });
+    
+    document.getElementById('totalValue').textContent = `${fmt(total)} bcm`;
+  }
+
+  el.btnTodos.addEventListener('click', () => switchView('Todos'));
+  el.btnSteps.addEventListener('click', () => switchView('STEPS'));
+  el.btnAps.addEventListener('click', () => switchView('APS'));
+  el.btnNze.addEventListener('click', () => switchView('NZE'));
   el.yearSelect.addEventListener('change', (e) => {
     const idx = parseInt(e.target.value, 10);
-    updateTotalForYear(idx);
+    updateTotals(); // Actualizar total para el escenario actual
   });
 
   populateYearSelect(el.yearSelect);

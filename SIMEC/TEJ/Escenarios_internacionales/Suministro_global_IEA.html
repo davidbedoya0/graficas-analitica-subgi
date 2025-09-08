@@ -45,7 +45,7 @@
 <body>
   <div id="wrap">
     <h1 style="margin-bottom:4px;">Suministro de energía global por fuente y escenario: 2010-2050</h1>
-    <div class="subtitle">adaptado de base de datos IEA. World Energy Outlook 2024.</div>
+    <div class="subtitle"> Fuente: adaptado de base de datos IEA. World Energy Outlook 2024.</div>
   
 
     <div class="grid">
@@ -60,9 +60,11 @@
 
 <div class="bottom">
   <div class="controls-row">
-    <div class="segmented" role="group" aria-label="Tipo de gráfica">
-      <button id="btnAbs" class="active" aria-pressed="true">Área Absoluta</button>
-      <button id="btnPct" aria-pressed="false">Área 100%</button>
+    <div class="segmented" role="group" aria-label="Tipo de escenario">
+      <button id="btnTodos" class="active" aria-pressed="true">Todos</button>
+      <button id="btnSteps" aria-pressed="false">STEPS</button>
+      <button id="btnAps" aria-pressed="false">APS</button>
+      <button id="btnNze" aria-pressed="false">NZE</button>
     </div>
     <div class="inline-metrics">
       <label for="yearSelect">Año:</label>
@@ -140,7 +142,18 @@
           Object.assign({ visible: showPctAxis,labels: { format: '{value}%' } }, PCT_AXIS) 
         ],
         legend: { enabled: false },   // <— sin leyenda dentro del chart
-        tooltip: { shared: true },
+        tooltip: { 
+          shared: true,
+          formatter: function() {
+            const year = this.x;
+            let s = `<span style="font-size: 11px;"><b>${year}</b></span><br/>`;
+            this.points.forEach(function(point) {
+              const suffix = point.series.name === 'Fosiles (%)' ? '%' : ' EJ';
+              s += `<span style="color:${point.color}">●</span> ${point.series.name}: <b>${point.y}</b>${suffix}<br/>`;
+            });
+            return s;
+          }
+        },
         plotOptions: {
           area: {
             stacking: 'normal',
@@ -233,56 +246,87 @@
       // ========================
       const el = {};
 
-      function setMode(absMode) {
-        MODE = absMode ? 'abs' : 'pct';
-        el.btnAbs.classList.toggle('active', absMode);
-        el.btnPct.classList.toggle('active', !absMode);
-        el.btnAbs.setAttribute('aria-pressed', String(absMode));
-        el.btnPct.setAttribute('aria-pressed', String(!absMode));
-
-        charts.forEach(chart => {
-          chart.update({
-            plotOptions: {
-              area: { stacking: absMode ? 'normal' : 'percent' }
-            }
-          }, false);
-          
-          // Actualizar el eje Y con la escala correcta
-          if (absMode) {
-            // Modo absoluto: restaurar escala original
-            chart.yAxis[0].update({
-              min: 0,
-              max: 800,
-              tickInterval: 200,
-              title: { text: 'EJ' },
-              labels: { formatter: function(){ return this.value; } }
-            }, false);
-          } else {
-            // Modo porcentaje: escala 0-100%
-            chart.yAxis[0].update({
-              min: 0,
-              max: 100,
-              tickInterval: 25,
-              title: { text: 'Participación (%)' },
-              labels: { formatter: function(){ return this.value + '%'; } }
-            }, false);
-          }
-          
-          chart.redraw();
-        });
-      }
 
       // Init controles
-      el.btnAbs = document.getElementById('btnAbs');
-      el.btnPct = document.getElementById('btnPct');
+      el.btnTodos = document.getElementById('btnTodos');
+      el.btnSteps = document.getElementById('btnSteps');
+      el.btnAps = document.getElementById('btnAps');
+      el.btnNze = document.getElementById('btnNze');
       el.yearSelect = document.getElementById('yearSelect');
       el.totalValue = document.getElementById('totalValue');
 
-      el.btnAbs.addEventListener('click', () => setMode(true));
-      el.btnPct.addEventListener('click', () => setMode(false));
+      let currentView = 'Todos';
+      let currentScenario = 'STEPS';
+
+      // Mapeo de datos por escenario
+      const scenarioData = {
+        'STEPS': D_STEPS,
+        'APS': D_APS,
+        'NZE': D_NZE
+      };
+
+      function switchView(viewName) {
+        currentView = viewName;
+        
+        // Actualizar botones activos
+        el.btnTodos.classList.toggle('active', viewName === 'Todos');
+        el.btnSteps.classList.toggle('active', viewName === 'STEPS');
+        el.btnAps.classList.toggle('active', viewName === 'APS');
+        el.btnNze.classList.toggle('active', viewName === 'NZE');
+        
+        el.btnTodos.setAttribute('aria-pressed', String(viewName === 'Todos'));
+        el.btnSteps.setAttribute('aria-pressed', String(viewName === 'STEPS'));
+        el.btnAps.setAttribute('aria-pressed', String(viewName === 'APS'));
+        el.btnNze.setAttribute('aria-pressed', String(viewName === 'NZE'));
+
+        // Mostrar/ocultar gráficos según vista seleccionada
+        const stepsChart = document.getElementById('chart-steps');
+        const apsChart = document.getElementById('chart-aps');
+        const nzeChart = document.getElementById('chart-nze');
+        const grid = document.querySelector('.grid');
+        
+        if (viewName === 'Todos') {
+          // Mostrar todas las gráficas en grilla
+          stepsChart.style.display = 'block';
+          apsChart.style.display = 'block';
+          nzeChart.style.display = 'block';
+          grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+          currentScenario = 'STEPS'; // Usar STEPS para totales por defecto
+        } else {
+          // Mostrar solo una gráfica
+          stepsChart.style.display = viewName === 'STEPS' ? 'block' : 'none';
+          apsChart.style.display = viewName === 'APS' ? 'block' : 'none';
+          nzeChart.style.display = viewName === 'NZE' ? 'block' : 'none';
+          grid.style.gridTemplateColumns = '1fr';
+          currentScenario = viewName;
+        }
+
+        // Actualizar totales
+        updateTotals();
+      }
+
+      function updateTotals() {
+        const data = scenarioData[currentScenario];
+        const yearIndex = parseInt(el.yearSelect.value, 10);
+        const years = [2010, 2023, 2030, 2035, 2040, 2050];
+        const selectedYear = years[yearIndex];
+        
+        let total = 0;
+        ['Coal', 'Oil', 'Natural gas', 'Renewables', 'Nuclear', 'Other'].forEach(fuel => {
+          const point = data[fuel].find(p => p[0] === selectedYear);
+          if (point) total += point[1];
+        });
+        
+        document.getElementById('totalValue').textContent = `${fmt(total)} EJ`;
+      }
+
+      el.btnTodos.addEventListener('click', () => switchView('Todos'));
+      el.btnSteps.addEventListener('click', () => switchView('STEPS'));
+      el.btnAps.addEventListener('click', () => switchView('APS'));
+      el.btnNze.addEventListener('click', () => switchView('NZE'));
       el.yearSelect.addEventListener('change', (e) => {
         const idx = parseInt(e.target.value, 10);
-        updateTotalForYear(idx);
+        updateTotals(); // Actualizar total para el escenario actual
       });
 
       populateYearSelect(el.yearSelect);

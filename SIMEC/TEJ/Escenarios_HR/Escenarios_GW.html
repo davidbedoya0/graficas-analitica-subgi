@@ -14,6 +14,7 @@
             justify-content: space-around;
             align-items: flex-start;
             width: 100%;
+            transition: all 0.3s ease;
         }
         .chart-container {
             flex: 1;
@@ -21,6 +22,26 @@
             height: 400px;
             margin: 5px;
             border: 1px solid #ccc;
+            transition: all 0.3s ease;
+        }
+        /* Estilos para vista individual */
+        #charts-container.single-view {
+            justify-content: center;
+        }
+        #charts-container.single-view .chart-container {
+            flex: none;
+            width: 400px;
+            height: 400px;
+        }
+        /* Estilos para vista de dos gráficos */
+        #charts-container.two-view {
+            justify-content: center;
+            gap: 20px;
+        }
+        #charts-container.two-view .chart-container {
+            flex: none;
+            width: 350px;
+            height: 400px;
         }
         #legend-general {
             display: flex;
@@ -52,6 +73,22 @@
         }
         .legend-item.inactive {
             opacity: 0.6;
+        }
+        /* Estilos para botones de escenarios */
+        .btn-scenario {
+            all: unset;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-weight: 500;
+            font-family: inherit;
+        }
+        .btn-scenario.active {
+            background: #111827;
+            color: #fff;
+        }
+        .btn-scenario:not(.active) {
+            background: #f3f4f6;
+            color: #111;
         }
     </style>
 </head>
@@ -85,6 +122,29 @@
         <div class="legend-item"><span class="legend-color" style="background:#8077b8"></span>Geotérmica</div>
         <div class="legend-item"><span class="legend-color" style="background:#6eb06c"></span>Bioenergía</div>
         <div class="legend-item"><span class="legend-color" style="background:#71004b"></span>Nuclear</div>
+    </div>
+
+    <div id="bottom-controls" style="max-width: 1100px; margin: 20px auto; padding: 0 16px; display: grid; grid-template-columns: 1fr; gap: 12px;">
+        <div id="controls-row" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center;">
+            <div id="segmented-buttons" style="display: inline-flex; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; width: fit-content;">
+                <button id="btnTodos" class="btn-scenario active" aria-pressed="true">Todos</button>
+                <button id="btnTendencial" class="btn-scenario" aria-pressed="false">Tendencial</button>
+                <button id="btnMedidas" class="btn-scenario" aria-pressed="false">Medidas</button>
+                <button id="btnTEJ" class="btn-scenario" aria-pressed="false">TEJ</button>
+                <button id="btnPENSup" class="btn-scenario" aria-pressed="false">PEN L.Sup</button>
+                <button id="btnPENInf" class="btn-scenario" aria-pressed="false">PEN L.Inf</button>
+            </div>
+            <div id="inline-metrics" style="display: inline-flex; align-items: center; gap: 10px; margin-left: 0; font-size: .95rem;">
+                <label for="yearSelect">Año:</label>
+                <select id="yearSelect" style="padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 8px; font-size: .9rem;">
+                    <option value="0">2030</option>
+                    <option value="1">2040</option>
+                    <option value="2">2050</option>
+                </select>
+                <span style="color: #374151;">Total:</span>
+                <span id="totalValue" style="font-weight: 700;">— GW</span>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -214,6 +274,139 @@
                 charts.forEach(c => c.redraw());
             });
         });
+
+        // ===== NUEVA FUNCIONALIDAD: Control de escenarios y totales =====
+        
+        // Mapeo de datos por escenario
+        const scenarioData = {
+            'Tendencial': seriesTendencial,
+            'Medidas': seriesMedidas, 
+            'TEJ': seriesTEJ,
+            'PENSup': seriesPENSuperior,
+            'PENInf': seriesPENInferior
+        };
+
+        // Variables de estado
+        let currentView = 'Todos';
+        let currentScenario = 'Tendencial';
+        let selectedScenarios = ['Tendencial', 'Medidas', 'TEJ', 'PENSup', 'PENInf']; // Para multi-selección
+
+        // Función para calcular totales
+        function calculateTotal(scenario, yearIndex) {
+            let total = 0;
+            scenarioData[scenario].forEach(series => {
+                total += series.data[yearIndex] || 0;
+            });
+            return total;
+        }
+
+        // Función para cambiar vista
+        function switchView(viewName) {
+            const chartsContainer = document.getElementById('charts-container');
+            const chartDivs = chartsContainer.querySelectorAll('.chart-container');
+            const scenarios = ['Tendencial', 'Medidas', 'TEJ', 'PENSup', 'PENInf'];
+            
+            if (viewName === 'Todos') {
+                // Modo Todos: mostrar todos y permitir multi-selección
+                currentView = 'Todos';
+                selectedScenarios = [...scenarios]; // Todos seleccionados
+                currentScenario = 'Tendencial';
+                
+                // Actualizar botones - solo Todos activo, otros como seleccionables
+                document.querySelectorAll('.btn-scenario').forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.setAttribute('aria-pressed', 'false');
+                });
+                document.getElementById('btnTodos').classList.add('active');
+                document.getElementById('btnTodos').setAttribute('aria-pressed', 'true');
+                
+                // Mostrar todos los gráficos con tamaño normal
+                chartDivs.forEach(div => div.style.display = 'block');
+                chartsContainer.classList.remove('single-view');
+                chartsContainer.style.flexDirection = 'row';
+                
+            } else if (currentView === 'Todos') {
+                // Transición de Todos a individual: mostrar solo uno, tamaño grande
+                currentView = 'Individual';
+                selectedScenarios = [viewName];
+                currentScenario = viewName;
+                
+                // Actualizar botones
+                document.querySelectorAll('.btn-scenario').forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.setAttribute('aria-pressed', 'false');
+                });
+                document.getElementById(`btn${viewName}`).classList.add('active');
+                document.getElementById(`btn${viewName}`).setAttribute('aria-pressed', 'true');
+                
+                // Mostrar solo un gráfico con tamaño grande
+                chartDivs.forEach((div, index) => {
+                    div.style.display = scenarios[index] === viewName ? 'block' : 'none';
+                });
+                chartsContainer.classList.add('single-view');
+                
+            } else {
+                // Modo multi-selección: toggle individual scenarios
+                const scenarioIndex = scenarios.indexOf(viewName);
+                const isCurrentlySelected = selectedScenarios.includes(viewName);
+                
+                if (isCurrentlySelected && selectedScenarios.length > 1) {
+                    // Deseleccionar si hay más de uno seleccionado
+                    selectedScenarios = selectedScenarios.filter(s => s !== viewName);
+                    document.getElementById(`btn${viewName}`).classList.remove('active');
+                    document.getElementById(`btn${viewName}`).setAttribute('aria-pressed', 'false');
+                    chartDivs[scenarioIndex].style.display = 'none';
+                } else if (!isCurrentlySelected) {
+                    // Seleccionar escenario adicional
+                    selectedScenarios.push(viewName);
+                    document.getElementById(`btn${viewName}`).classList.add('active');
+                    document.getElementById(`btn${viewName}`).setAttribute('aria-pressed', 'true');
+                    chartDivs[scenarioIndex].style.display = 'block';
+                }
+                
+                // Ajustar layout según número de gráficos visibles
+                const visibleCount = selectedScenarios.length;
+                if (visibleCount === 1) {
+                    chartsContainer.classList.remove('two-view');
+                    chartsContainer.classList.add('single-view');
+                    currentScenario = selectedScenarios[0];
+                } else if (visibleCount === 2) {
+                    chartsContainer.classList.remove('single-view');
+                    chartsContainer.classList.add('two-view');
+                    chartsContainer.style.flexDirection = 'row';
+                    currentScenario = selectedScenarios[0]; // Usar el primero para totales
+                } else {
+                    chartsContainer.classList.remove('single-view', 'two-view');
+                    chartsContainer.style.flexDirection = 'row';
+                    currentScenario = selectedScenarios[0]; // Usar el primero para totales
+                }
+            }
+
+            // Actualizar totales
+            updateTotals();
+        }
+
+        // Función para actualizar totales
+        function updateTotals() {
+            const yearIndex = parseInt(document.getElementById('yearSelect').value, 10);
+            const total = calculateTotal(currentScenario, yearIndex);
+            const fmt = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 1 });
+            document.getElementById('totalValue').textContent = `${fmt.format(total)} GW`;
+        }
+
+        // Event listeners para botones
+        document.getElementById('btnTodos').addEventListener('click', () => switchView('Todos'));
+        document.getElementById('btnTendencial').addEventListener('click', () => switchView('Tendencial'));
+        document.getElementById('btnMedidas').addEventListener('click', () => switchView('Medidas'));
+        document.getElementById('btnTEJ').addEventListener('click', () => switchView('TEJ'));
+        document.getElementById('btnPENSup').addEventListener('click', () => switchView('PENSup'));
+        document.getElementById('btnPENInf').addEventListener('click', () => switchView('PENInf'));
+
+        // Event listener para selector de año
+        document.getElementById('yearSelect').addEventListener('change', updateTotals);
+
+        // Inicializar totales
+        updateTotals();
 
     });
     </script>
