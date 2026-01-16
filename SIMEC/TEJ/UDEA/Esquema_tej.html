@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Esquema HOME TEJ</title>
+
+<!-- Highcharts core -->
+<script src="https://code.highcharts.com/highcharts.js"></script>
+
+<!-- Fuente -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* Fondo con la foto de aerogeneradores + velo oscuro para contraste */
+html,body{
+  margin:0;
+  height:100%;
+  font-family:'Inter','Segoe UI',sans-serif;
+}
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.4)),
+    url('holaxd.png') center/cover no-repeat;
+  z-index:-1;
+}
+/* Lienzo Highcharts */
+#container{
+  width:100%;
+  height:680px;
+  max-width:1400px;
+  margin:0 auto;
+  user-select:none;
+}
+/* Sombra al pasar el cursor */
+.highlight rect,
+.highlight circle{
+  filter:drop-shadow(0 0 6px #00ff95);
+}
+</style>
+</head>
+<body>
+
+<div id="container"></div>
+
+<script>
+Highcharts.chart('container',{
+  chart:{
+    backgroundColor:'rgba(0,0,0,0)',
+    spacing:[40,20,40,20],
+    animation:false,
+    events:{
+      load:function(){
+        /*--- CONFIGURACIÓN GENERAL ---*/
+        const chart=this,
+              R     = chart.renderer,
+              W     = chart.chartWidth,
+              H     = chart.chartHeight;
+
+        /* Posiciones X de las tres columnas principales */
+        const CX=[0.2,0.5,0.8].map(f=>W*f);
+
+        /* Dimensiones y colores */
+        const COLORS={
+          root:'#d9e6e5',
+          group:'#d9e6e5',
+          sub:'#cfd2d2'
+        };
+        const DIMS={
+          root:{w:290,h:60,r:14},
+          group:{w:290,h:54,r:10},
+          sub:{w:320,h:38,r:8}
+        };
+
+        /* Texto de tooltip */
+        const TOOLTIPS={
+          principios:'Cuatro principios propuestos en la Hoja de Ruta de la TEJ',
+          justicia  :'Perspectiva que integra derechos humanos y salvaguardas ambientales, priorizando territorios y poblaciones vulnerables frente al cambio climático',
+          politicas :'Líneas estratégicas del gobierno<br>para acelerar la TEJ',
+          s0:'Asegurar que los beneficios y costos de la transición se distribuyan sin reproducir desigualdades territoriales, socioeconómicas ni de género',
+          s1:'Cambiar el modelo energético a ritmos realistas, fortaleciendo la seguridad de suministro y el control nacional de los recursos',
+          s2:'Incluir comunidades y actores locales en la toma de decisiones con mecanismos que hagan sus aportes',
+          s3:'Basar la transición en ciencia, innovación y formación técnica y profesional, involucrando activamente a la academia en la TEJ',
+          j0:'Pregunta sobre la gobernanza: exige transparencia, representatividad y control ciudadano en las decisiones energéticas',
+          j1:'Establece criterios para repartir impactos negativos y retornos económicos de manera proporcional y justa',
+          j2:'Incorpora conocimientos ancestrales, comunitarios y locales en la planificación y gestión de la energía',
+          j3:'Acciones de reparación ecosistémica y social en zonas afectadas por actividades extractivas o infraestructuras energéticas',
+          p0:'Estrategias para reducir emisiones de GEI y aumentar la resiliencia climática del país',
+          p1:'Impulso a nuevas cadenas de valor y tecnologías limpias que sustituyan actividades intensivas en carbono',
+          p2:'Incorporación de derechos humanos, enfoque étnico-territorial y construcción de paz en los proyectos energéticos',
+          p3:'Promoción de comunidades energéticas, generación distribuida y acceso universal a energía asequible y sostenible',
+        };
+
+        /* Utilidad para crear nodos */
+        function nodo(id,txt,cx,cy,{w,h,r,fill},cls=''){
+          const g = R.g().attr({ zIndex: 5 }).add();
+          
+          const x=cx-w/2,y=cy-h/2;
+          const rect=R.rect(x,y,w,h,r)
+                      .attr({fill,stroke:'#ffffff','stroke-width':2})
+                      .add(g);
+          /* Icono + texto */
+          const fsRoot=id===''?18:15
+          const fs=id.startsWith('sub')?12:14;
+          if(id==='root'||id===''||id===''||id===''){
+            const icon={
+              root:'',principios:'',justicia:'',politicas:''
+            }[id];
+            R.text(icon,x+8,cy+5)
+             .css({fontSize:fsRoot+'px',fontWeight:600,color:'#000'})
+             .attr({align:'center',y:cy+fsRoot/2-4})
+             .add(g);
+            R.text(txt,x+60,cy+5,w-70)
+             .css({fontSize:fsRoot+'px',fontWeight:600,color:'#000'})
+             .attr({align:'left',y:cy+fsRoot/2-4})
+             .add(g);
+          }else{
+            R.text(txt,cx,cy+2)
+             .css({fontSize:fs+'px',fontWeight:500,color:'#000'})
+             .attr({align:'center',y:cy+fs/2-3})
+             .add(g);
+          }
+
+          /* Interacción tooltip */
+          if(TOOLTIPS[id]){
+            const div=document.createElement('div');
+            div.innerHTML=TOOLTIPS[id];
+            Object.assign(div.style,{
+              position:'absolute',
+              background:'#ffffffee',
+              border:'1px solid #666',
+              borderRadius:'6px',
+              padding:'8px 10px',
+              fontSize:'12px',
+              maxWidth:'220px',
+              display:'none',
+              pointerEvents:'none',
+              zIndex:1000,
+              boxShadow:'0 3px 8px rgba(0,0,0,.25)'
+            });
+            chart.container.parentNode.appendChild(div);
+            g.element.addEventListener('mouseenter',e=>{
+              div.style.left=e.pageX+12+'px';
+              div.style.top =e.pageY+12+'px';
+              div.style.display='block';
+              g.addClass('highlight');
+            });
+            g.element.addEventListener('mousemove',e=>{
+              div.style.left=e.pageX+12+'px';
+              div.style.top =e.pageY+12+'px';
+            });
+            g.element.addEventListener('mouseleave',()=>{
+              div.style.display='none';
+              g.removeClass('highlight');
+            });
+          }
+          return {id,cx,cy,w,h};
+        }
+
+        /* Utilidad para dibujar conexión ortogonal */
+        function conectar(a,b,col='#ffffff',sw=2){
+          const x1=a.cx+(a.cx<b.cx?a.w/2:-a.w/2),
+                y1=a.cy,
+                x2=b.cx+(a.cx<b.cx?-b.w/2:+b.w/2),
+                y2=b.cy,
+                xm=(x1+x2)/2;
+          R.path(['M',x1,y1,'L',xm,y1,'L',xm,y2,'L',x2,y2])
+           .attr({stroke:col,'stroke-width':sw})
+           .add();
+        }
+
+        /*--- CREAR NODOS PRINCIPALES ---*/
+        const root=nodo('root','Transición Energética Justa',CX[1],110,
+                        {...DIMS.root,fill:COLORS.root});
+
+        const principios=nodo('principios','Principios de la TEJ',CX[0],250,
+                              {...DIMS.group,fill:COLORS.group});
+        const justicia =nodo('justicia','Justicia Ambiental, climática y energética',
+                              CX[1],250,{...DIMS.group,fill:COLORS.group});
+        const politicas=nodo('politicas','Políticas de Gobierno',CX[2],250,
+                              {...DIMS.group,fill:COLORS.group});
+
+        conectar(root,principios);
+        conectar(root,justicia);
+        conectar(root,politicas);
+
+        /*--- SUB-NODOS DE PRINCIPIOS ---*/
+        const subsP=['1. Equidad',
+                     '2. Gradualidad, soberanía y confiabilidad',
+                     '3. Participación social vinculante',
+                     '4. Intensiva en conocimiento'];
+
+        const nodosSubsP=subsP.map((t,i)=>{
+          const cy=principios.cy+90+(i*50);
+          return nodo('s'+i,t,CX[0],cy,{...DIMS.sub,fill:COLORS.sub});
+        });
+        nodosSubsP.forEach(n=>conectar(principios,n, '#ffffff',1.6));
+
+        /*--- SUB-NODOS DE JUSTICIA ---*/
+        const subsJ=['¿Cómo y quién decide?',
+                     'Distribución de cargas y beneficios',
+                     'Reconocimiento de otros saberes',
+                     'Restauración'];
+
+        const nodosSubsJ=subsJ.map((t,i)=>{
+          const cy=justicia.cy+90+(i*50);
+          return nodo('j'+i,t,CX[1],cy,{...DIMS.sub,fill:COLORS.sub});
+        });
+        nodosSubsJ.forEach(n=>conectar(justicia,n,'#ffffff',1.6));
+
+        /*--- SUB-NODOS DE POLÍTICAS ---*/
+        const subsPol=['Acción climática y descarbonización',
+                       'Reindustrialización y diversificación productiva',
+                       'Enfoque diferencial DDHH y Paz Total',
+                       'Democratización energética'];
+
+        const nodosSubsPol=subsPol.map((t,i)=>{
+          const cy=politicas.cy+90+(i*50);
+          return nodo('p'+i,t,CX[2],cy,{...DIMS.sub,fill:COLORS.sub});
+        });
+        nodosSubsPol.forEach(n=>conectar(politicas,n,'#ffffff',1.6));
+
+      }/* fin load */
+    }/* fin events */
+  },
+  title:{text:''},
+  tooltip:{enabled:false},
+  series:[] /* Dibujamos todo con el renderer; no se requieren series */
+});
+</script>
+</body>
+</html>
+
+

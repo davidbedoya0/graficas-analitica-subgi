@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Demanda de gas natural por sector – escenarios (bcm)</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <style>
+    :root { --maxw: 1100px; --accent: #22c55e; --track: #e5e7eb; --knob: #374151; }
+    * { box-sizing: border-box; }
+    body{margin:0;font-family:"Segoe UI", Roboto, system-ui, -apple-system, sans-serif;background:#fff;}
+    #wrap{max-width:var(--maxw);margin:20px auto;padding:0 12px;}
+    h1{margin:0 0 2px 0;text-align:center;font-size:20px;font-weight:700}
+    h2{margin:0 0 14px 0;text-align:center;font-size:13px;color:#555;font-weight:400}
+    #grid{display:grid;grid-template-columns: repeat(3, 1fr); gap:10px;}
+    .chart{height:420px;min-width:260px;}
+    .source{font-size:11px;color:#555;text-align:center;margin-top:6px}
+    .bottom { max-width: var(--maxw); margin: 10px auto 18px; padding: 0 16px; display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .controls-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .segmented { display: inline-flex; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; width: fit-content; }
+    .segmented button { all: unset; padding: 6px 12px; cursor: pointer; font-weight: 500; }
+    .segmented button.active { background: #111827; color: #fff; }
+    .segmented button:not(.active) { background: #f3f4f6; color: #111; }
+    .inline-metrics { display: inline-flex; align-items: center; gap: 10px; margin-left: 0; font-size: .95rem; }
+    .metric-label { color: #374151; }
+    .metric-value { font-weight: 700; }
+    select.yearpick { padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 8px; font-size: .9rem; }
+
+    /* Leyenda global (sin fondo ni borde) */
+    #global-legend{
+      display:flex;flex-wrap:wrap;gap:12px;justify-content:center;
+      margin:10px auto 0 auto;max-width:980px
+    }
+    #global-legend .legend-item{
+      display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;
+      font-size:12px;padding:0 6px;border:none;background:transparent;border-radius:0;
+      transition:opacity .12s ease;
+    }
+    #global-legend .legend-item.off{ opacity:.35; }
+    #global-legend .legend-item .swatch{
+      width:16px;height:10px;border-radius:2px;border:none;background: var(--c);
+    }
+
+    @media (max-width: 980px){
+      #grid{grid-template-columns:1fr;}
+      .chart{height:420px;}
+    }
+  </style>
+</head>
+<body>
+<div id="wrap">
+  <h1>Demanda de gas natural por sector y escenario</h1>
+  <h2>Fuente: adaptado de base de datos IEA. World Energy Outlook 2024</h2>
+
+  <div id="grid">
+    <div id="container-steps" class="chart"></div>
+    <div id="container-aps"   class="chart"></div>
+    <div id="container-nze"   class="chart"></div>
+  </div>
+  
+
+  <!-- Leyenda global -->
+  <div id="global-legend" aria-label="Leyenda global por sector"></div>
+</div>
+
+<div class="bottom">
+  <div class="controls-row">
+    <div class="segmented" role="group" aria-label="Tipo de escenario">
+      <button id="btnTodos" class="active" aria-pressed="true">Todos</button>
+      <button id="btnSteps" aria-pressed="false">STEPS</button>
+      <button id="btnAps" aria-pressed="false">APS</button>
+      <button id="btnNze" aria-pressed="false">NZE</button>
+    </div>
+    <div class="inline-metrics">
+      <label for="yearSelect">Año:</label>
+      <select id="yearSelect" class="yearpick"></select>
+      <span class="metric-label">Total:</span>
+      <span id="totalValue" class="metric-value">— bcm</span>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // ===== Paleta UPME (adjunta) + un tono UPME extra para el 6.º sector =====
+  const PALETTE = {
+    teal:   '#183e34', // Generación eléctrica (base)
+    gold:   '#ecb000', // Industria
+    lemon:  '#deff64', // Edificios
+    wasabi: '#b8f600', // Otros
+    green:  '#0a8c00', // Transporte
+    lime:   '#deed1b'  // Hidrógeno de bajas emisiones (tono UPME)
+  };
+
+  Highcharts.setOptions({ lang: { decimalPoint: ',', thousandsSep: '.' } });
+
+  // Puntos de tiempo y estado global
+  const X = [2023, 2030, 2035, 2050];
+  let YEARS = X.map(String);
+  let TOTALS = [];
+  let MODE = 'abs';
+  let charts = [];
+
+  // Utilidades
+  const nf = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 2 });
+  const fmt = (n) => nf.format(n);
+
+  function computeTotals() {
+    const n = YEARS.length;
+    TOTALS = Array.from({ length: n }, (_, i) => {
+      let total = 0;
+      // Usar solo STEPS para el total en unidades originales
+      Object.keys(STEPS_SERIES).forEach(sector => {
+        total += STEPS_SERIES[sector][i] || 0;
+      });
+      return total;
+    });
+  }
+
+  function populateYearSelect(elYear) {
+    elYear.innerHTML = YEARS.map((y, i) => `<option value="${i}">${y}</option>`).join('');
+    elYear.value = '0';
+    updateTotalForYear(0);
+  }
+
+  function updateTotalForYear(idx) {
+    const val = TOTALS[idx] ?? 0;
+    document.getElementById('totalValue').textContent = `${fmt(val)} bcm`;
+  }
+
+  function convertBcmToPj(bcmValue) {
+    // 1 bcm ≈ 0.036 PJ (aproximación para gas natural)
+    return bcmValue * 0.036;
+  }
+
+  // ===== Datos (bcm) – ordenados base→cima como en la referencia =====
+  // STEPS
+  const STEPS_SERIES = {
+    'Generación eléctrica':           [1642, 1657, 1602, 1513],  // Power
+    'Industria':                      [ 936, 1037, 1080, 1136],
+    'Edificios':                      [ 809,  877,  868,  855],
+    'Otros':                          [ 647,  671,  668,  651],
+    'Transporte':                     [ 151,  183,  191,  191],
+    'Hidrógeno de bajas emisiones':   [   0,    5,   13,   31]   // 2023 es 0
+  };
+  // APS
+  const APS_SERIES = {
+    'Generación eléctrica':           [1642, 1519, 1258,  786],
+    'Industria':                      [ 936,  941,  888,  674],
+    'Edificios':                      [ 809,  780,  649,  418],
+    'Otros':                          [ 647,  593,  510,  302],
+    'Transporte':                     [ 151,  143,  116,   56],
+    'Hidrógeno de bajas emisiones':   [   0,   26,   55,  219]
+  };
+  // NZE
+  const NZE_SERIES = {
+    'Generación eléctrica':           [1642, 1537,  773,  136],
+    'Industria':                      [ 936,  852,  711,  338],
+    'Edificios':                      [ 809,  570,  307,    1],
+    'Otros':                          [ 647,  482,  279,  156],
+    'Transporte':                     [ 151,  113,   67,    7],
+    'Hidrógeno de bajas emisiones':   [   0,   64,  120,  246]
+  };
+
+  // Colores por sector
+  const COLOR_BY_SECTOR = {
+    'Generación eléctrica':           PALETTE.teal,
+    'Industria':                      PALETTE.gold,
+    'Edificios':                      PALETTE.lemon,
+    'Otros':                          PALETTE.wasabi,
+    'Transporte':                     PALETTE.green,
+    'Hidrógeno de bajas emisiones':   PALETTE.lime
+  };
+
+  // Utilidad: objeto → series Highcharts
+  function buildSeries(sectorData){
+    return Object.keys(sectorData).map(name => ({
+      type: 'areaspline',
+      name,
+      data: sectorData[name].map((value, i) => [i, value]),
+      color: COLOR_BY_SECTOR[name],
+      lineColor: COLOR_BY_SECTOR[name],
+      fillOpacity: 0.9,
+      marker: { enabled: false },
+      showInLegend: false,
+      tooltip: { valueDecimals: 0 }
+    }));
+  }
+
+  function makeChart(renderTo, titleText, sectorData){
+    return Highcharts.chart(renderTo, {
+      chart: { spacing: [6,6,6,6] },
+      title: { text: titleText, align: 'center', style: { fontSize: '14px', fontWeight: 700 } },
+      credits: { enabled: false },
+      legend: { enabled: false }, // leyenda global
+      xAxis: {
+        type: 'linear',
+        min: 0,
+        max: X.length - 1,
+        tickPositions: [0, 1, 2, 3],
+        labels: {
+          formatter: function() {
+            return X[this.value] || '';
+          }
+        },
+        title: { text: null }
+      },
+      yAxis: {
+        title: { text: 'bcm' },
+        min: 0, max: 5000, tickInterval: 1000,
+        gridLineColor: '#e6e6e6',
+        reversedStacks: false,
+        labels: { format: '{value:,.0f}' }
+      },
+      tooltip: { 
+        shared: true, 
+        valueSuffix: ' bcm',
+        formatter: function() {
+          const year = X[this.x];
+          let s = `<span style="font-size: 11px;"><b>${year}</b></span><br/>`;
+          this.points.forEach(function(point) {
+            s += `<span style="color:${point.color}">●</span> ${point.series.name}: <b>${point.y}</b> bcm<br/>`;
+          });
+          return s;
+        }
+      },
+      plotOptions: { series: { stacking: 'normal' } },
+      exporting: { enabled: true },
+      series: buildSeries(sectorData)
+    });
+  }
+
+  // Render de los tres escenarios
+  const chSteps = makeChart('container-steps', 'STEPS', STEPS_SERIES);
+  const chAPS   = makeChart('container-aps',   'APS',   APS_SERIES);
+  const chNZE   = makeChart('container-nze',   'NZE',   NZE_SERIES);
+  // Ocultar título del eje Y en APS y NZE
+  chAPS.yAxis[0].setTitle({ text: null });
+  chNZE.yAxis[0].setTitle({ text: null });
+
+  // ===== Leyenda global (en español) =====
+  function buildGlobalLegend(containerId, charts) {
+    const order = [
+      'Generación eléctrica',
+      'Industria',
+      'Edificios',
+      'Otros',
+      'Transporte',
+      'Hidrógeno de bajas emisiones'
+    ];
+    const el = document.getElementById(containerId);
+    el.innerHTML = '';
+    order.forEach(name => {
+      const div = document.createElement('div');
+      div.className = 'legend-item';
+      div.setAttribute('role','button');
+      div.setAttribute('aria-label', name);
+
+      const sw = document.createElement('span');
+      sw.className = 'swatch';
+      sw.style.setProperty('--c', COLOR_BY_SECTOR[name]);
+      div.appendChild(sw);
+
+      const label = document.createElement('span');
+      label.textContent = name;
+      div.appendChild(label);
+
+      div.addEventListener('click', () => {
+        let targetVisible = null;
+        charts.forEach(ch => {
+          const s = ch.series.find(sr => sr.name === name);
+          if (s) { if (targetVisible === null) targetVisible = !s.visible; }
+        });
+        charts.forEach(ch => {
+          const s = ch.series.find(sr => sr.name === name);
+          if (s) s.setVisible(targetVisible, false);
+        });
+        charts.forEach(ch => ch.redraw());
+        div.classList.toggle('off', !targetVisible);
+      });
+
+      el.appendChild(div);
+    });
+  }
+  charts = [chSteps, chAPS, chNZE];
+  buildGlobalLegend('global-legend', charts);
+
+  // Computar totales en unidades originales (bcm)
+  computeTotals();
+
+  // ========================
+  // Controles & sincronización
+  // ========================
+  const el = {};
+
+
+
+  // Init controles
+  el.btnTodos = document.getElementById('btnTodos');
+  el.btnSteps = document.getElementById('btnSteps');
+  el.btnAps = document.getElementById('btnAps');
+  el.btnNze = document.getElementById('btnNze');
+  el.yearSelect = document.getElementById('yearSelect');
+  el.totalValue = document.getElementById('totalValue');
+
+  let currentView = 'Todos';
+  let currentScenario = 'STEPS';
+
+  function switchView(viewName) {
+    currentView = viewName;
+    
+    // Actualizar botones activos
+    el.btnTodos.classList.toggle('active', viewName === 'Todos');
+    el.btnSteps.classList.toggle('active', viewName === 'STEPS');
+    el.btnAps.classList.toggle('active', viewName === 'APS');
+    el.btnNze.classList.toggle('active', viewName === 'NZE');
+    
+    el.btnTodos.setAttribute('aria-pressed', String(viewName === 'Todos'));
+    el.btnSteps.setAttribute('aria-pressed', String(viewName === 'STEPS'));
+    el.btnAps.setAttribute('aria-pressed', String(viewName === 'APS'));
+    el.btnNze.setAttribute('aria-pressed', String(viewName === 'NZE'));
+
+    // Mostrar/ocultar gráficos según vista seleccionada
+    const stepsCont = document.getElementById('container-steps');
+    const apsCont = document.getElementById('container-aps');
+    const nzeCont = document.getElementById('container-nze');
+    const grid = document.getElementById('grid');
+    
+    if (viewName === 'Todos') {
+      // Mostrar todas las gráficas en grilla
+      stepsCont.style.display = 'block';
+      apsCont.style.display = 'block';
+      nzeCont.style.display = 'block';
+      grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+      currentScenario = 'STEPS'; // Usar STEPS para totales por defecto
+    } else {
+      // Mostrar solo una gráfica
+      stepsCont.style.display = viewName === 'STEPS' ? 'block' : 'none';
+      apsCont.style.display = viewName === 'APS' ? 'block' : 'none';
+      nzeCont.style.display = viewName === 'NZE' ? 'block' : 'none';
+      grid.style.gridTemplateColumns = '1fr';
+      currentScenario = viewName;
+    }
+
+    // Actualizar totales
+    updateTotals();
+  }
+
+  function updateTotals() {
+    const scenarioData = currentScenario === 'STEPS' ? STEPS_SERIES : 
+                        currentScenario === 'APS' ? APS_SERIES : NZE_SERIES;
+    
+    const yearIdx = parseInt(el.yearSelect.value, 10);
+    let total = 0;
+    Object.keys(scenarioData).forEach(sector => {
+      total += scenarioData[sector][yearIdx] || 0;
+    });
+    
+    document.getElementById('totalValue').textContent = `${fmt(total)} bcm`;
+  }
+
+  el.btnTodos.addEventListener('click', () => switchView('Todos'));
+  el.btnSteps.addEventListener('click', () => switchView('STEPS'));
+  el.btnAps.addEventListener('click', () => switchView('APS'));
+  el.btnNze.addEventListener('click', () => switchView('NZE'));
+  el.yearSelect.addEventListener('change', (e) => {
+    const idx = parseInt(e.target.value, 10);
+    updateTotals(); // Actualizar total para el escenario actual
+  });
+
+  populateYearSelect(el.yearSelect);
+});
+</script>
+</body>
+</html>

@@ -6,9 +6,9 @@
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <style>
         #container {
-            min-width: 310px;
-            height: 600px;
-            margin: 0 auto;
+            max-width: 1100px;
+            height: 540px;
+            margin: 20px auto;
         }
     </style>
 </head>
@@ -19,27 +19,23 @@
             Highcharts.chart('container', {
                 chart: {
                     type: 'area',
-                    backgroundColor: '#f4f4f4'
+                    backgroundColor: '#ffffff',
+                    spacingTop: 8,
+                    spacingRight: 12
                 },
                 title: {
                     text: 'Proyección de capacidad instalada por tecnología - Escenario TEJ',
                     // align: 'left'
                 },
                 subtitle: {
-                    text: 'Fuente: Minenergia - Hoja de Ruta TEJ',
-                    align: 'left'
+                    text: 'Fuente: Minenergia - Hoja de Ruta TEJ'
                 },
                 xAxis: {
-                    categories: ['2022','2023', '2024','2025','2026','2027','2028','2029','2030','2031','2032','2033','2034','2035','2036','2037','2038','2039','2040','2041','2042','2043','2044','2045','2046','2047','2048','2049','2050'],
-                    tickmarkPlacement: 'on',
+                    categories: ['2022','2023','2024','2025','2026','2027','2028','2029','2030','2031','2032','2033','2034','2035','2036','2037','2038','2039','2040','2041','2042','2043','2044','2045','2046','2047','2048','2049','2050'],
+                    tickInterval: 5,
+                    tickLength: 0,
                     title: {
                         enabled: false
-                    },
-                    labels: {
-                        rotation: -45,
-                        // style: {
-                        //     fontSize: '10px'
-                        // }
                     }
                 },
                 yAxis: {
@@ -55,24 +51,32 @@
                     //         return this.value / 1000;
                     //     }
                     // },
-                    gridLineColor: '#d9d9d9'
+                    gridLineDashStyle: 'Dash'
                 },
                 tooltip: {
                     split: true,
-                    valueSuffix: 'MW'
+                    valueSuffix: ' MW'
                 },
-                credits: {
-                enabled: false
-                },
+                credits: { enabled: false },
+                exporting: { enabled: true },
                 plotOptions: {
                     area: {
                         stacking: 'normal',
                         lineColor: '#666666',
-                        lineWidth: 1,
+                        lineWidth: 0,
                         marker: {
-                            lineWidth: 1,
+                            enabled: false,
+                            lineWidth: 0.5,
                             lineColor: '#666666',
-                            radius:1
+                            radius: 3,
+                            states: {
+                                hover: {
+                                    enabled: true,
+                                    radius: 5,
+                                    lineWidth: 2,
+                                    lineColor: '#ffffff'
+                                }
+                            }
                         }
                     }
                 },
@@ -80,8 +84,7 @@
                     layout: 'horizontal',
                     align: 'center',
                     verticalAlign: 'bottom',
-                    backgroundColor: '#ffffff',
-                    borderWidth: 1
+                    borderWidth: 0
                 },
                 series: [{
 
@@ -94,7 +97,7 @@
                         0.52, 0.68, 0.84, 1.00, 1.17, 1.33, 1.50, 1.67, 1.83, 2.00,
                         2.17, 2.33, 2.50, 2.67, 2.83, 3.00, 3.17, 3.33, 3.50
                         ],
-                        color: '#05D80A'
+                        color: '#b8f600'
                     },
                     {
                         name: 'Carbon',
@@ -104,7 +107,7 @@
                         0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00,
                         0.00, 0.00, 0.00, 0.00, 0.00
                         ],
-                        color: '#183E34'
+                        color: '#183e34'
                     },
                     {
                         name: 'Combustóleo',
@@ -112,12 +115,12 @@
                         0.27, 0.27, 0.27, 0.27, 0.27, 0.27,
                         0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00
                         ],
-                        color: '#DEFF90'
+                        color: '#0a8c00'
                     },
                     {
                         name: 'Gas Natural CS',
                         data: Array(29).fill(1.16),
-                        color: '#B8F600'
+                        color: '#05d80a'
                     },
                     {
                         name: 'Gas Natural CC',
@@ -126,7 +129,7 @@
                         // el resto son 2.60
                         ...Array(22).fill(2.60)
                         ],
-                        color: '#131c46'
+                        color: '#efca18'
                     },
                     {
                         name: 'Gen. Distribuida',
@@ -135,7 +138,7 @@
                         3.95, 4.35, 4.75, 5.15, 5.55, 5.95, 6.35, 6.75, 7.15, 7.55,
                         7.95, 8.35, 8.75, 9.15, 9.55, 10.15, 10.75, 11.15, 11.75
                         ],
-                        color: '#ECB000'
+                        color: '#e4b33c'
                     },
                     {
                         name: 'Geotermica',
@@ -145,7 +148,7 @@
                         0.07, 0.14, 0.22, 0.29, 0.36, 0.44, 0.51, 0.58, 0.66,
                         0.73, 0.80, 0.88, 0.95, 1.02, 1.10, 1.17
                         ],
-                        color: '#4F5A65'
+                        color: '#0991B5'
                     },
                     {
                         name: 'Hidro',
@@ -155,7 +158,7 @@
                         13.60, 13.60, 13.60, 13.60, 13.60, 13.60, 13.60, 13.60, 13.60,
                         13.60, 13.60, 13.60, 13.60, 13.60
                         ],
-                        color: '#183e34'
+                        color: '#52D0F0'
                     },
                     {
                         name: 'Hidro RoR',
@@ -164,7 +167,7 @@
                         1.26, 1.48, 1.69, 1.91, 2.13, 2.34, 2.56, 2.78, 2.99, 3.29,
                         3.59, 3.89, 4.19, 4.49, 4.79, 5.09, 5.39, 5.69, 5.99
                         ],
-                        color: '#1F9EA0'
+                        color: '#004369'
                     },
                     {
                         name: 'Jet Fuel',
@@ -172,7 +175,7 @@
                         0.05, 0.05, 0.05, 0.05, 0.05, 0.05,
                         ...Array(23).fill(0.00)
                         ],
-                        color: '#F4A460'
+                        color: '#49296B'
                     },
                     {
                         name: 'Solar FV',
@@ -181,7 +184,7 @@
                         15.82, 16.12, 16.42, 16.72, 17.02, 17.32, 17.62, 17.92, 18.22, 18.52,
                         18.82, 19.12, 19.42, 20.00, 21.00, 22.00, 23.00, 24.00, 25.00
                         ],
-                        color: '#deff64'
+                        color: '#7A1B7B'
                     },
                     {
                         name: 'Viento Offshore',
@@ -192,7 +195,7 @@
                         ...Array(7).fill(7.00),
                         7.09, 7.92, 7.92, 8.38
                         ],
-                        color: '#00BFFF'
+                        color: '#F5222D'
                     },
                     {
                         name: 'Viento Onshore',
@@ -201,7 +204,7 @@
                         ...Array(14).fill(3.00),
                         4.00, 5.00, 6.00, 7.00, 7.00, 7.00
                         ],
-                        color: '#4B0082'
+                        color: '#A0D911'
                     },
                     {
                         name: 'Solar + BESS',
@@ -213,7 +216,7 @@
                         ...Array(8).fill(1.68),
                         2.03, 2.38, 2.73, 3.78, 4.83, 5.78, 6.83
                         ],
-                        color: '#c7f425'
+                        color: '#0145FF'
                     },
                     {
                         name: 'Biomasa',
@@ -222,7 +225,7 @@
                         0.67, 0.78, 0.89, 1.00, 1.07, 1.13, 1.20, 1.27, 1.33, 1.40,
                         1.47, 1.53, 1.60, 1.67, 1.73, 1.80, 1.87, 1.93, 2.00
                         ],
-                        color: '#0a8c00'
+                        color: '#2e86de'
   }]
             });
         });

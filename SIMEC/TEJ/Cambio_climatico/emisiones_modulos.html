@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Emisiones netas nacionales – 2021</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <style>
+    body { margin:0; font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif; }
+    #container { width: 100%; max-width: 1100px; height: 520px; margin: 24px auto; }
+  </style>
+</head>
+<body>
+
+<div id="container"></div>
+
+<script>
+// Formato numérico en español (punto de miles, coma decimal)
+Highcharts.setOptions({
+  lang: {
+    decimalPoint: ',',
+    thousandsSep: '.',
+    numericSymbols: null ,
+    contextButtonTitle: 'Exportar',
+    viewFullscreen: 'Ver en pantalla completa',
+    printChart: 'Imprimir gráfico',
+    downloadPNG: 'Descargar PNG',
+    downloadJPEG: 'Descargar JPEG',
+    downloadPDF: 'Descargar PDF',
+    downloadSVG: 'Descargar SVG'
+  }
+});
+
+const data = [
+  ['Silvicultura, uso y cambio de uso de la tierra', 96603.06],
+  ['Energía',                                             91610.54],
+  ['Agricultura',                                         57957.85],
+  ['Residuos',                                            22209.05],
+  ['Procesos industriales',                                11721.47]
+];
+
+Highcharts.chart('container', {
+  chart: { type: 'column', backgroundColor: '#ffffff' },
+  title: { text: 'Emisiones netas GEI - 2021' },
+  subtitle: { text: 'Fuente: adaptado de (IDEAM, 2024)', align: 'center' },
+  colors: ['#b8f600', '#ecb000', '#05d80a', '#183e34', '#deff64'],
+  
+
+  xAxis: {
+    type: 'category',
+    labels: {
+      useHTML: true,
+      style: { whiteSpace: 'normal', width: '140px' }
+    }
+  },
+
+  yAxis: {
+    title: { text: 'Emisiones (ktCO₂ eq)' }
+  },
+
+  legend: { enabled: false },
+  credits: { enabled: false },
+  exporting: { enabled: true },
+
+  tooltip: {
+    useHTML: true,
+    formatter: function () {
+      const total = this.series.yData.reduce((a, b) => a + b, 0);
+      const pct = (this.y / total) * 100;
+      return `
+        <b>${this.point.name}</b><br/>
+        Emisiones: <b>${Highcharts.numberFormat(this.y, 2, ',', '.')}</b> ktCO₂ eq<br/>
+        Participación: <b>${Highcharts.numberFormat(pct, 1, ',', '.')}%</b>
+      `;
+    }
+  },
+
+  plotOptions: {
+    column: {
+      pointPadding: 0.1,
+      borderWidth: 0,
+      dataLabels: {
+        enabled: true,
+        formatter: function () {
+          return Highcharts.numberFormat(this.y, 0, ',', '.');
+        }
+      }
+    },
+    series: {
+      states: { hover: { enabled: true } }
+    }
+  },
+
+  series: [{
+    name: 'Emisiones',
+    data: data,
+    colorByPoint: true 
+  }],
+
+  responsive: {
+    rules: [{
+      condition: { maxWidth: 600 },
+      chartOptions: {
+        xAxis: { labels: { style: { width: '100px' } } },
+        yAxis: { title: { text: '' } }
+      }
+    }]
+  }
+});
+</script>
+
+</body>
+</html>

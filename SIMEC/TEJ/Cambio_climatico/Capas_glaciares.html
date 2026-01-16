@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Balance de masa acumulado de glaciares de referencia, 1956–2023</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <style>
+    :root { --verde:#05d80a; --amarillo:#deed1b; }
+    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;}
+    #wrap{max-width:1100px;margin:20px auto;padding:0 12px;}
+    #chart{height:620px;}
+  </style>
+</head>
+<body>
+<div id="wrap"><div id="chart"></div></div>
+
+<script>
+(async () => {
+  // Lee el CSV exportado (trae metadatos en las primeras líneas)
+  const raw = await fetch('glaciers_fig-1.csv').then(r => r.text());
+
+  const mass = [];     // [year, m w.e.]
+  const count = [];    // [year, n glaciares]
+
+  raw.split(/\r?\n/).forEach(line => {
+    const s = line.trim();
+    // Solo filas que inician con año: 4 dígitos seguidos de coma o punto y coma
+    if (!/^\d{4}[,;]/.test(s)) return;
+
+    // Particiona admitiendo comas y punto y coma, y descarta vacíos
+    const t = s.split(/[;,]/).map(v => v.trim()).filter(v => v !== '');
+    if (t.length < 2) return;
+
+    const year  = +t[0];
+    const mb    = +t[1];             // mean cumulative mass balance (m w.e.)
+    const nObs  = t[2] !== undefined ? +t[2] : NaN;  // número de observaciones
+
+    if (Number.isFinite(year) && Number.isFinite(mb)) {
+      mass.push([year, +mb.toFixed(3)]);
+    }
+    if (Number.isFinite(year) && Number.isFinite(nObs)) {
+      count.push([year, nObs]);
+    }
+  });
+
+  // Ordena por año (por seguridad) y verifica rangos
+  mass.sort((a,b)=>a[0]-b[0]);
+  count.sort((a,b)=>a[0]-b[0]);
+  const firstYear = mass.length ? mass[0][0] : 1956;
+  const lastYear  = mass.length ? mass[mass.length-1][0] : 2023;
+
+  Highcharts.setOptions({ lang: { decimalPoint: ',', thousandsSep: '.' } });
+
+  Highcharts.chart('chart', {
+    chart: { spacingTop: 12, spacingRight: 18 },
+    title: {
+      text: 'Balance de masa acumulado de glaciares: 1956 - 2023',
+      align: 'center',
+      style: { color: '#000', fontWeight: 700, fontSize: '18px' }
+    },
+    subtitle: {
+      text: 'Fuente: Adaptado de EPA. WGMS (2024). Compilación EPA (jun. 2024).',
+      style: { color: '#6b6b6b' },
+      y: 35
+    },
+    credits: { enabled: false },
+    legend: { enabled: false },
+
+    xAxis: {
+      type: 'linear',
+      min: firstYear,
+      max: lastYear,
+      tickInterval: 10,
+      lineColor: '#e8e8e8',
+      tickColor: '#e8e8e8',
+      title: { text: null }
+    },
+
+    // Dos paneles apilados
+    yAxis: [{
+      // Panel superior
+      title: { text: 'Balance de masa acumulado (metros de agua equivalentes)' },
+      height: '68%',
+      offset: 0,
+      lineWidth: 1,
+      gridLineColor: '#ededed',
+      tickInterval: 5,
+      max: 0,         // 0 en la parte superior, como en la figura
+      min: -35
+    }, {
+      // Panel inferior
+      title: { text: 'No. de glaciares medidos' },
+      top: '74%',
+      height: '26%',
+      offset: 0,
+      lineWidth: 1,
+      gridLineColor: '#ededed',
+      min: 0,
+      max: 70,
+      tickInterval: 10
+    }],
+
+    tooltip: {
+      shared: true,
+      formatter: function () {
+        // Busca valores por año en ambas series
+        const year = Math.round(this.x);
+        const p1 = this.points?.find(p => p.series.userOptions.key === 'mass');
+        const p2 = this.points?.find(p => p.series.userOptions.key === 'count');
+        const mb = p1 ? Highcharts.numberFormat(p1.y, 3) + ' m e.a.' : '—';
+        const n  = p2 ? Highcharts.numberFormat(p2.y, 0) + ' glaciares' : '—';
+        return `<b>${year}</b><br/>` +
+               `<span style="color:${p1?.color}">\u25CF</span> Balance: <b>${mb}</b><br/>` +
+               `<span style="color:${p2?.color}">\u25CF</span> Medidos: <b>${n}</b>`;
+      }
+    },
+
+    plotOptions: {
+      series: { animation: { duration: 0 }, marker: { enabled: false } }
+    },
+
+    series: [
+      {
+        key: 'mass',
+        type: 'line',
+        name: 'Balance acumulado',
+        data: mass,          // [año, m e.a.]
+        color: '#05d80a',    // verde solicitado
+        lineWidth: 3,
+        yAxis: 0
+      },
+      {
+        key: 'count',
+        type: 'line',
+        name: 'Glaciares medidos',
+        data: count,         // [año, conteo]
+        color: '#deed1b',    // amarillo solicitado
+        lineWidth: 3,
+        dashStyle: 'ShortDash',
+        yAxis: 1
+      }
+    ]
+  });
+})();
+</script>
+</body>
+</html>

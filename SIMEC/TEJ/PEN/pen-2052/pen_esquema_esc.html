@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Escenarios de Oferta Energética - Colombia</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f0f4fa;
+    }
+    .chart-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+    }
+    .chart-box {
+      width: 30%;
+      min-width: 300px;
+      margin-bottom: 40px;
+      background: #fff;
+      padding: 15px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<h2 style="text-align: center;">Escenarios de Oferta Energética</h2>
+<div class="chart-container">
+  <div class="chart-box" id="chart-actualizacion"></div>
+  <div class="chart-box" id="chart-modernizacion"></div>
+  <div class="chart-box" id="chart-inflexion"></div>
+  <div class="chart-box" id="chart-innovacion"></div>
+  <div class="chart-box" id="chart-limite-inferior"></div>
+  <div class="chart-box" id="chart-limite-superior"></div>
+</div>
+
+<script>
+  const escenarios = [
+    { id: 'chart-actualizacion', title: 'ACTUALIZACIÓN' },
+    { id: 'chart-modernizacion', title: 'MODERNIZACIÓN' },
+    { id: 'chart-inflexion', title: 'INFLEXIÓN' },
+    { id: 'chart-innovacion', title: 'INNOVACIÓN' },
+    { id: 'chart-limite-inferior', title: 'LÍMITE INFERIOR TE' },
+    { id: 'chart-limite-superior', title: 'LÍMITE SUPERIOR TE' }
+  ];
+
+  const categorias = [
+    'Petróleo y Derivados',
+    'Gas Natural',
+    'Hidrogeneración',
+    'Biomasa',
+    'Carbón Térmico',
+    'Carbón Metalúrgico',
+    'FNCER'
+  ];
+
+  escenarios.forEach((escenario) => {
+    Highcharts.chart(escenario.id, {
+      chart: {
+        type: 'pie'
+      },
+      title: {
+        text: escenario.title,
+        align: 'center',
+        style: {
+          fontSize: '16px'
+        }
+      },
+      plotOptions: {
+        pie: {
+          innerSize: '60%',
+          depth: 45,
+          dataLabels: {
+            enabled: true,
+            format: '{point.name}: {point.y:.1f}%',
+            distance: 10
+          }
+        }
+      },
+      series: [{
+        name: 'Participación',
+        data: categorias.map(cat => {
+          return {
+            name: cat,
+            y: Math.random() * 20 + 5 // Genera valores aleatorios entre 5% y 25%
+          }
+        })
+      }]
+    });
+  });
+</script>
+
+</body>
+</html>

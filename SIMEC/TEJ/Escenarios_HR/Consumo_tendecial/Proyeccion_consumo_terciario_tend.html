@@ -6,9 +6,9 @@
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <style>
         #container {
-            min-width: 310px;
-            height: 600px;
-            margin: 0 auto;
+            max-width: 1100px;
+            height: 540px;
+            margin: 20px auto;
         }
     </style>
 </head>
@@ -19,27 +19,23 @@
             Highcharts.chart('container', {
                 chart: {
                     type: 'area',
-                    backgroundColor: '#f4f4f4'
+                    backgroundColor: '#ffffff',
+                    spacingTop: 8,
+                    spacingRight: 12
                 },
                 title: {
                     text: 'Consumo de energía sector terciario - Escenario tendencial',
                     // align: 'left'
                 },
                 subtitle: {
-                    text: 'Fuente: Minenergia - Hoja de Ruta TEJ',
-                    align: 'left'
+                    text: 'Fuente: Minenergia - Hoja de Ruta TEJ'
                 },
                 xAxis: {
-                    categories: ['2010','2011','2012','2013', '2014', '2015','2016','2017','2018', '2019','2020','2021','2022','2023', '2024','2025','2026','2027','2028','2029','2030','2031','2032','2033','2034','2035','2036','2037','2038','2039','2040','2041','2042','2043','2044','2045','2046','2047','2048','2049','2050'],
-                    tickmarkPlacement: 'on',
+                    categories: ['2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025','2026','2027','2028','2029','2030','2031','2032','2033','2034','2035','2036','2037','2038','2039','2040','2041','2042','2043','2044','2045','2046','2047','2048','2049','2050'],
+                    tickInterval: 5,
+                    tickLength: 0,
                     title: {
                         enabled: false
-                    },
-                    labels: {
-                        rotation: -45,
-                        // style: {
-                        //     fontSize: '10px'
-                        // }
                     }
                 },
                 yAxis: {
@@ -55,24 +51,32 @@
                     //         return this.value / 1000;
                     //     }
                     // },
-                    gridLineColor: '#d9d9d9'
+                    gridLineDashStyle: 'Dash'
                 },
                 tooltip: {
                     split: true,
-                    valueSuffix: '(PJ/año)'
+                    valueSuffix: ' PJ/año'
                 },
-                credits: {
-                enabled: false
-                },
+                credits: { enabled: false },
+                exporting: { enabled: true },
                 plotOptions: {
                     area: {
                         stacking: 'normal',
                         lineColor: '#666666',
-                        lineWidth: 1,
+                        lineWidth: 0,
                         marker: {
-                            lineWidth: 1,
+                            enabled: false,
+                            lineWidth: 0.5,
                             lineColor: '#666666',
-                            radius:1
+                            radius: 3,
+                            states: {
+                                hover: {
+                                    enabled: true,
+                                    radius: 5,
+                                    lineWidth: 2,
+                                    lineColor: '#ffffff'
+                                }
+                            }
                         }
                     }
                 },
@@ -80,8 +84,7 @@
                     layout: 'horizontal',
                     align: 'center',
                     verticalAlign: 'bottom',
-                    backgroundColor: '#ffffff',
-                    borderWidth: 1
+                    borderWidth: 0
                 },
                 series: [{
 
@@ -97,7 +100,7 @@
       13.17, 13.80, 15.42, 16.28, 16.63, 16.20, 15.66, 14.93, 20.79, 17.43, 13.43, 16.21, 17.54, 17.52, 17.33, 17.05, 16.74, 16.16, 15.34, 14.41, 13.55, 12.96, 12.55, 12.29, 12.12,
       12.01, 12.04, 12.07, 12.09, 12.09, 12.07, 12.57, 13.09, 13.63, 14.19, 14.77, 15.38, 16.02, 16.68, 17.37, 18.09
     ],
-                color:'#0a8c00' 
+                color:'#b8f600' 
             },
             {
                 name: 'GLP',
@@ -113,7 +116,7 @@
       39.71, 40.57, 43.24, 45.48, 47.78, 46.60, 47.62, 55.18, 49.13, 58.09,52.00, 56.11, 56.98, 57.23, 56.77, 55.71, 55.99, 55.76, 54.97, 53.87, 52.84, 53.52, 54.69, 56.32, 58.31,
       60.58, 63.13, 65.82, 68.64, 71.61, 74.70, 77.78, 80.99, 84.34, 87.82, 91.45, 95.23, 99.17, 103.28, 107.55, 112.00
     ],
-                color:'#b8f600' 
+                color:'#0a8c00' 
              },
             
         ]

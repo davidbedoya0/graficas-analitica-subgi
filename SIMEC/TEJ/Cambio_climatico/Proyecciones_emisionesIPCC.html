@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Global GHG emissions — IPCC AR6 (Panel a)</title>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<style>
+  body { margin:0; font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif; }
+  #container { max-width: 960px; margin: 20px auto; height: 540px; }
+</style>
+</head>
+<body>
+<div id="container"></div>
+<script>
+// ===== Paleta (tu set) =====
+const PALETTE = {
+  amber:"#ecb000",      // implemented policies (línea y, si quisieras, banda)
+  deep:"#b8f600",       // NDC (línea)
+  green:"#0a8c00",      // 2°C (línea)
+  neon:"#0145FF",       // 1.5°C (línea)
+  chartreuse:"#c7f425", // 2°C (banda - NO USADA ahora, dejamos la nueva c2_area)
+  lemon:"#9befd7",      // 1.5°C (banda)
+  violet:"#8C009B",
+
+  // NUEVOS: fondos diferenciados para las dos bandas del medio
+  ndc_area:"#e8e6ff",   // NDCs fondo lavanda MUY claro
+  c2_area:"#e8f0ff"     // 2°C fondo azul MUY claro
+};
+
+// ====== Datos (extraídos de la hoja "Data") ======
+// Línea histórica
+const pastLine = [
+  [2010,50.15],[2011,51.42],[2012,52.39],[2013,53.22],[2014,54.41],[2015,54.11]
+];
+// Incertidumbre y mediana (solo 2015, 2019)
+const pastErrorBars = [
+  [2015,50.28,62.85],[2019,52.51,65.67]
+];
+const pastMedianPts = [
+  [2015,56.57],[2019,59.09]
+];
+
+// Implemented policies (P25, P50, P75)
+const impl_low  = [[2015,52.22],[2020,53.14],[2025,53.91],[2030,55.18],[2035,55.48],[2040,55.47],[2045,54.91],[2050,53.24]];
+const impl_med  = [[2015,53.61],[2020,54.32],[2025,54.26],[2030,55.64],[2035,57.84],[2040,58.73],[2045,59.61],[2050,60.45]];
+const impl_high = [[2015,53.96],[2020,54.66],[2025,56.12],[2030,58.24],[2035,59.76],[2040,60.60],[2045,61.64],[2050,62.11]];
+
+// NDCs hasta 2030 (alto overshoot)
+const ndc_low  = [[2015,52.16],[2020,52.49],[2025,52.06],[2030,50.96],[2035,31.46],[2040,23.70],[2045,17.67],[2050,13.61]];
+const ndc_med  = [[2015,53.61],[2020,55.46],[2025,54.46],[2030,52.88],[2035,39.95],[2040,29.47],[2045,22.12],[2050,17.05]];
+const ndc_high = [[2015,56.04],[2020,58.00],[2025,56.02],[2030,54.41],[2035,42.49],[2040,32.44],[2045,25.57],[2050,20.34]];
+
+// Limitar a 2°C (>67%)
+const c2_low  = [[2015,52.16],[2020,53.90],[2025,44.81],[2030,37.44],[2035,30.94],[2040,25.88],[2045,20.90],[2050,16.31]];
+const c2_med  = [[2015,53.61],[2020,55.13],[2025,46.81],[2030,40.62],[2035,34.87],[2040,29.53],[2045,25.08],[2050,20.63]];
+const c2_high = [[2015,54.60],[2020,57.64],[2025,50.08],[2030,44.69],[2035,38.77],[2040,33.28],[2045,27.93],[2050,23.25]];
+
+// Limitar a 1.5°C (>50%) con no/limitado overshoot
+const c15_low  = [[2015,52.83],[2020,53.90],[2025,39.55],[2030,26.92],[2035,20.20],[2040,14.73],[2045,10.55],[2050,7.05]];
+const c15_med  = [[2015,53.74],[2020,54.50],[2025,41.50],[2030,31.08],[2035,22.82],[2040,17.98],[2045,12.97],[2050,9.49]];
+const c15_high = [[2015,56.29],[2020,56.25],[2025,44.00],[2030,34.65],[2035,26.43],[2040,20.25],[2045,15.33],[2050,11.30]];
+
+// Utilidad: convertir pares [x,y] a arearange [x,low,high]
+function toAreaRange(low, high){
+  const ml = new Map(low.map(p=>[p[0],p[1]]));
+  const mh = new Map(high.map(p=>[p[0],p[1]]));
+  const xs = [...ml.keys()].filter(x=>mh.has(x)).sort((a,b)=>a-b);
+  return xs.map(x=>[x, ml.get(x), mh.get(x)]);
+}
+
+Highcharts.setOptions({ lang: { thousandsSep:',', decimalPoint:'.' } });
+
+Highcharts.chart('container', {
+  chart: { spacing:[16,16,40,16] },
+  title: { text:'Trayectorias de emisiones GEI globales', align:'center', style:{ fontWeight:600 } },
+  subtitle: { text: 'Fuente: adaptado de (IPCC, 2024). Informe de síntesis del Sexto Informe de Evaluación del IPCC.',
+      style: { color: '#6b6b6b' },
+      y: 35
+    },
+  credits: { enabled:false },
+
+  legend: {
+    enabled:true,
+    layout:'horizontal',
+    align:'center',
+    verticalAlign:'bottom',
+    itemStyle:{ fontWeight:500 }
+  },
+
+  xAxis: {
+    min:2010, max:2050, tickInterval:5,
+    plotLines:[{
+      value:2030, color:'#9ea7b3', width:1.5, dashStyle:'Dash', zIndex:3,
+      label:{ text: null, rotation:0, align:'left', y:-6, x:14, style:{ color:'#6b7280' } }
+    }]
+  },
+
+  yAxis: {
+    title:{ text:'Emisiones GEI (GtCO\u2082-eq/yr)' },
+    min:0, max:70, tickInterval:10, gridLineColor:'#e5e7eb'
+  },
+
+  tooltip: {
+    useHTML:true, borderRadius:8, valueDecimals:2,
+    formatter: function(){
+      return `<b>${this.series.name}</b><br>Año: <b>${this.x}</b><br>Emisiones: <b>${this.y}</b> GtCO\u2082-eq/año`;
+    }
+  },
+
+  plotOptions: {
+    series: { animation:{ duration:2200 } },
+    line: { lineWidth:3, marker:{ enabled:true, radius:4, lineWidth:1.5, lineColor:'#fff' } },
+    // Quitamos marcas en TODAS las bandas y dejamos solo las de las líneas
+    arearange: { lineWidth:0, fillOpacity:0.18, showInLegend:false, marker:{ enabled:false } }
+  },
+
+  series: [
+    // Pasado
+    { type:'line', name:'Emisiones históricas', data: pastLine, color:'#111111', zIndex:7 },
+    { type:'errorbar', name:'Past uncertainty', showInLegend:false,
+      data: pastErrorBars, color:'#111111', whiskerWidth:1.2, stemWidth:1.2, zIndex:6 },
+    { type:'scatter', name:'Past median', data: pastMedianPts, showInLegend:false,
+      marker:{ symbol:'diamond', radius:5, fillColor:'#111111' }, color:'#111111', zIndex:8 },
+
+    // Implemented policies
+    { type:'arearange', name:'Implemented policies (range)', data: toAreaRange(impl_low, impl_high), color:PALETTE.amber, zIndex:1 },
+    { type:'line', name:'Tendencia de las políticas implementadas', data: impl_med, color:PALETTE.amber, zIndex:3 },
+
+    // NDCs to 2030 (high overshoot) — FONDO DIFERENCIADO
+    { type:'arearange', name:'NDCs to 2030 — high overshoot (range)', data: toAreaRange(ndc_low, ndc_high), color:'#f4e8', zIndex:1 },
+    { type:'line', name:'Limitar a 2 °C (>67 %) o que el calentamiento vuelva a 1,5 °C (>50 %).', data: ndc_med, color:PALETTE.deep, zIndex:3 },
+
+    // Limitar a 2°C — FONDO DIFERENCIADO
+    { type:'arearange', name:'Limit warming to 2°C (>67%) (range)', data: toAreaRange(c2_low, c2_high), color:'#deff64', zIndex:1 },
+    { type:'line', name:'Limitar a 2 °C (>67 %) con acción inmediata.', data: c2_med, color:PALETTE.green, zIndex:3 },
+
+    // Limitar a 1.5°C
+    { type:'arearange', name:'Limit warming to 1.5°C (>50%) with no/limited overshoot (range)', data: toAreaRange(c15_low, c15_high), color:PALETTE.lemon, zIndex:1 },
+    { type:'line', name:'Límite a 1,5 °C (>50 %) sin sobrepaso o con un sobrepaso limitado', data: c15_med, color:PALETTE.neon, zIndex:4 }
+  ]
+});
+</script>
+</body>
+</html>

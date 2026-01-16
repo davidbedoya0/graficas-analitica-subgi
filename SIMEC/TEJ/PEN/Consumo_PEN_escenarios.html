@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Escenarios – Transición energética (PJ·año)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/highcharts-more.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <style>
+    body{margin:0;font-family:Segoe UI, Roboto, system-ui, -apple-system, sans-serif;background:#fff;}
+    #container{max-width:1100px;height:540px;margin:20px auto;}
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+
+  <script>
+    // Paleta (tus colores)
+    const COLORS = {
+      oro1:   '#ecb000',
+      oro2:   '#efca18',
+      lima1:  '#deed1b',
+      verdeNeon: '#05d80a',
+      verde:  '#0a8c00',
+      verdeOsc: '#183e34',
+      limaSuave: '#deff64',
+      lima2:  '#c7f425',
+      lima3:  '#b8f600'
+    };
+
+    Highcharts.setOptions({
+      lang: {
+        decimalPoint: ',',
+        thousandsSep: '.'
+      }
+    });
+
+    const categorias = [2021, 2022, 2032, 2042, 2052];
+
+    // Series numéricas (PJ·año)
+    const TEA =  [1274.17, 1280.44, 1405.08, 1569.25, 1760.23];
+    const TEB =  [1274.17, 1280.35, 1355.11, 1483.12, 1749.31];
+
+    const actualizacion  = [1274.17, 1271.74, 1576.15, 1881.30, 2197.78];
+    const modernizacion  = [1274.17, 1270.66, 1520.81, 1728.44, 1991.07];
+    const inflexion      = [1274.17, 1277.16, 1491.33, 1697.66, 1982.76];
+    const innovacion     = [1274.17, 1280.50, 1415.09, 1606.56, 1788.71];
+
+    Highcharts.chart('container', {
+      chart: {
+        spacingTop: 8,
+        spacingRight: 12
+      },
+      title: { text: 'Consumo final de energía por escenario' },
+      subtitle: { text: 'Fuente: PEN 2022- 2052'},
+      xAxis: {
+        categories: categorias,
+        tickmarkPlacement: 'on',
+        title: { text: null }
+      },
+      yAxis: {
+        title: { text: 'PJ·año' },
+        min: 1200,
+        // puedes comentar la siguiente línea si prefieres auto-escala
+        max: 2300,
+        gridLineDashStyle: 'Dash'
+      },
+      tooltip: {
+        shared: true,
+        valueDecimals: 2,
+        valueSuffix: ' PJ·año'
+      },
+      legend: { itemStyle: { fontWeight: '600' } },
+      credits: { enabled: false },
+      exporting: { enabled: true },
+
+      series: [
+        // Túnel de transición energética (área entre TE B y TE A)
+        {
+          type: 'arearange',
+          name: 'Transición energética (Limite superior - inferior)',
+          data: categorias.map((_, i) => [i, TEB[i], TEA[i]]),
+          color: '#c7f425',
+          fillOpacity: 0.35,
+          lineWidth: 0,
+          zIndex: 0,
+          tooltip: {
+            pointFormatter: function () {
+              const low  = Highcharts.numberFormat(this.low, 2, ',', '.');
+              const high = Highcharts.numberFormat(this.high, 2, ',', '.');
+              return `<span style="color:${COLORS.limaSuave}">\u25CF</span> ` +
+                     `Transición energética: <b>${low} – ${high} PJ·año</b><br/>`;
+            }
+          }
+        },
+
+        // Líneas de los escenarios
+        {
+          type: 'line',
+          name: 'Actualización',
+          data: actualizacion,
+          color: COLORS.verdeOsc,
+          lineWidth: 3,
+          marker: { radius: 3 }
+        },
+        {
+          type: 'line',
+          name: 'Modernización',
+          data: modernizacion,
+          color: COLORS.verdeNeon,
+          lineWidth: 3,
+          marker: { radius: 3 }
+        },
+        {
+          type: 'line',
+          name: 'Inflexión',
+          data: inflexion,
+          color: COLORS.oro2,
+          lineWidth: 3,
+          marker: { radius: 3 }
+        },
+        {
+          type: 'line',
+          name: 'Innovación',
+          data: innovacion,
+          color: COLORS.verde,
+          lineWidth: 3,
+          dashStyle: 'Dash',
+          marker: { radius: 3 }
+        }
+      ]
+    });
+  </script>
+</body>
+</html>

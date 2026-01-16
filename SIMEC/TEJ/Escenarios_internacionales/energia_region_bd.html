@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Energía primaria — BP Outlook (Hoja 28)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <style>
+    :root{
+      /* Paleta UPME */
+      --upme-amarillo:#efca18;
+      --upme-lima:#b8f600;
+      --upme-verde:#05d80a;
+      --upme-verde-osc:#0a8c00;
+      --upme-verdeos:#183e34
+;
+      --upme-teal:#0991B5;
+      --upme-azul:#0145FF;
+      --upme-aceite:#ecb000;
+    }
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#fff;color:#111;}
+    .wrap{max-width:1200px;margin:18px auto;padding:0 12px;}
+    .grid{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;}
+    .panel{height:420px;}
+    h1{font-size:18px;margin:8px 0 12px;font-weight:600}
+    .foot{font-size:11px;color:#555;margin-top:4px;text-align:right}
+    @media (max-width:960px){ .grid{grid-template-columns:1fr} .panel{height:360px} }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="grid">
+    <div>
+      <h1>Energía primaria</h1>
+      <div id="chart-lines" class="panel"></div>
+    </div>
+    <div>
+      <h1>Energía primaria por tipo</h1>
+      <div id="chart-bars" class="panel"></div>
+    </div>
+  </div>
+  <div class="foot">Fuente: adaptado de base de datos BP p.l.c., 2024.</div>
+</div>
+
+<script>
+/* =======================
+   Datos extraídos de la hoja 28 (xlsx)
+   ======================= */
+
+/* Serie de líneas (EJ) — años 2000–2050
+   - Serie histórica (2000–2022)
+   - Net Zero = trayectoria NZ (2022–2050)
+   - Current Trajectory = valores a partir de 2022 (años intermedios nulos)
+*/
+const serieHistorica = [[2000,401.0],[2001,405.0],[2002,413.0],[2003,429.0],[2004,449.0],[2005,464.0],[2006,477.0],[2007,492.0],[2008,496.0],[2009,488.0],[2010,503.0],[2011,526.0],[2012,541.0],[2013,550.0],[2014,544.0],[2015,547.0],[2016,553.0],[2017,563.0],[2018,577.0],[2019,582.0],[2020,559.0],[2021,589.0],[2022,595.0]];
+
+const serieNetZero = [[2022,595.0],[2025,565.0],[2030,516.0],[2035,472.0],[2040,437.0],[2045,472.0],[2050,437.0]];
+
+const serieCT = [[2000,null],[2001,null],[2002,null],[2003,null],[2004,null],[2005,null],[2006,null],[2007,null],[2008,null],[2009,null],[2010,null],[2011,null],[2012,null],[2013,null],[2014,null],[2015,null],[2016,null],[2017,null],[2018,null],[2019,null],[2020,null],[2021,null],[2022,595.0],[2025,618.0],[2030,633.0],[2035,643.0],[2040,646.0],[2045,644.0],[2050,635.0]];
+
+/* Barras apiladas (EJ) — categorías: 2022, Current Trajectory (2050), Net Zero (2050) */
+const categoriasBarras = ['2022','Current Trajectory','Net Zero'];
+const barras = {
+  'Renewables':          [ 70.0, 173.0, 249.3348135235 ],
+  'Nuclear and hydro':   [ 25.0,  37.0,  48.0 ],
+  'Coal':                [165.0, 108.0,  23.0 ],
+  'Natural gas':         [143.0, 170.0,  65.0 ],
+  'Oil':                 [191.0, 146.0,  52.0 ]
+};
+
+/* =======================
+   Gráfico de líneas
+   ======================= */
+Highcharts.chart('chart-lines', {
+  chart: { type: 'line', backgroundColor: '#ffffff' },
+  title: { text: null },
+  credits: { enabled: false },
+  legend: { align: 'left', verticalAlign: 'top', y: -6, itemStyle:{fontWeight:500} },
+  xAxis: {
+    tickInterval: 5,
+    min: 2000, max: 2050,
+    gridLineWidth: 0, lineColor: '#ccc',
+    plotLines: [{ // Línea vertical en 2022
+      color: '#ccc', width: 1, value: 2022, zIndex: 3, dashStyle: 'ShortDash'
+    }]
+  },
+  yAxis: {
+    title: { text: 'EJ' },
+    gridLineWidth: 1, gridLineColor: '#eee',
+  },
+  tooltip: {
+    shared: false, valueDecimals: 0, valueSuffix: ' EJ',
+    pointFormat: '<b>{point.y:.0f} EJ</b>'
+  },
+  series: [{
+    name: 'Serie histórica',
+    data: serieHistorica,
+    color: getComputedStyle(document.documentElement).getPropertyValue('--upme-lima').trim(),
+    marker: { enabled: true, radius: 3 },
+    lineWidth: 2
+  },{
+    name: 'Trayectoria actual',
+    data: serieCT,
+    color: getComputedStyle(document.documentElement).getPropertyValue('--upme-verde-oscuro').trim(),
+    marker: { enabled: true, radius: 3 },
+    lineWidth: 2
+  },{
+    name: 'Cero Neto',
+    data: serieNetZero,
+    color: getComputedStyle(document.documentElement).getPropertyValue('--upme-azul').trim(),
+    marker: { enabled: true, radius: 3 },
+    lineWidth: 2
+  }]
+});
+
+/* =======================
+   Barras apiladas por tipo
+   ======================= */
+Highcharts.chart('chart-bars', {
+  chart: { type: 'column', backgroundColor:'#ffffff' },
+  title: { text: null },
+  credits: { enabled: false },
+  xAxis: { categories: categoriasBarras, lineColor:'#ccc', gridLineWidth:0 },
+  yAxis: {
+    min: 0, title: { text: 'EJ' },
+    gridLineColor:'#eee'
+  },
+  legend: { align:'left', verticalAlign:'top', y:-6, itemStyle:{fontWeight:500} },
+  tooltip: { shared: true, valueDecimals: 0, valueSuffix: ' EJ' },
+  plotOptions: {
+    column: { stacking: 'normal', borderWidth: 0, pointPadding: 0.05, groupPadding: 0.08 }
+  },
+  series: [
+    { name:'Renovables',        data:barras['Renewables'],        color:getCSS('--upme-verde') },
+    { name:'Nuclear e hidro',   data:barras['Nuclear and hydro'], color:getCSS('--upme-azul') },
+    { name:'Carbón',            data:barras['Coal'],              color:getCSS('--upme-verdeos') },
+    { name:'Gas natural',       data:barras['Natural gas'],       color:getCSS('--upme-lima') },
+    { name:'Petróleo',          data:barras['Oil'],               color:getCSS('--upme-aceite') }
+  ]
+});
+
+/* Utilitarios */
+function getCSS(varName){ return getComputedStyle(document.documentElement).getPropertyValue(varName).trim(); }
+</script>
+</body>
+</html>

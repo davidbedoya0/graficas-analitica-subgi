@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Crecimiento de energía primaria — Hoja 26 (BP 2024)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <style>
+    /* Paleta UPME (principales) */
+    :root{
+      --upme-amarillo:#deed1b;
+      --upme-lima:#b8f600;
+      --upme-verde:#05d80a;
+      --upme-verde-osc2:#183e34;
+      --upme-verde-osc:#0a8c00;
+      --upme-gris:#ADADAD;
+      --upme-limacl:#deff64;
+      --upme-azul:#0145FF;
+      --upme-oro:#ecb000;}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#fff;color:#111;}
+    .wrap{max-width:1200px;margin:18px auto;padding:0 12px;}
+    .grid{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+    .panel{height:420px}
+    h1{font-size:18px;margin:8px 0 10px;font-weight:600}
+    .foot{font-size:11px;color:#555;margin-top:6px;text-align:right}
+    @media (max-width:960px){ .grid{grid-template-columns:1fr} .panel{height:360px} }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="grid">
+    <div>
+      <h1>Crecimiento anual medio de la demanda de energía primaria</h1>
+      <div id="chart-crecimiento" class="panel"></div>
+    </div>
+    <div>
+      <h1>Energía primaria por región</h1>
+      <div id="chart-region" class="panel"></div>
+    </div>
+  </div>
+  <div class="foot">Fuente: adaptado de base de datos BP p.l.c., 2024.</div>
+</div>
+
+<script>
+/* ============================
+   Datos de la hoja 26 (Excel)
+   ============================ */
+
+/* Tabla 1 – Porcentajes (1995–2022, 2022–2050 CT y NZ)
+   En el Excel vienen como fracciones; aquí se expresan en %.
+   GDP per capita: 0.022 / 0.017 / 0.017
+   Population:     0.012 / 0.007 / 0.007
+   Energy intensity:-0.016 / -0.021 / -0.034
+   Primary energy: 0.018 / 0.002 / -0.011
+*/
+const categoriasCrec = ['1995–2022','Trayectoria actual','Cero neto'];
+const intens = [-1.6, -2.1, -3.4];        // Intensidad energética
+const pobl   = [ 1.2,  0.7,  0.7];        // Población
+const pibpc  = [ 2.2,  1.7,  1.7];        // PIB per cápita
+const prim   = [ 1.8,  0.2, -1.1];        // Energía primaria (punto)
+
+/* Tabla 2 – Energía primaria por región (EJ)
+   2022; 2035 CT/NZ; 2050 CT/NZ
+   Developed: 208, 191,167, 163,125
+   China:     146, 155,138, 128, 94
+   Emerging ex. China: 240, 297,260, 345,218
+*/
+const categoriasRegion = [
+  '2022',
+  'Trayectoria actual','Cero neto',   // 2035
+  'Trayectoria actual','Cero neto'    // 2050
+];
+const serieChina      = [146,155,138,128, 94];
+const serieDesarroll  = [208,191,167,163,125];
+const serieEmergentes = [240,297,260,345,218];
+
+/* Utilitario para leer variables CSS */
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+/* ============================
+   Gráfico 1 – Barras apiladas + punto
+   ============================ */
+Highcharts.chart('chart-crecimiento', {
+  chart: { type: 'column', backgroundColor:'#ffffff' },
+  title: { text: null },
+  credits: { enabled:false },
+  xAxis: {
+    categories: categoriasCrec,
+    lineColor:'#ccc',
+    gridLineWidth:0,
+    plotLines: [{
+      color:'#d9d9d9', width:1, value:0.5, dashStyle:'ShortDash', zIndex:3 // separador visual como el ejemplo
+    }]
+  },
+  yAxis: {
+    min: -4, max: 4, tickInterval: 1,
+    title: { text: 'Porcentaje' },
+    gridLineColor:'#eee'
+  },
+  legend: { align:'left', verticalAlign:'top', y:-6, itemStyle:{fontWeight:500} },
+  tooltip: {
+    shared: true,
+    pointFormatter: function () {
+      const sVal = (this.y>=0?'+':'') + Highcharts.numberFormat(this.y, 1) + '%';
+      return '<span style="color:'+this.color+'">\u25CF</span> ' +
+             this.series.name + ': <b>' + sVal + '</b><br/>';
+    }
+  },
+  plotOptions: {
+    column: { stacking:'normal', borderWidth:0, pointPadding:0.05, groupPadding:0.08 }
+  },
+  series: [
+    { name:'Intensidad energética', data:intens, color:css('--upme-verde') },
+    { name:'Población',             data:pobl,  color:css('--upme-amarillo') },
+    { name:'PIB per cápita',        data:pibpc, color:css('--upme-azul') },
+    { type:'scatter',
+      name:'Energía primaria',
+      data: categoriasCrec.map((_, i) => [i, prim[i]]),
+      color: css('--upme-limacl'),
+      marker: { symbol:'circle', radius:5, lineWidth:1, lineColor:css('--upme-teal') },
+      tooltip: { pointFormat: '<b>{point.y:.1f}%</b>' },
+      enableMouseTracking: true
+    }
+  ]
+});
+
+/* ============================
+   Gráfico 2 – Barras apiladas por región (EJ)
+   ============================ */
+Highcharts.chart('chart-region', {
+  chart: { type: 'column', backgroundColor:'#ffffff' },
+  title: { text: null },
+  credits: { enabled:false },
+  xAxis: {
+    categories: categoriasRegion,
+    lineColor:'#ccc',
+    gridLineWidth:0,
+    plotLines: [
+      { color:'#d9d9d9', width:1, value:0.5, dashStyle:'ShortDash', zIndex:3 }, // después de 2022
+      { color:'#d9d9d9', width:1, value:2.5, dashStyle:'ShortDash', zIndex:3 }  // entre 2035 y 2050
+    ],
+    plotBands: [
+      { from: 0.5, to: 2.5, color:'rgba(0,0,0,0)', label:{ text:'2035', y:-10, style:{ color:'#666' } } },
+      { from: 2.5, to: 4.5, color:'rgba(0,0,0,0)', label:{ text:'2050', y:-10, style:{ color:'#666' } } }
+    ]
+  },
+  yAxis: {
+    min: 0, title: { text: 'EJ' }, gridLineColor:'#eee'
+  },
+  legend: { align:'left', verticalAlign:'top', y:-6, itemStyle:{fontWeight:500} },
+  tooltip: { shared:true, valueSuffix:' EJ' },
+  plotOptions: {
+    column: { stacking:'normal', borderWidth:0, pointPadding:0.05, groupPadding:0.08 }
+  },
+  series: [
+    { name:'China',                     data:serieChina,      color:css('--upme-verde') },
+    { name:'Desarrollados',             data:serieDesarroll,  color:css('--upme-verde-osc2') },
+    { name:'Emergentes (excl. China)',  data:serieEmergentes, color:css('--upme-oro') }
+  ]
+});
+</script>
+</body>
+</html>

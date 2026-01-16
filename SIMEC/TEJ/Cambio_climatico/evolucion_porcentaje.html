@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Emisiones por sector – Colombia (apilado 100%)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <style>
+    body{margin:0;font-family:Segoe UI, Roboto, system-ui, -apple-system, sans-serif;}
+    #container{max-width:1200px;height:560px;margin:20px auto;}
+  </style>
+</head>
+<body>
+<div id="container"></div>
+
+<script>
+  // Locale: punto para miles, coma para decimales
+  Highcharts.setOptions({
+    lang: { decimalPoint: ',', thousandsSep: '.' }
+  });
+
+  // Paleta (tus colores)
+  const COLORS = {
+    oro1:  '#ecb000',  // Energía
+    oro2:  '#efca18',  // Proc. industriales
+    lima:  '#deed1b',  // Agricultura
+    verde: '#0a8c00',  // Silvicultura, uso y cambio de uso
+    teal:  '#183e34'   // Residuos
+  };
+
+  // Años visibles en tu tabla
+  const categorias = [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021];
+
+  // Datos (valores absolutos de emisiones)
+  const energia =      [78394.3524, 82670.6049, 86616.4305, 89548.4378, 93066.8124, 93048.7536, 86482.7229, 90968.8938, 95064.3384, 84988.7072, 91610.5525];
+  const procesos =     [ 7888.6570,  8427.1276,  8606.9795,  8987.1681,  9102.6152,  8829.9211,  9217.7435,  9676.8341, 10052.7714, 10604.0408, 11721.4720];
+  const agricultura =  [48713.6926, 47561.7669, 47702.7504, 46683.2984, 48335.1350, 49004.2192, 50324.0133, 55523.3897, 57029.5967, 58642.6559, 57957.8489];
+  const silvicultura = [101250.1359,101609.6959, 84532.6944, 90883.4663, 83274.7694,110658.2546,133960.0328,128786.7821,110254.3384,120520.0316,119435.1073];
+  const residuos =     [17242.8638, 17286.0437, 17363.5684, 18028.3822, 18820.1514, 19956.3636, 21285.3453, 21266.4122, 21669.1523, 21929.3551, 22209.0471];
+
+  Highcharts.chart('container', {
+    chart: { type: 'column' },
+    title: { text: 'Evolución histórica de la participación de las emisiones GEI ' },
+    subtitle: { text: 'Fuente: adaptado de IDEAM (2024)', align: 'center' },
+    xAxis: {
+      categories: categorias,
+      labels: { rotation: -45 }
+    },
+    yAxis: {
+      min: 0,
+      max: 100,
+      title: { text: '' },
+      labels: { format: '{value}%' },
+      gridLineDashStyle: 'Dash'
+    },
+    legend: { itemStyle: { fontWeight: 600 } },
+    credits: { enabled: false },
+    exporting: { enabled: true },
+    tooltip: {
+      shared: true,
+      formatter: function () {
+        // Suma de valores absolutos para el año
+        const total = this.points.reduce((s, p) => s + p.y, 0);
+        let s = `<b>${this.x}</b><br/>` +
+                `Total: <b>${Highcharts.numberFormat(total, 2, ',', '.')}</b><br/>`;
+        this.points.forEach(p => {
+          s += `<span style="color:${p.color}">■</span> ${p.series.name}: ` +
+               `<b>${Highcharts.numberFormat(p.y, 2, ',', '.')}</b>` +
+               ` (${Highcharts.numberFormat(p.percentage, 2, ',', '.')}%)<br/>`;
+        });
+        return s;
+      }
+    },
+    plotOptions: {
+      column: {
+        stacking: 'percent',
+        borderWidth: 0
+      },
+      series: {
+        dataLabels: { enabled: false }
+      }
+    },
+    series: [
+      { name: 'Energía',                      data: energia,     color: COLORS.oro1  },
+      { name: 'Procesos industriales',        data: procesos,    color: COLORS.oro2  },
+      { name: 'Agricultura',                  data: agricultura, color: COLORS.lima  },
+      { name: 'Silvicultura, uso del suelo',  data: silvicultura,color: COLORS.verde },
+      { name: 'Residuos',                     data: residuos,    color: COLORS.teal  }
+    ]
+  });
+</script>
+</body>
+</html>

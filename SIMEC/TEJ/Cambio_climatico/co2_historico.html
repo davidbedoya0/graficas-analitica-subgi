@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Mediciones directas de CO₂ (1958–actualidad)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <style>
+    :root { --verde:#183e34; }
+    body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    #wrap { max-width: 1100px; margin: 20px auto; padding: 0 12px; }
+    #chart { height: 520px; }
+  </style>
+</head>
+<body>
+<div id="wrap">
+  <div id="chart"></div>
+</div>
+
+<script>
+(async () => {
+  // Carga el archivo NOAA/ML (el que adjuntaste) ubicado junto a este HTML
+  const raw = await fetch('co2_historico.txt').then(r => r.text());
+
+  // Parseo: ignora comentarios y líneas sin datos; usa la columna "monthly average"
+  // Formato esperado por línea (espacios múltiples):
+  // YEAR  MONTH  DECIMAL_DATE  MONTHLY_AVG  DESEASON  NDAYS  STDEV  UNC
+  const data = [];
+  raw.split(/\r?\n/).forEach(line => {
+    const s = line.trim();
+    if (!s || s.startsWith('#')) return;
+    // Solo procesa líneas que comienzan por año (4 dígitos)
+    if (!/^\d{4}\s+/.test(s)) return;
+
+    const t = s.split(/\s+/);
+    if (t.length < 4) return;
+
+    const year   = +t[0];
+    const month1 = +t[1];
+    const monthlyAvg = +t[3];
+
+    // Filtra valores faltantes o inválidos
+    if (!isFinite(year) || !isFinite(month1) || !isFinite(monthlyAvg)) return;
+    if (monthlyAvg <= 0 || monthlyAvg === -9.99) return;
+
+    // x = fecha (primer día del mes, UTC); y = ppm
+    const x = Date.UTC(year, month1 - 1, 1);
+    const y = +monthlyAvg.toFixed(2);
+    data.push([x, y]);
+  });
+
+  // Seguridad: ordena por fecha y elimina posibles duplicados
+  data.sort((a, b) => a[0] - b[0]);
+  const unique = [];
+  for (let i = 0; i < data.length; i++) {
+    if (i === 0 || data[i][0] !== data[i-1][0]) unique.push(data[i]);
+  }
+
+  // Serie para resaltar el último dato con marcador
+  const lastPoint = unique[unique.length - 1];
+
+  Highcharts.setOptions({ lang: { decimalPoint: ',', thousandsSep: '.' } });
+
+  Highcharts.chart('chart', {
+    chart: { spacingTop: 16, spacingRight: 18 },
+    title: {
+      text: 'Mediciones directas dióxido de carbono: 1958 - 2025',
+      style: { color: '#000', fontWeight: 700, fontSize: '18px', textTransform: 'none' }
+    },
+    subtitle: {
+      text: 'Fuente: adaptado de NASA. NOAA, Observatorio Mauna Loa.',
+      style: { color: '#6b6b6b' },
+      y: 35
+    },
+    credits: { enabled: false },
+    legend: { enabled: false },
+    xAxis: {
+      type: 'datetime',
+      tickInterval: 5 * 365 * 24 * 36e5, // ~5 años
+      lineColor: '#e8e8e8',
+      tickColor: '#e8e8e8'
+    },
+    yAxis: {
+      title: { text: 'CO₂ (partes por millón)' },
+      gridLineColor: '#ededed',
+      tickAmount: 7
+    },
+    tooltip: {
+      xDateFormat: '%B %Y',
+      pointFormat: '<b>{point.y:.2f} ppm</b>',
+      shared: false
+    },
+    plotOptions: {
+      series: {
+        animation: { duration: 1400 },
+        states: { hover: { enabled: true, lineWidthPlus: 0 } }
+      },
+      line: {
+        marker: { enabled: false }
+      }
+    },
+    series: [
+      {
+        type: 'line',
+        name: 'CO₂ mensual',
+        data: unique,
+        color: '#183e34',
+        lineWidth: 2.5
+      },
+      {
+        type: 'scatter',
+        name: 'Último dato',
+        data: [ lastPoint ],
+        marker: { enabled: true, radius: 5, lineWidth: 0, fillColor: '#183e34' },
+        enableMouseTracking: false,
+        tooltip: { pointFormat: '' }
+      }
+    ]
+  });
+})();
+</script>
+</body>
+</html>

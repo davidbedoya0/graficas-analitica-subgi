@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Systemic Equity Venn Diagram</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/venn.js"></script>
+    <style>
+        .highlight-center {
+            animation: zoomIn 1.5s ease-out;
+        }
+
+        @keyframes zoomIn {
+            0% {
+                transform: scale(0.6);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="container" style="height: 600px; width: 100%;"></div>
+
+    <script>
+        Highcharts.chart('container', {
+            chart: {
+                type: 'venn',
+                backgroundColor: '#ffffff',
+                animation: true
+            },
+            title: {
+                text: 'Equidad Sistémica'
+            },
+                tooltip: {
+        formatter: function () {
+            return this.point.name || '';
+        }
+            },
+            series: [{
+                name: 'Venn Diagram',
+                data: [
+                    {
+                        sets: ['Reconocimiento'],
+                        value: 5,
+                        color: '#b8f600'
+                    },
+                    {
+                        sets: ['Procedimental'],
+                        value: 5,
+                        color: '#deff64'
+                    },
+                    {
+                        sets: ['Distributiva'],
+                        value: 5,
+                        color: '#05d80a'
+                    },
+                    {
+                        sets: ['Reconocimiento', 'Procedimental'],
+                        value: 1,
+                        name: 'Aspiración',
+                        color: '#b8f600'
+                    },
+                    {
+                        sets: ['Procedimental', 'Distributiva'],
+                        value: 1,
+                        name: 'Ostensible',
+                        color: '#deed1b'
+                    },
+                    {
+                        sets: ['Distributiva', 'Reconocimiento'],
+                        value: 1,
+                        name: 'Explotación',
+                        color: '#efca18'
+                    },
+                    {
+                        sets: ['Reconocimiento', 'Procedimental', 'Distributiva'],
+                        value: 1,
+                        name: 'Equidad Sistémica',
+                        color: '#183e34',
+                        dataLabels: {
+                            enabled: true,
+                            useHTML: true,
+                            style: {
+                                fontWeight: 'bold',
+                                color: '#FFFFFF',
+                                fontSize: '14px'
+                            },
+                            className: 'highlight-center',
+                            format: '<span class="highlight-center">{point.name}</span>'
+                        }
+                    }
+                ],
+                dataLabels: {
+                    enabled: true,
+                    style: {
+                        fontWeight: 'bold',
+                        color: '#000000',
+                        textOutline: 'none'
+                    },
+                    formatter: function () {
+                        // Evita sobrescribir el personalizado del centro
+                        return this.point.name === 'Systemic equity' ? null : this.point.name;
+                    }
+                }
+            }]
+        });
+    </script>
+</body>
+</html>
+

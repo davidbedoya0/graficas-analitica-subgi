@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Participación por subcategoría – Emisiones</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <style>
+    body { margin:0; font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif; }
+    #container { width: 100%; max-width: 800px; height: 520px; margin: 24px auto; }
+  </style>
+</head>
+<body>
+
+<div id="container"></div>
+
+<script>
+// Localización en español
+Highcharts.setOptions({
+  lang: {
+    decimalPoint: ',',
+    thousandsSep: '.',
+    contextButtonTitle: 'Exportar',
+    viewFullscreen: 'Ver en pantalla completa',
+    printChart: 'Imprimir gráfico',
+    downloadPNG: 'Descargar PNG',
+    downloadJPEG: 'Descargar JPEG',
+    downloadPDF: 'Descargar PDF',
+    downloadSVG: 'Descargar SVG'
+  },
+  // Paleta de colores proporcionada (se usarán los primeros 6)
+  colors: ['#ecb000', '#efca18', '#0a8c00', '#05d80a', '#deed1b', '#183e34']
+});
+
+// Datos (ktCO2 eq)
+const data = [
+  { name: '1A1 Industrias de la energía', y: 19593.86 },
+  { name: '1A2 Industrias manufactureras y de la construcción', y: 13535.02 },
+  { name: '1A3 Transporte', y: 42170.57 },
+  { name: '1A4 Otros sectores', y: 9039.78 },
+  { name: '1B1 Combustibles sólidos', y: 2323.36 },
+  { name: '1B2 Petróleo y gas natural', y: 4947.95 }
+];
+
+Highcharts.chart('container', {
+  chart: { type: 'pie' },
+  title: { text: 'Participación por subcategoría - Módulo energía' },
+  subtitle: { text: ' Adaptado de (IDEAM, 2024)' },
+  credits: { enabled: false },
+  legend: { enabled: false },
+  exporting: { enabled: true },
+
+  tooltip: {
+  useHTML: true,
+  headerFormat: '',
+  pointFormatter: function () {
+    return `
+      <b>${this.name}</b><br/>
+      Emisiones: <b>${Highcharts.numberFormat(this.y, 2, ',', '.')}</b> ktCO₂ eq<br/>
+      Participación: <b>${Highcharts.numberFormat(this.percentage, 0, ',', '.')}%</b>
+    `;
+    }
+  },
+
+  plotOptions: {
+    pie: {
+      innerSize: '58%',       // dona
+      borderWidth: 0,
+      dataLabels: {
+        enabled: true,
+        distance: 1,
+        style: { fontWeight: 600, textOutline: 'none', color: '#4a4a4a' },
+        formatter: function () {
+          return this.point.name + '<br/><span style="font-weight:700">'
+                 + Highcharts.numberFormat(this.point.percentage, 0) + '%</span>';
+        }
+      }
+    }
+  },
+
+  series: [{
+    name: 'Emisiones',
+    data: data
+  }],
+
+});
+</script>
+
+</body>
+</html>
